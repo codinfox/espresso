@@ -1,0 +1,12 @@
+# Site settings
+title: Espresso
+description: A minimal iOS neural network framework
+url: "http://codinfox.github.ip/espresso"
+baseurl: "/espresso"
+
+font-awesome-include: true # make this false if you don't need font-awesome
+
+# Build settings
+markdown: kramdown
+
+exclude: ["README.md"]
