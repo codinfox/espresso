@@ -12,71 +12,93 @@ sup:after { content: "]"; }
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
+> We are in need of an apple developer account to test the framework on real devices.
+
 
 ### Background
 
-Good clean read is set up with readability first in mind. Whatever you want to communicate here can be read easily, and without distraction. Of course, it's fully responsive, which means people can read it naturally on any phone, or tablet. Write it in markdown in <code>index.md</code> and get a beautifully published piece.
+According to Morgan Stanley Research, as of the year of 2011, half of the computing devices worldwide are mobile devices [^6]. The intelligent mobile applications are changing people's lives. However a quite thorough survey, we find no fully functional deep neural network framework on iOS. Therefore, we want to implement our own.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This framework features ***well designed and easy to use API***, and ***high performance parallel neural network implementation*** based on Metal.
 
-> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+With such framework, software engineers can easily train and test network on their iOS devices. This can potentially lead to many interesting applications. For example, an application that can recognize daily objects ***in real time without connection to internet***. Or photo collection applications that can recognize all your friends based on ***personalized fine-tuning without any threat to privacy***.
+
+We envision a great future market opening for such framework.
 
 ### The Challenge
 
 The task of training and running neural networks on a iOS device is itself challenging.
 
 * **Memory Limitation** The latest version of iPhone (iPhone 6S) has only 2 GB RAM. This makes running a network on such device very difficult, not to mention training on it. To compensate this issue, we may take advantage of recent research outgrowth on compression of deep neural networks [^1] [^2] [^3] or use low-precision networks [^4] [^5].
+* **High Performance Computing** Parallelizing a neural network implementation on iOS devices is an unprecedented task. We will explore the possibility of Metal API to implement a GPGPU version of the framework.
+* **Learning of a New Language** Both of us are not familiar with Swift 2, the programming language. This would be a challenge for us in the early stage of implementation.
+
+Bearing so many challenges, this project is still promising. The task of training and testing neural networks is highly parallizable, as the computation inside a layer is independent (we currently don't support intra-layer connections). The locality should be good as weights within the same layer should be stores adjacently. And typically there is not much divergence in the network training and testing - all the weights are updated at the same time within a layer.
+
+
 
 ### Resources
 
-Simply add the following line anywhere in your markdown:
+We will start the project from scratch. The framework will be mainly running on iOS devices with limited support to OSX devices. We will use the high-level architecture of Caffe [^7] as our reference.
 
-<pre><code>{% raw  %}
-{% include sharing.html %}
-{% endraw %}
-</code></pre>
-
-and get a nice responsive sharing ribbon.
-
-
-Add this at the bottom, or the top, or between every other paragraph if you're desprate for social validation.
-
-Just remember to customize the buttons to fit your url in the `_includes/sharing.html` file. These buttons are made available and customizable by the good folks at kni-labs. See the documentation at [https://github.com/kni-labs/rrssb](https://github.com/kni-labs/rrssb) for more information.
+***We are in need of a apple developer account to test the framework on real devices.***
 
 ### Goals and Deliverables
 
-<i class="fa fa-quote-left fa-3x fa-pull-left fa-border"></i> Now you can use all the cool icons you want! [Font Awesome](http://fontawesome.io) is indeed awesome. But wait, you don't need this sweetness and you don't want that little bit of load time from the font awesome css? No problem, just disable it in the `config.yml` file, and it won't be loaded.
+#### PLAN TO ACHIEVE
+In this project, we want to develop a Caffe-like deep neural network framework running on iOS/OSX devices, in both CPU and GPU, that provides usable primitives to
 
-<ul class="fa-ul">
-  <li><i class="fa-li fa fa-check-square"></i>you can make lists...</li>
-  <li><i class="fa-li fa fa-check-square-o"></i>with cool icons like this,</li>
-  <li><i class="fa-li fa fa-spinner fa-spin"></i>even ones that move!</li>
-</ul>
+* Define a neural netowrk
+* Train a small neural network
+* Run compressed models
 
-If you need them, you can stick any of the [605 icons](http://fontawesome.io/icons/) anywhere, with any size you like. ([See documentation](http://fontawesome.io/examples/))
+To achieve this, we will implement
 
-<i class="fa fa-building"></i>&nbsp;&nbsp;<i class="fa fa-bus fa-lg"></i>&nbsp;&nbsp;<i class="fa fa-cube fa-2x"></i>&nbsp;&nbsp;<i class="fa fa-paper-plane fa-3x"></i>&nbsp;&nbsp;<i class="fa fa-camera-retro fa-4x">
+* **Layers**
+	* `ImageData` layer
+	* `Convolution` layer
+	* `ReLU` layer
+	* `FullyConnected` layer
+	* `Softmax` layer: as output layer, no BP needed
+	* `SoftmaxWithLoss` layer
+	* `Pooling` layer: max pooling and average pooling
+	* `Dropout` layer
+	* `LRN` layer
+* **Optimizer**
+	* `SGDOptimizer`
+
+We want our system to be usable in mobile devices, therefore, the performance goal would be to have a user acceptable memory, energy, computation cost and response time to train on a reasonably sized dataset, and to run a compressed model.
+
+The demo we plan to do at the parallism competition is ...(Specifically, what will you show us that will demonstrate you did a good job?)
+
+#### HOPE TO ACHIEVE
+
+If we are ahead of schedule, we plan to
 
 ### Platform Choice
 
-Images play nicely with this template as well. Add diagrams or charts to make your point, and the template will fit them in appropriately.
-
+OSX and iOS. Metal.
 <img src="{{ site.baseurl }}/images/hello.svg" alt="sample image">
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 Thanks to [Shu Uesengi](https://github.com/chibicode) for inspiring and providing the base for this template with his excellent work, [solo](https://github.com/chibicode).
 
-
 ### Schedule
 
+|   Time    | What we plan to do | What we actually did  |
+|:---------:|:-------------------|:-----:|
+| April 1   |       | $1600 |
+| April 7   | centered           |   $12 |
+| April 15  | are neat     |    $1 |
+| April 22  | right-aligned| $1600 |
+| May 1     | centered     |   $12 |
+| May 7 	| are neat     |    $1 |
 
 **Share the excitement with your friends by**
 {% include sharing.html %}
 
 ----
 
-##### Footnotes:
+##### References:
 
 [^1]: Kim, Yong-Deok, et al. "Compression of Deep Convolutional Neural Networks for Fast and Low Power Mobile Applications." *arXiv preprint arXiv:1511.06530* (2015).
 
@@ -87,3 +109,7 @@ Thanks to [Shu Uesengi](https://github.com/chibicode) for inspiring and providin
 [^4]: Courbariaux, Matthieu, Yoshua Bengio, and Jean-Pierre David. "Low precision arithmetic for deep learning." *arXiv preprint arXiv:1412.7024* (2014).
 
 [^5]: Gupta, Suyog, et al. "Deep learning with limited numerical precision." *arXiv preprint arXiv:1502.02551* (2015).
+
+[^6]: Huberty, K., Lipacis, C. M., Holt, A., Gelblum, E., Devitt, S., Swinburne, B., ... & Chen, G. (2011). Tablet Demand and Disruption. *Tablet*.
+
+[^7]: Jia, Yangqing, et al. "Caffe: Convolutional architecture for fast feature embedding." *Proceedings of the ACM International Conference on Multimedia. ACM*, 2014.
