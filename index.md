@@ -69,11 +69,12 @@ To achieve this, we will implement
 
 We want our system to be usable in mobile devices, therefore, the performance goal would be to have a user acceptable memory, energy, computation cost and response time to train on a reasonably sized dataset, and to run a compressed model.
 
-The demo we plan to do at the parallism competition is ...(Specifically, what will you show us that will demonstrate you did a good job?)
-
 #### HOPE TO ACHIEVE
 
 If we are ahead of schedule, we plan to
+
+#### Demo
+The demo we plan to do at the parallism competition is ...(Specifically, what will you show us that will demonstrate you did a good job?)
 
 ### Platform Choice
 
