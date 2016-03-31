@@ -88,10 +88,10 @@ Thanks to [Shu Uesengi](https://github.com/chibicode) for inspiring and providin
 |:---------:|:-------------------|:-----:|
 | April 1   | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API      |  |
 | April 7   | Design interfaces for espresso, implement a simple app for testing and an initial implementation of the cpu version of espresso framework           |    |
-| April 15  | Develop the CPU version and test the framework  |     |
+| April 15  | Develop and test CPU version |     |
 | April 22  | Develop and test GPU version |  |
-| May 1     | Debug the framework, prepare demo |   |
-| May 7 	| Wrap up, Final report and Prepare for presentation     |    $1 |
+| May 1     | Debug the framework, prepare for demo |   |
+| May 7 	| Wrap up, write final report and prepare for presentation     |    |
 
 **Share the excitement with your friends by**
 {% include sharing.html %}
