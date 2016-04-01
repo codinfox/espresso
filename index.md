@@ -82,7 +82,7 @@ OSX and iOS based on Metal framework.
 
 |   Time    | What we plan to do | What we actually did  |
 |:---------:|:-------------------|:-----:|
-| April 1   | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, Design interfaces for espresso |  |
+| April 1   | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso |  |
 | April 7   | Develop and test the CPU version |    |
 | April 15  | Develop and test the GPU version |     |
 | April 22  | Train and test neural networks on the framework|  |
