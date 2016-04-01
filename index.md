@@ -82,12 +82,12 @@ OSX and iOS based on Metal framework.
 
 |   Time    | What we plan to do | What we actually did  |
 |:---------:|:-------------------|:-----:|
-| April 1 ~ April 6  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso |  |
-| April 7 ~ April 14  | Develop and test the CPU version |    |
+| April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso |  |
+| April 8 ~ April 14  | Develop and test the CPU version |    |
 | April 15 ~ April 21 | Develop and test the GPU version |     |
-| April 22 ~ April 30 | Train neural networks on espresso |  |
-| May 1 ~ May 6   | Study neural network compression and try to run compressed model |   |
-| May 7 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
+| April 22 ~ April 28 | Train neural networks on espresso |  |
+| April 29 ~ May 5   | Study neural network compression and try to run compressed model |   |
+| May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
 
 **Share the excitement with your friends by**
 {% include sharing.html %}
