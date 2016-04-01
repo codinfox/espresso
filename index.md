@@ -12,8 +12,6 @@ sup:after { content: "]"; }
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
-> We are in need of an apple developer account to test the framework on real devices.
-
 
 ### Background
 
@@ -71,17 +69,14 @@ We want our system to be usable in mobile devices, therefore, the performance go
 
 #### HOPE TO ACHIEVE
 
-If we are ahead of schedule, we plan to
+If we are ahead of schedule, we plan to port some other layers and optimizers from Caffe to our framework.
 
 #### Demo
-The demo we plan to do at the parallism competition is ...(Specifically, what will you show us that will demonstrate you did a good job?)
+We will be demonstrating an application developed based on our framework. It could be a application to recognize things. Also, we will be comparing the CPU implementation and GPU implementation in terms of speedup and energy consumption.
 
 ### Platform Choice
 
-OSX and iOS. Metal.
-<img src="{{ site.baseurl }}/images/hello.svg" alt="sample image">
-
-Thanks to [Shu Uesengi](https://github.com/chibicode) for inspiring and providing the base for this template with his excellent work, [solo](https://github.com/chibicode).
+OSX and iOS based on Metal framework.
 
 ### Schedule
 
