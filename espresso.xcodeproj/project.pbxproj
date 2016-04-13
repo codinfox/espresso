@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B52775401CBDEE7C00A0FA0B /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527753F1CBDEE7C00A0FA0B /* Tensor.swift */; };
+		B52775421CBE0B7600A0FA0B /* Layer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* Layer.swift */; };
+		B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775431CBE0B8400A0FA0B /* Solver.swift */; };
 		B5A6FF571CBC802A00085F1B /* espresso.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A6FF561CBC802A00085F1B /* espresso.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B5A6FF5E1CBC802A00085F1B /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6FF531CBC802A00085F1B /* espresso.framework */; };
 		B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A6FF621CBC802A00085F1B /* espressoTests.swift */; };
@@ -23,6 +26,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B527753F1CBDEE7C00A0FA0B /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
+		B52775411CBE0B7600A0FA0B /* Layer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Layer.swift; sourceTree = "<group>"; };
+		B52775431CBE0B8400A0FA0B /* Solver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
 		B5A6FF531CBC802A00085F1B /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = espresso.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6FF561CBC802A00085F1B /* espresso.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = espresso.h; sourceTree = "<group>"; };
 		B5A6FF581CBC802A00085F1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -50,6 +56,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B527753C1CBC8C8C00A0FA0B /* layers */ = {
+			isa = PBXGroup;
+			children = (
+				B52775411CBE0B7600A0FA0B /* Layer.swift */,
+			);
+			path = layers;
+			sourceTree = "<group>";
+		};
+		B527753D1CBC8C8C00A0FA0B /* solvers */ = {
+			isa = PBXGroup;
+			children = (
+				B52775431CBE0B8400A0FA0B /* Solver.swift */,
+			);
+			path = solvers;
+			sourceTree = "<group>";
+		};
+		B527753E1CBC8C8C00A0FA0B /* utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B527753F1CBDEE7C00A0FA0B /* Tensor.swift */,
+			);
+			path = utilities;
+			sourceTree = "<group>";
+		};
 		B5A6FF491CBC802A00085F1B = {
 			isa = PBXGroup;
 			children = (
@@ -71,6 +101,9 @@
 		B5A6FF551CBC802A00085F1B /* espresso */ = {
 			isa = PBXGroup;
 			children = (
+				B527753C1CBC8C8C00A0FA0B /* layers */,
+				B527753D1CBC8C8C00A0FA0B /* solvers */,
+				B527753E1CBC8C8C00A0FA0B /* utilities */,
 				B5A6FF561CBC802A00085F1B /* espresso.h */,
 				B5A6FF581CBC802A00085F1B /* Info.plist */,
 			);
@@ -148,6 +181,7 @@
 				TargetAttributes = {
 					B5A6FF521CBC802A00085F1B = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 9VUC3R8D65;
 					};
 					B5A6FF5C1CBC802A00085F1B = {
 						CreatedOnToolsVersion = 7.3;
@@ -194,6 +228,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B52775401CBDEE7C00A0FA0B /* Tensor.swift in Sources */,
+				B52775421CBE0B7600A0FA0B /* Layer.swift in Sources */,
+				B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +347,8 @@
 		B5A6FF681CBC802A00085F1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -320,12 +359,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.cmu.espresso;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		B5A6FF691CBC802A00085F1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -378,6 +420,7 @@
 				B5A6FF691CBC802A00085F1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B5A6FF6A1CBC802A00085F1B /* Build configuration list for PBXNativeTarget "espressoTests" */ = {
 			isa = XCConfigurationList;
@@ -386,6 +429,7 @@
 				B5A6FF6C1CBC802A00085F1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
