@@ -11,9 +11,6 @@ import Foundation
 /** @brief The input data layer.
  */
 protocol DataLayer : Layer {
-    var data:Tensor<Int> {
-        get
-        set
-    }
-    
+    var data:Tensor<Int> {get}
+    var parameters:[String:Double] {get set}
 }

@@ -11,8 +11,5 @@ import Foundation
 /** @brief The layer that provides functions for forward and backward updates.
  */
 protocol ForwardBackwardLayer: Layer {
-    var data : Tensor<Int> {
-        get
-        set
-    }
+    var data : Tensor<Int> {get set}
 }

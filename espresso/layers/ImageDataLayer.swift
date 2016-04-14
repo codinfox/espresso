@@ -13,7 +13,9 @@ import Foundation
 public class ImageDataLayer : DataLayer {
     let name: String = "ImageDataLayer"
     var data: Tensor<Int>
-    init(imgFileName:String) {
+    var parameters: [String : Double]
+    init(imgFileName:String, parameters:[String: Double]) {
         self.data = Tensor<Int>(dimensions:[])
+        self.parameters = parameters
     }
 }
