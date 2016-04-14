@@ -8,9 +8,9 @@
 
 import Foundation
 
-/** 
- Basic storage class
- Tensor is a multidimensional matrix. This serves as the fundamental storage class. Tensor can take arbitrary type of data and when using, should be initialized with the dimension.
+/** @brief Basic storage class
+ *  Tensor is a multidimensional matrix. This serves as the fundamental storage class.
+ *  Tensor can take arbitrary type of data and when using, should be initialized with the dimension.
  */
 public class Tensor<StorageDataType> {
   var storage : [StorageDataType] = []

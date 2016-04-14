@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+/** @brief Base solver.
+ */
+protocol Solver {
+    var name:String {get}
+    var parameters:[String:Double] {get set}
+    var net:Net{get set}
+}

@@ -7,3 +7,9 @@
 //
 
 import Foundation
+
+/** @brief The base layer.
+ */
+protocol Layer {
+    var name: String { get }
+}
