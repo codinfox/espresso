@@ -10,24 +10,80 @@ import Foundation
 
 /** @brief Convolution layer.
  */
-public class ConvolutionLayer<DataType>: ForwardBackwardLayer {
-  public let name:String="Convolution Layer"
-  public var output : Tensor<DataType>
-  public var gradient : Tensor<DataType>
+public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+  public var name : String
+  public var output : Tensor
+  public var gradient : Tensor
+  public var weights: Tensor
+  var parameters: ConvolutionParameters
 
-  var data: Tensor<DataType>
-  init(data: Tensor<DataType>) {
-    self.data = data
+  public init(name : String = "conv", parameters: ConvolutionParameters) {
+    self.name = name
+    self.parameters = parameters
+    self.weights = Tensor(dimensions: [parameters.numNeurons, parameters.kernelSize, parameters.kernelSize])
+    self.output = Tensor() // Not initialized, needs to be resized
+    self.gradient = Tensor()
   }
 
-  public func forward_cpu(input: Tensor<DataType>) {
-  
+  public func reshape(dimensions: [Int]) {
+    // Resize output and gradient
   }
-  public func backward_cpu(input: Tensor<DataType>) {
-  
+
+  public func forward(bottom: Tensor?) {
+
   }
+
+  public func backward(top: Tensor) {
+
+  }
+
+  public func initWeights() {
+
+  }
+
+  public func updateWeights(weightGrad: Tensor) {
+
+  }
+
+  func forward_cpu(bottom: Tensor?) {
+
+  }
+
+  func forward_gpu(bottom: Tensor?) {
+    forward_cpu(bottom)
+  }
+
+  func backward_cpu(top: Tensor) {
+
+  }
+
+  func backward_gpu(top: Tensor) {
+    backward_cpu(top)
+  }
+
 }
 
-public struct ForwardBackwardLayerParams: Parameter {
-  
+public struct ConvolutionParameters: LayerParameterProtocol {
+  public let numNeurons : Int
+  public let kernelSize : Int
+  public let stride : Int
+  public let padSize : Int
+  public let isBiasTerm : Bool
+  public let weightFiller : WeightFiller
+  public let biasFiller : WeightFiller
+  public init(numNeurons: Int,
+              kernelSize: Int,
+              stride: Int = 1,
+              padSize: Int = 0,
+              isBiasTerm: Bool = true,
+              weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
+              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
+    self.numNeurons = numNeurons
+    self.kernelSize = kernelSize
+    self.stride = stride
+    self.padSize = padSize
+    self.isBiasTerm = isBiasTerm
+    self.weightFiller = weightFiller
+    self.biasFiller = biasFiller
+  }
 }

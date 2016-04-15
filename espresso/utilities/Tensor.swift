@@ -12,15 +12,20 @@ import Foundation
  *  Tensor is a multidimensional matrix. This serves as the fundamental storage class.
  *  Tensor can take arbitrary type of data and when using, should be initialized with the dimension.
  */
-public class Tensor<DataType> {
+public class Tensor {
+  public typealias DataType = Double
+  
   var storage : [DataType] = []
   
   public private(set) var dimensions : [Int] = []
   public private(set) var numel : Int = 0
+  public private(set) var capacity : Int = 0
   private var indexAuxilary: [Int] = [1]
+
   /**
    * Initialize the Tensor with dimensionalities
    */
+  init() {}
   init(dimensions: [Int]) {
     self.dimensions = dimensions
     self.numel = 1
@@ -32,6 +37,7 @@ public class Tensor<DataType> {
     indexAuxilary = indexAuxilary.reverse()
 
     self.storage.reserveCapacity(numel)
+    capacity = numel
   }
   
   func index(idxs: [Int]) -> Int {
@@ -40,6 +46,10 @@ public class Tensor<DataType> {
       idx += indexAuxilary[i] * idxs[i]
     }
     return idx
+  }
+
+  func reshape(dimensions: [Int]) {
+    // Reshape the tensor, reallocate space or reinterpret
   }
   
   subscript(idxs: Int...)->DataType {
