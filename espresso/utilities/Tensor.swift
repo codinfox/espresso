@@ -15,7 +15,7 @@ import Foundation
 public class Tensor {
   public typealias DataType = Double
   
-  var storage : [DataType] = []
+  public var storage : [DataType] = []
   
   public private(set) var dimensions : [Int] = []
   public private(set) var numel : Int = 0
