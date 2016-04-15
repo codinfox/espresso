@@ -10,6 +10,10 @@ import Foundation
 
 /** @brief The layer that provides functions for forward and backward updates.
  */
-protocol ForwardBackwardLayer: Layer {
-    var data : Tensor<Int> {get set}
+public protocol ForwardBackwardLayer: Layer {
+    associatedtype DataType
+    var output : Tensor<DataType> {get set}
+    var gradient : Tensor<DataType> {get set}
+    func forward_cpu(input: Tensor<DataType>)
+    func backward_cpu(input: Tensor<DataType>)
 }

@@ -10,10 +10,24 @@ import Foundation
 
 /** @brief Convolution layer.
  */
-public class ConvolutionLayer: ForwardBackwardLayer {
-    let name:String="Convolution Layer"
-    var data: Tensor<Int>
-    init(data: Tensor<Int>) {
-        self.data = data
-    }
+public class ConvolutionLayer<DataType>: ForwardBackwardLayer {
+  public let name:String="Convolution Layer"
+  public var output : Tensor<DataType>
+  public var gradient : Tensor<DataType>
+
+  var data: Tensor<DataType>
+  init(data: Tensor<DataType>) {
+    self.data = data
+  }
+
+  public func forward_cpu(input: Tensor<DataType>) {
+  
+  }
+  public func backward_cpu(input: Tensor<DataType>) {
+  
+  }
+}
+
+public struct ForwardBackwardLayerParams: Parameter {
+  
 }

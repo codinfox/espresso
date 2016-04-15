@@ -10,6 +10,11 @@ import Foundation
 
 /** @brief The base layer.
  */
-protocol Layer {
-    var name: String { get }
+public protocol Layer {
+  var name: String {get}
+  
+}
+
+public protocol Parameter {
+  
 }

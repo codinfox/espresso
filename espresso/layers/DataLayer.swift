@@ -10,7 +10,9 @@ import Foundation
 
 /** @brief The input data layer.
  */
-protocol DataLayer : Layer {
-    var data:Tensor<Int> {get}
-    var parameters:[String:Double] {get set}
+public protocol DataLayer : Layer {
+  associatedtype DataType
+  var output:Tensor<DataType> {get set}
+  func forward_cpu()
+  func forward_gpu()
 }
