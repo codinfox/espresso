@@ -43,4 +43,5 @@ extension ForwardLayerProtocol {
   func forward_gpu(bottom: [Tensor]?) {
     forward_cpu(bottom)
   }
+
 }

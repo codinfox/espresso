@@ -52,6 +52,16 @@ public class Tensor {
     // Reshape the tensor, reallocate space or reinterpret
   }
   
+  func reset(val: DataType) {
+    for i in 0..<dimensions[0] { /* channel */
+      for j in 0..<dimensions[1] { /* height */
+        for k in 0..<dimensions[2] { /* width */
+          storage[index([i, j, k])] = val
+        }
+      }
+    }
+  }
+  
   subscript(idxs: Int...)->DataType {
     get {
       return self.storage[index(idxs)]

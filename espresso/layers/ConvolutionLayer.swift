@@ -17,74 +17,77 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   public var weights: Tensor
   public var isCpu : Bool
   var parameters: ConvolutionParameters
-  
+
   public init(name : String = "conv", parameters: ConvolutionParameters) {
     self.name = name
     self.parameters = parameters
-    self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, /* TODO: #Channels, */ parameters.kernelSize, parameters.kernelSize])
-    self.output = [] // Not initialized, needs to be resized
-    self.gradient = []
+    self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, parameters.kernelSize, parameters.kernelSize])
+    self.output = []
+    self.gradient = [] // Not initialized, needs to be resized
     self.isCpu = parameters.isCpu
   }
-  
+
   public func reshape(bottomDimensions: [Int]?) {
     // Resize output and gradient
   }
-  
+
   public func backward(top: [Tensor]?) {
-    
+
   }
-  
+
   public func initWeights() {
-    
+    // weightFiller, biasFiller --> self.weights
   }
-  
+
   public func updateWeights(weightGrad: Tensor) {
-    
+
   }
-  
+
   func forward_cpu(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil {
+    if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
+      let channels = bottom[0].dimensions[1]
+      let height = bottom[0].dimensions[2]
+      let width = bottom[0].dimensions[3]
+      let outHeight = (height + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
+      let outWidth = (width + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
+      for i in 0..<parameters.numKerns {
+        output[i].reset(0)
+      }
       for i in 0..<bottom.count {
-        let channels = bottom[i].dimensions[1]
-        let height = bottom[i].dimensions[2]
-        let width = bottom[i].dimensions[3]
-        let outHeight = (height + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
-        let outWidth = (width + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
         for kern in 0..<parameters.numKerns {
-          for k in 0..<outHeight {
-            for l in 0..<outWidth {
-              var conved:Float = 0
-              for j in 0..<channels {
+          for j in 0..<channels {
+            for k in 0..<outHeight {
+              for l in 0..<outWidth {
+                var conved:Float = 0
                 for x in 0..<parameters.kernelSize {
                   for y in 0..<parameters.kernelSize {
                     //conved += bottom[i][j, k * parameters.stride + x, l * parameters.stride + y] * weights[kern][x,y]
                     // not considering padSize
-                    conved += Float(bottom[i][j, k * parameters.stride + x, l * parameters.stride + y] * weights[kern, x, y] * parameters.weightFiller() + parameters.biasFiller())
+                    conved += Float(bottom[i][j, k * parameters.stride + x, l * parameters.stride + y] * weights[kern, j, x, y])
                   }
                 }
+                output[kern][k, l] += conved
               }
-              output[kern][k, l] = sigmoid_cpu(conved)
             }
           }
         }
       }
     }
   }
-  
+
   func forward_gpu(bottom: [Tensor]?) {
     forward_cpu(bottom)
   }
-  
+
   func backward_cpu(top: [Tensor]?) {
-    
+
   }
-  
+
   func backward_gpu(top: [Tensor]?) {
     backward_cpu(top)
   }
-  
+
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {

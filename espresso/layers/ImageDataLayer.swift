@@ -15,7 +15,6 @@ public class ImageDataLayer : ForwardLayerProtocol {
   public var output: [Tensor]
   public var batchNo:Int
   var parameters: ImageDataParameters
-  var batchSize: Int
   var channelNo: Int
   var height: Int
   var width: Int
@@ -25,20 +24,20 @@ public class ImageDataLayer : ForwardLayerProtocol {
     self.parameters = parameters
     self.batchNo = 0
     self.parameters = parameters
-    self.batchSize = parameters.dimensions[0]
-    self.channelNo = parameters.dimensions[1]
-    self.height = parameters.dimensions[2]
-    self.width = parameters.dimensions[3]
+    self.channelNo = parameters.dimensions[0]
+    self.height = parameters.dimensions[1]
+    self.width = parameters.dimensions[2]
     self.output = []
     self.isCpu = parameters.isCpu
   }
 
   func forward_cpu(bottom: [Tensor]?) {
     let imgSize = self.height * self.width
+    let batchSize = 1
     let start = batchNo * batchSize
     for i in 0..<batchSize {
       let data = parameters.readImage(parameters.imgNames[start + i])
-      let trainData:[Int] = data.0
+      let trainData:[Float] = data.0
       // let trainLabel = data.1 //(TODO) Later
       output[i].storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
     }
@@ -51,11 +50,13 @@ public class ImageDataLayer : ForwardLayerProtocol {
   func reshape(bottomDimensions: [Int]?) {
     if bottomDimensions != nil {
       let dimensions = bottomDimensions!
-      self.batchSize = dimensions[0]
-      self.channelNo = dimensions[1]
-      self.height = dimensions[2]
-      self.width = dimensions[3]
-      self.output = []
+      self.channelNo = dimensions[0]
+      self.height = dimensions[1]
+      self.width = dimensions[2]
+      let batchSize = 1
+      for i in 0..<batchSize {
+        self.output[i].reshape(dimensions)
+      }
     }
   }
 }
@@ -63,9 +64,9 @@ public class ImageDataLayer : ForwardLayerProtocol {
 public struct ImageDataParameters: LayerParameterProtocol {
   public var imgNames: [String]
   public var dimensions:[Int]
-  public var readImage: String->([Int], [Int])
+  public var readImage: String->([Float], [Float])
   public var isCpu : Bool
-  public init(imgNames: [String], dimensions: [Int], readImage: String->([Int], [Int]), isCpu: Bool) {
+  public init(imgNames: [String], dimensions: [Int], readImage: String->([Float], [Float]), isCpu: Bool) {
     self.imgNames = imgNames
     self.dimensions = dimensions
     self.readImage = readImage
