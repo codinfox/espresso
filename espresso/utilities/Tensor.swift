@@ -13,7 +13,7 @@ import Foundation
  *  Tensor can take arbitrary type of data and when using, should be initialized with the dimension.
  */
 public class Tensor {
-  public typealias DataType = Double
+  public typealias DataType = Int
   
   public var storage : [DataType] = []
   
