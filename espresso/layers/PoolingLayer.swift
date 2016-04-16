@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief Polling layer.
  */
-public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+public class PoolingLayer: ForwardBackwardLayerProtocol {
   public var name : String
 
   var parameters : PoolingLayer

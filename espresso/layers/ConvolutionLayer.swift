@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief Convolution layer.
  */
-public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
   public var output : [Tensor]
   public var gradient : [Tensor]
@@ -25,9 +25,9 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     self.gradient = []
   }
 
-  public func reshape(bottomDimensions: [Int]?) {
-    // Resize output and gradient
-  }
+//  public func reshape(bottomDimensions: [Int]?) {
+//    // Resize output and gradient
+//  }
 
   public func forward(bottom: [Tensor]?) {
 

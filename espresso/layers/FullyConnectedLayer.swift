@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief Fully connected layer.
  */
-public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
 
   var parameters : FullyConnectedParameters

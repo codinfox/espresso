@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief ReLU layer.
  */
-public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+public class ReluLayer: ForwardBackwardLayerProtocol {
   public var name : String
   var parameters : ReLUParameters
   var negativeSlope : Tensor.DataType

@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief Dropout layer.
  */
-public class DropoutLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+public class DropoutLayer: ForwardBackwardLayerProtocol {
   public var name : String
   var parameters : DropoutParameters
 

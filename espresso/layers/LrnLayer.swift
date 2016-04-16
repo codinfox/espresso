@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief LRN layer.
  */
-public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+public class LRNLayer: ForwardBackwardLayerProtocol {
   public var name : String
   var parameters : LRNParameters
 

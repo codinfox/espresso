@@ -11,7 +11,7 @@ import Foundation
 /** @brief Softmax layer.
  This can also be not backwardable
  */
-public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+public class SoftmaxLayer: ForwardBackwardLayerProtocol {
   public var name : String
   public init(name: String = "softmax") {
     self.name = name
