@@ -61,8 +61,17 @@ public class Network {
 }
 
 public struct NetworkProperties {
+
+  public enum NetworkEngine {
+    case GPU
+    case CPU
+  }
+
   public let batchSize : Int
-  public init(batchSize: Int = 1) {
+  public let engine : NetworkEngine
+  public init(batchSize: Int = 1,
+              engine: NetworkEngine = .CPU) {
     self.batchSize = batchSize
+    self.engine = engine
   }
 }

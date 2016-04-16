@@ -12,6 +12,7 @@ import Foundation
  */
 public protocol LayerProtocol {
   var name: String { get set }
+  var engine: NetworkProperties.NetworkEngine { get set }
 //  var parameters : LayerParameterProtocol { get set }
 //  init(name: String, parameters : LayerParameterProtocol)
 
@@ -25,7 +26,24 @@ public protocol LayerProtocol {
 }
 
 extension LayerProtocol {
-  func layerSetUp(networkProperties: NetworkProperties) {
+  /**
+   Default layerSetUp method, should be called everytime when calling layerSetUp
+   
+   Class/Struct conforming to this protocol should not override this method, and when calling layerSetUp, one should always call superLayerSetUp inside layerSetUp first
+
+   - parameter networkProperties:
+   */
+  mutating func superLayerSetUp(networkProperties: NetworkProperties) {
+    self.engine = networkProperties.engine
+  }
+
+  /**
+   Don't forget to call superLayerSetUp first
+
+   - parameter networkProperties: 
+   */
+  mutating func layerSetUp(networkProperties: NetworkProperties) {
+    superLayerSetUp(networkProperties)
     // TODO: do setup
   }
 }
