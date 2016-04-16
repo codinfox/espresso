@@ -30,6 +30,7 @@
 		C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D51CC0339D004C0175 /* PoolingLayer.swift */; };
 		C43E83D81CC033BC004C0175 /* DropoutLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D71CC033BC004C0175 /* DropoutLayer.swift */; };
 		C43E83DA1CC033D6004C0175 /* LrnLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D91CC033D6004C0175 /* LrnLayer.swift */; };
+		C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49DC4C31CC2809F009E2076 /* MathFunctions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,7 +62,7 @@
 		C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardLayerProtocol.swift; sourceTree = "<group>"; };
 		C43E83C51CC02479004C0175 /* ImageDataLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDataLayer.swift; sourceTree = "<group>"; };
 		C43E83C71CC02537004C0175 /* BackwardLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackwardLayerProtocol.swift; sourceTree = "<group>"; };
-		C43E83CB1CC03228004C0175 /* ConvolutionLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConvolutionLayer.swift; sourceTree = "<group>"; };
+		C43E83CB1CC03228004C0175 /* ConvolutionLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ConvolutionLayer.swift; sourceTree = "<group>"; };
 		C43E83CD1CC032DD004C0175 /* ReluLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReluLayer.swift; sourceTree = "<group>"; };
 		C43E83CF1CC0330C004C0175 /* FullyConnectedLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullyConnectedLayer.swift; sourceTree = "<group>"; };
 		C43E83D11CC03334004C0175 /* SoftmaxLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoftmaxLayer.swift; sourceTree = "<group>"; };
@@ -69,6 +70,7 @@
 		C43E83D51CC0339D004C0175 /* PoolingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoolingLayer.swift; sourceTree = "<group>"; };
 		C43E83D71CC033BC004C0175 /* DropoutLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropoutLayer.swift; sourceTree = "<group>"; };
 		C43E83D91CC033D6004C0175 /* LrnLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LrnLayer.swift; sourceTree = "<group>"; };
+		C49DC4C31CC2809F009E2076 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			children = (
 				B527753F1CBDEE7C00A0FA0B /* Tensor.swift */,
 				B52775471CC0BE4100A0FA0B /* WeightFiller.swift */,
+				C49DC4C31CC2809F009E2076 /* MathFunctions.swift */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				C43E83DA1CC033D6004C0175 /* LrnLayer.swift in Sources */,
 				C43E83CE1CC032DD004C0175 /* ReluLayer.swift in Sources */,
 				C43E83D21CC03334004C0175 /* SoftmaxLayer.swift in Sources */,
+				C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */,
 				C43E83C41CC01F6A004C0175 /* ForwardLayerProtocol.swift in Sources */,
 				B52775421CBE0B7600A0FA0B /* LayerProtocol.swift in Sources */,
 				C43E83D01CC0330C004C0175 /* FullyConnectedLayer.swift in Sources */,
