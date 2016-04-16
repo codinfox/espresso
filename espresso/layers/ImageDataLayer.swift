@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief The image data input layer.
  */
-public class ImageDataLayer : ForwardLayerProtocol {
+public class ImageDataLayer : DataLayerProtocol {
   public var name: String
   public var output: [Tensor]
   public var batchNo:Int
