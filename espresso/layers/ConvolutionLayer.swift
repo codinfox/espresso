@@ -46,9 +46,9 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
   func forward_cpu(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
-      let channels = bottom[0].dimensions[1]
-      let height = bottom[0].dimensions[2]
-      let width = bottom[0].dimensions[3]
+      let channels = bottom[0].dimensions[0]
+      let height = bottom[0].dimensions[1]
+      let width = bottom[0].dimensions[2]
       let outHeight = (height + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
       let outWidth = (width + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
       for i in 0..<parameters.numKerns {

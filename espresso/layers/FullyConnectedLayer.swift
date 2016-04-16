@@ -15,6 +15,7 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
   public var output: [Tensor]
   public var gradient: [Tensor]
   public var weights : Tensor
+  public var bias: Tensor
   public var isCpu : Bool
   var parameters : FullyConnectedParameters
 
@@ -22,11 +23,36 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
     self.name = name
     self.parameters = parameters
     self.isCpu = parameters.isCpu
+    self.output = []
+    self.gradient = []
+    // TODO Tensor(dimensions: [parameters.numNeurons, parameters])
+    self.weights = Tensor(dimensions: [])
+    self.bias = Tensor(dimensions: [])
   }
 
-  func forward_cpu(bottom: [Tensor]?) {
-
+  func forward_cpu(bottomOpt: [Tensor]?) {
+    if bottomOpt != nil && (bottomOpt!.count > 0) {
+      let bottom = bottomOpt!
+      let channels = bottom[0].dimensions[0]
+      let height = bottom[0].dimensions[1]
+      let width = bottom[0].dimensions[2]
+      for i in 0..<parameters.numNeurons {
+        output[i].reset(0)
+      }
+      for i in 0..<bottom.count {
+        for j in 0..<parameters.numNeurons {
+          for k in 0..<channels {
+            for l in 0..<height {
+              for m in 0..<width {
+                output[i][j] += bottom[i][k, l, m] * weights[k, l, m] + bias[k, l, m]
+              }
+            }
+          }
+        }
+      }
+    }
   }
+
   func forward_gpu(bottom: [Tensor]?) {
     forward_cpu(bottom)
   }
@@ -53,9 +79,6 @@ public struct FullyConnectedParameters : LayerParameterProtocol {
   public let biasFiller : WeightFiller
   public let isCpu: Bool
   public init(numNeurons: Int,
-              kernelSize: Int,
-              stride: Int = 1,
-              padSize: Int = 0,
               isBiasTerm: Bool = true,
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
