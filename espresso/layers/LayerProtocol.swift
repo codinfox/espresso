@@ -14,6 +14,20 @@ public protocol LayerProtocol {
   var name: String { get set }
 //  var parameters : LayerParameterProtocol { get set }
 //  init(name: String, parameters : LayerParameterProtocol)
+
+  /**
+   Setup current layer when added to the network
+   
+   This is a life-cycle method, will be called once added to the network. This method will take parameters from the network to do necessary initialization.
+   This method is transparent to user and should be declared internal.
+   */
+  func layerSetUp(networkProperties: NetworkProperties)
+}
+
+extension LayerProtocol {
+  func layerSetUp(networkProperties: NetworkProperties) {
+    // TODO: do setup
+  }
 }
 
 protocol LayerParameterProtocol {

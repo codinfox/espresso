@@ -9,5 +9,5 @@
 import Foundation
 
 protocol DataLayerProtocol : ForwardLayerProtocol {
-  var batchSize : Int { set get }
+  
 }

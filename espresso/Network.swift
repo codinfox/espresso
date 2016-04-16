@@ -12,20 +12,23 @@ import Foundation
  */
 public class Network {
   public var layers: [LayerProtocol]
+  var parameters : NetworkProperties
 
-  public init() {
+  public init(parameters: NetworkProperties) {
     self.layers = []
+    self.parameters = parameters
   }
 
   public func add(layer: LayerProtocol) {
     self.layers.append(layer)
+    layer.layerSetUp(self.parameters)
   }
 
   public func forward() {
     // The first layer does not take in any input
     var bottomOutput : [Tensor]? = nil
     for l in self.layers {
-      if !(l is ForwardLayerProtocol) {
+      guard l is ForwardLayerProtocol else {
         break
       }
       let layer = l as! ForwardLayerProtocol
@@ -39,7 +42,7 @@ public class Network {
     // Last layer does not take any input
     var topGradient : [Tensor]? = nil
     for l in self.layers {
-      if !(l is BackwardLayerProtocol) {
+      guard l is BackwardLayerProtocol else {
         break
       }
       let layer = l as! BackwardLayerProtocol
@@ -55,4 +58,11 @@ public class Network {
      */
   }
 
+}
+
+public struct NetworkProperties {
+  public let batchSize : Int
+  public init(batchSize: Int = 1) {
+    self.batchSize = batchSize
+  }
 }
