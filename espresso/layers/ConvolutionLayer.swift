@@ -15,6 +15,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
   public var output : [Tensor]
   public var gradient : [Tensor]
   public var weights: Tensor
+  public var bias : Tensor
   public var isCpu : Bool
   var parameters: ConvolutionParameters
 
@@ -46,25 +47,32 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
   func forward_cpu(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
+      let batchSize = bottom.count
       let channels = bottom[0].dimensions[0]
       let height = bottom[0].dimensions[1]
       let width = bottom[0].dimensions[2]
-      let outHeight = (height + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
-      let outWidth = (width + 2 * parameters.padSize - parameters.kernelSize) / parameters.stride + 1
+      let padSize = parameters.padSize
+      let stride = parameters.stride
+      let kernelSize = parameters.kernelSize
+      let padedHeight = (height + 2 * padSize - kernelSize + 1)
+      let padedWidth = (width + 2 * padSize - kernelSize + 1)
       for i in 0..<parameters.numKerns {
         output[i].reset(0)
       }
-      for i in 0..<bottom.count {
+      for i in 0..<batchSize {
         for kern in 0..<parameters.numKerns {
           for j in 0..<channels {
-            for k in 0..<outHeight {
-              for l in 0..<outWidth {
+            for k in 0.stride(to: padedHeight, by: stride) {
+              for l in 0.stride(to: padedWidth, by: stride) {
                 var conved:Float = 0
                 for x in 0..<parameters.kernelSize {
                   for y in 0..<parameters.kernelSize {
-                    //conved += bottom[i][j, k * parameters.stride + x, l * parameters.stride + y] * weights[kern][x,y]
-                    // not considering padSize
-                    conved += Float(bottom[i][j, k * parameters.stride + x, l * parameters.stride + y] * weights[kern, j, x, y])
+                    let row = k + x
+                    let col = l + y
+                    if (row >= padSize && row < padedHeight - padSize
+                        && col >= padSize && col < padedWidth) {
+                      conved += bottom[i][j, row, col] * weights[kern, j, x, y]
+                    }
                   }
                 }
                 output[kern][k, l] += conved

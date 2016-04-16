@@ -14,21 +14,21 @@ protocol BackwardLayerProtocol : LayerProtocol {
   var isCpu: Bool {get set}
   var gradient: [Tensor] { get set }
 
-  func backward(top: [Tensor]?)
-  func backward_cpu(top: [Tensor]?)
-  func backward_gpu(top: [Tensor]?)
+  func backward(topOpt: [Tensor]?)
+  func backward_cpu(topOpt: [Tensor]?)
+  func backward_gpu(topOpt: [Tensor]?)
 }
 
 extension BackwardLayerProtocol {
-  func backward(top: [Tensor]?) {
+  func backward(topOpt: [Tensor]?) {
     if self.isCpu {
-      backward_cpu(top)
+      backward_cpu(topOpt)
     } else {
-      backward_gpu(top)
+      backward_gpu(topOpt)
     }
   }
 
-  func backward_gpu(top: [Tensor]?) {
-    backward_cpu(top)
+  func backward_gpu(topOpt: [Tensor]?) {
+    backward_cpu(topOpt)
   }
 }

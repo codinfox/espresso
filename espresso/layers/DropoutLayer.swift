@@ -12,7 +12,35 @@ import Foundation
  */
 public class DropoutLayer: ForwardBackwardLayerProtocol {
   public var name : String
+  public var isCpu: Bool
+  public var output: [Tensor]
+  public var gradient: [Tensor]
+  public var weight: Tensor
+  public var bias: Tensor
+
   var parameters : DropoutParameters
+
+  func forward_cpu(bottomOpt: [Tensor]?) {}
+  func forward_gpu(bottomOpt: [Tensor]?) {}
+
+  func backward_cpu(topOpt: [Tensor]?) {}
+  func backward_gpu(topOpt: [Tensor]?) {}
+
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    // Reshape the output (and gradient)
+  }
+
+  func initWeights() {
+  }
+
+  func updateWeights(weightGrad: Tensor){
+  }
+
+  func initBias() {}
+
+  func updateBias(biasGrad: Tensor) {
+  }
+
 
   public init(name: String = "dropout", parameters: DropoutParameters) {
     self.name = name
