@@ -11,6 +11,7 @@ import Foundation
 /** @brief Protocol for Backward Layers
  */
 protocol BackwardLayerProtocol : LayerProtocol {
+  var isCpu: Bool {get set}
   var gradient: [Tensor] { get set }
 
   func backward(top: [Tensor]?)
@@ -20,7 +21,11 @@ protocol BackwardLayerProtocol : LayerProtocol {
 
 extension BackwardLayerProtocol {
   func backward(top: [Tensor]?) {
-    backward_cpu(top)
+    if self.isCpu {
+      backward_cpu(top)
+    } else {
+      backward_gpu(top)
+    }
   }
 
   func backward_gpu(top: [Tensor]?) {
