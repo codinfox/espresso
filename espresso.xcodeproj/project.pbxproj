@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B52481641CC23DD60015A403 /* SGDSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481631CC23DD60015A403 /* SGDSolver.swift */; };
+		B52481661CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481651CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift */; };
+		B52481681CC2CFC10015A403 /* DataLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */; };
 		B52775401CBDEE7C00A0FA0B /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527753F1CBDEE7C00A0FA0B /* Tensor.swift */; };
 		B52775421CBE0B7600A0FA0B /* LayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */; };
 		B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775431CBE0B8400A0FA0B /* Solver.swift */; };
@@ -43,6 +45,8 @@
 
 /* Begin PBXFileReference section */
 		B52481631CC23DD60015A403 /* SGDSolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SGDSolver.swift; sourceTree = "<group>"; };
+		B52481651CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardBackwardLayerProtocol.swift; sourceTree = "<group>"; };
+		B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataLayerProtocol.swift; sourceTree = "<group>"; };
 		B527753F1CBDEE7C00A0FA0B /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
 		B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerProtocol.swift; sourceTree = "<group>"; };
 		B52775431CBE0B8400A0FA0B /* Solver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
@@ -94,7 +98,9 @@
 				B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */,
 				C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */,
 				C43E83C71CC02537004C0175 /* BackwardLayerProtocol.swift */,
+				B52481651CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift */,
 				B52775451CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift */,
+				B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */,
 				C43E83C51CC02479004C0175 /* ImageDataLayer.swift */,
 				C43E83CB1CC03228004C0175 /* ConvolutionLayer.swift */,
 				C43E83CD1CC032DD004C0175 /* ReluLayer.swift */,
@@ -288,7 +294,9 @@
 				B52775461CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift in Sources */,
 				B52481641CC23DD60015A403 /* SGDSolver.swift in Sources */,
 				C43E83C61CC02479004C0175 /* ImageDataLayer.swift in Sources */,
+				B52481681CC2CFC10015A403 /* DataLayerProtocol.swift in Sources */,
 				C43E83CC1CC03228004C0175 /* ConvolutionLayer.swift in Sources */,
+				B52481661CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift in Sources */,
 				B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */,
 				C43E83D41CC03377004C0175 /* SoftmaxWithLossLayer.swift in Sources */,
 				C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */,

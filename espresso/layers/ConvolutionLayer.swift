@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief Convolution layer.
  */
-public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
   public var output : [Tensor]
   public var gradient : [Tensor]
