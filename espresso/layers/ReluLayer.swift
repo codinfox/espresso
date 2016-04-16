@@ -15,6 +15,7 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   var parameters : ReLUParameters
   var negativeSlope : Tensor.DataType
   public init(name: String = "relu", parameters: ReLUParameters) {
+    self.name = name
     self.parameters = parameters
     self.negativeSlope = parameters.negativeSlope
   }
@@ -22,7 +23,7 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 }
 
 public struct ReLUParameters : LayerParameterProtocol {
-  var negativeSlope : Tensor.DataType
+  public var negativeSlope : Tensor.DataType
   public init(negativeSlope: Tensor.DataType = 0) {
     self.negativeSlope = negativeSlope
   }

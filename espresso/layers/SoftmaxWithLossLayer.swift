@@ -10,10 +10,9 @@ import Foundation
 
 /** @brief Softmax With Loss layer.
  */
-public class SoftmaxWithLossLayer: ForwardBackwardLayer {
-    let name:String="Softmax With Loss Layer"
-    var data: Tensor<Int>
-    init(data: Tensor<Int>) {
-        self.data = data
-    }
+public class SoftmaxWithLossLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+  public var name : String
+  public init(name: String = "softmaxwloss") {
+    self.name = name
+  }
 }

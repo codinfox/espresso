@@ -11,21 +11,19 @@ import Foundation
 /** @brief Protocol for Backward Layers
  */
 protocol BackwardLayerProtocol : LayerProtocol {
-  var gradient:Tensor { get set }
+  var gradient: [Tensor] { get set }
 
-  func backward(top: Tensor)
-  func backward_cpu(top: Tensor)
-  func backward_gpu(top: Tensor)
-
-  func reshape(dimensions: [Int])
+  func backward(top: [Tensor]?)
+  func backward_cpu(top: [Tensor]?)
+  func backward_gpu(top: [Tensor]?)
 }
 
 extension BackwardLayerProtocol {
-  func backward(top: Tensor) {
+  func backward(top: [Tensor]?) {
     backward_cpu(top)
   }
 
-  func backward_gpu(top: Tensor) {
+  func backward_gpu(top: [Tensor]?) {
     backward_cpu(top)
   }
 }

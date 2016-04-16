@@ -9,11 +9,11 @@
 import Foundation
 
 /** @brief Softmax layer.
+ This can also be not backwardable
  */
-public class SoftmaxLayer: ForwardBackwardLayer {
-    let name:String="Softmax Layer"
-    var data: Tensor<Int>
-    init(data: Tensor<Int>) {
-        self.data = data
-    }
+public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+  public var name : String
+  public init(name: String = "softmax") {
+    self.name = name
+  }
 }

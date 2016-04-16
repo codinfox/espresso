@@ -10,10 +10,20 @@ import Foundation
 
 /** @brief Dropout layer.
  */
-public class DropoutLayer: ForwardBackwardLayer {
-    let name:String="Dropout Layer"
-    var data: Tensor<Int>
-    init(data: Tensor<Int>) {
-        self.data = data
-    }
+public class DropoutLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+  public var name : String
+  var parameters : DropoutParameters
+
+  public init(name: String = "dropout", parameters: DropoutParameters) {
+    self.name = name
+    self.parameters = parameters
+  }
+  // Implement protocols
+}
+
+public struct DropoutParameters : LayerParameterProtocol {
+  public let dropoutRatio : Float
+  public init(dropoutRatio: Float = 0.5) {
+    self.dropoutRatio = dropoutRatio
+  }
 }

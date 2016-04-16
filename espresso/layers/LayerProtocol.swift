@@ -10,7 +10,7 @@ import Foundation
 
 /** @brief The base layer.
  */
-protocol LayerProtocol {
+public protocol LayerProtocol {
   var name: String { get set }
 //  var parameters : LayerParameterProtocol { get set }
 //  init(name: String, parameters : LayerParameterProtocol)

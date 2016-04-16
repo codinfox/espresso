@@ -11,24 +11,31 @@ import Foundation
 /** @brief Protocol for Forward Layers
  */
 protocol ForwardLayerProtocol : LayerProtocol {
-  var output:Tensor { get set }
+  var output: [Tensor] { get set }
 
   /** To be called in feedforward pass.
    Forward methods can take optional parameters. For the input layers, the parameters can be nil. `forward` method is a wrapper of `forward_cpu` and `forward_gpu`. `forward` method is public in the implementing classes, while `forward_cpu` and `forward_gpu` are internal
    */
-  func forward(bottom: Tensor?)
-  func forward_cpu(bottom: Tensor?)
-  func forward_gpu(bottom: Tensor?)
+  func forward(bottom: [Tensor]?)
+  func forward_cpu(bottom: [Tensor]?)
+  func forward_gpu(bottom: [Tensor]?)
 
-  func reshape(dimensions: [Int])
+  /**
+   Reshape the current output (gradient maybe) to conform to the output dimension of the bottom layer
+   
+   Always check first. It may not be necessary to reshape if it has already been same with the target shape
+
+   - parameter bottomDimensions: The dimension of the bottom layer
+   */
+  func reshape(bottomDimensions: [Int]?)
 }
 
 extension ForwardLayerProtocol {
-  func forward(bottom: Tensor?) {
+  func forward(bottom: [Tensor]?) {
     forward_cpu(bottom)
   }
 
-  func forward_gpu(bottom: Tensor?) {
+  func forward_gpu(bottom: [Tensor]?) {
     forward_cpu(bottom)
   }
 }
