@@ -33,12 +33,10 @@ public class Tensor {
     self.numel = 1
     for d in dimensions.reverse() {
       self.numel = self.numel * d
-      print("n:" + self.numel.description)
       indexAuxilary.append(self.numel)
     }
     indexAuxilary.removeLast()
     indexAuxilary = indexAuxilary.reverse()
-    print("numel: " + self.numel.description)
     self.storage.reserveCapacity(numel)
     self.storage = Array(count: self.numel, repeatedValue: 0)
     capacity = self.numel
@@ -57,7 +55,6 @@ public class Tensor {
   }
 
   func reshape(dimensions: [Int]) {
-    print("numElements:" + numElements(self.dimensions).description + "numElements: " + numElements(dimensions).description)
     if numElements(self.dimensions) < numElements(dimensions) {
       self.storage = Array(count: numElements(dimensions), repeatedValue: 0)
     }

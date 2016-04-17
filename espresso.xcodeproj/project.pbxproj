@@ -31,6 +31,7 @@
 		C43E83D81CC033BC004C0175 /* DropoutLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D71CC033BC004C0175 /* DropoutLayer.swift */; };
 		C43E83DA1CC033D6004C0175 /* LRNLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D91CC033D6004C0175 /* LRNLayer.swift */; };
 		C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49DC4C31CC2809F009E2076 /* MathFunctions.swift */; };
+		C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */; };
 		C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */; };
 		C4EBC6CA1CC3AF21006E03C7 /* ImageDataLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C51CC02479004C0175 /* ImageDataLayer.swift */; };
 		C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */; };
@@ -92,6 +93,7 @@
 		C43E83D71CC033BC004C0175 /* DropoutLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropoutLayer.swift; sourceTree = "<group>"; };
 		C43E83D91CC033D6004C0175 /* LRNLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRNLayer.swift; sourceTree = "<group>"; };
 		C49DC4C31CC2809F009E2076 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
+		C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSwiftV.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +192,7 @@
 			children = (
 				B5A6FF621CBC802A00085F1B /* espressoTests.swift */,
 				B5A6FF641CBC802A00085F1B /* Info.plist */,
+				C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */,
 			);
 			path = espressoTests;
 			sourceTree = "<group>";
@@ -348,6 +351,7 @@
 				C4EBC6D01CC3AF43006E03C7 /* ConvolutionLayer.swift in Sources */,
 				C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */,
 				C4EBC6D51CC3AF55006E03C7 /* PoolingLayer.swift in Sources */,
+				C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */,
 				C4EBC6D41CC3AF51006E03C7 /* SoftmaxWithLossLayer.swift in Sources */,
 				B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */,
 				C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */,

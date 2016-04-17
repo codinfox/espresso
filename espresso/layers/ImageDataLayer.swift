@@ -43,8 +43,6 @@ public class ImageDataLayer : DataLayerProtocol {
       let data = parameters.readImage(parameters.imgNames[start + i])
       let trainData:[Float] = data.0
       // let trainLabel = data.1 //(TODO) Later
-      print(output[i].storage.count)
-      print((i+1)*imgSize)
       output[i].storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
     }
     batchNo += 1
@@ -55,7 +53,6 @@ public class ImageDataLayer : DataLayerProtocol {
   }
   
   func reshape(bottomDimensions: [Int]?) {
-    print ("In reshape")
     if bottomDimensions != nil {
       let dimensions = bottomDimensions!
       self.channelNo = dimensions[0]
