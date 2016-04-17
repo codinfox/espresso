@@ -51,7 +51,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
 
   }
 
-  func forward_cpu(bottomOpt: [Tensor]?) {
+  func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
       let batchSize = bottom.count
@@ -91,16 +91,16 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     }
   }
 
-  func forward_gpu(bottom: [Tensor]?) {
-    forward_cpu(bottom)
+  func forwardGPU(bottom: [Tensor]?) {
+    forwardCPU(bottom)
   }
 
-  func backward_cpu(top: [Tensor]?) {
+  func backwardCPU(top: [Tensor]?) {
 
   }
 
-  func backward_gpu(top: [Tensor]?) {
-    backward_cpu(top)
+  func backwardGPU(top: [Tensor]?) {
+    backwardCPU(top)
   }
 
   public func layerSetUp(networkProperties: NetworkProperties) {

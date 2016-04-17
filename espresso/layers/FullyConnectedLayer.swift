@@ -30,7 +30,7 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
     self.bias = Tensor(dimensions: [])
   }
 
-  func forward_cpu(bottomOpt: [Tensor]?) {
+  func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0) {
       let bottom = bottomOpt!
       let channels = bottom[0].dimensions[0]
@@ -53,16 +53,16 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
     }
   }
 
-  func forward_gpu(bottom: [Tensor]?) {
-    forward_cpu(bottom)
+  func forwardGPU(bottom: [Tensor]?) {
+    forwardCPU(bottom)
   }
 
   func reshape(bottomDimensions: [Int]?) {
 
   }
 
-  func backward_cpu(top: [Tensor]?) {}
-  func backward_gpu(top: [Tensor]?) { backward_cpu(top) }
+  func backwardCPU(top: [Tensor]?) {}
+  func backwardGPU(top: [Tensor]?) { backwardCPU(top) }
 
   func initWeights() {}
   func updateWeights(weightGrad: Tensor) {}

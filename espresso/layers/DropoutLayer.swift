@@ -20,11 +20,11 @@ public class DropoutLayer: ForwardBackwardLayerProtocol {
 
   var parameters : DropoutParameters
 
-  func forward_cpu(bottomOpt: [Tensor]?) {}
-  func forward_gpu(bottomOpt: [Tensor]?) {}
+  func forwardCPU(bottomOpt: [Tensor]?) {}
+  func forwardGPU(bottomOpt: [Tensor]?) {}
 
-  func backward_cpu(topOpt: [Tensor]?) {}
-  func backward_gpu(topOpt: [Tensor]?) {}
+  func backwardCPU(topOpt: [Tensor]?) {}
+  func backwardGPU(topOpt: [Tensor]?) {}
 
   func reshape(bottomDimensionsOpt: [Int]?) {
     // Reshape the output (and gradient)

@@ -14,11 +14,11 @@ protocol ForwardLayerProtocol : LayerProtocol {
   var output: [Tensor] { get set }
 
   /** To be called in feedforward pass.
-   Forward methods can take optional parameters. For the input layers, the parameters can be nil. `forward` method is a wrapper of `forward_cpu` and `forward_gpu`. `forward` method is public in the implementing classes, while `forward_cpu` and `forward_gpu` are internal
+   Forward methods can take optional parameters. For the input layers, the parameters can be nil. `forward` method is a wrapper of `forwardCPU` and `forwardGPU`. `forward` method is public in the implementing classes, while `forwardCPU` and `forwardGPU` are internal
    */
   func forward(bottomOpt: [Tensor]?)
-  func forward_cpu(bottomOpt: [Tensor]?)
-  func forward_gpu(bottomOpt: [Tensor]?)
+  func forwardCPU(bottomOpt: [Tensor]?)
+  func forwardGPU(bottomOpt: [Tensor]?)
 
   /**
    Reshape the current output (gradient maybe) to conform to the output dimension of the bottom layer
@@ -34,14 +34,14 @@ extension ForwardLayerProtocol {
   func forward(bottomOpt: [Tensor]?) {
     switch engine {
     case .CPU:
-      forward_cpu(bottomOpt)
+      forwardCPU(bottomOpt)
     case .GPU:
-      forward_gpu(bottomOpt)
+      forwardGPU(bottomOpt)
     }
   }
 
-  func forward_gpu(bottomOpt: [Tensor]?) {
-    forward_cpu(bottomOpt)
+  func forwardGPU(bottomOpt: [Tensor]?) {
+    forwardCPU(bottomOpt)
   }
 
 }

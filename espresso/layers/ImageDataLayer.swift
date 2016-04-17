@@ -32,7 +32,7 @@ public class ImageDataLayer : DataLayerProtocol {
     self.engine = .CPU
   }
 
-  func forward_cpu(bottom: [Tensor]?) {
+  func forwardCPU(bottom: [Tensor]?) {
     let imgSize = self.height * self.width
     let batchSize = 1
     let start = batchNo * batchSize
@@ -44,8 +44,8 @@ public class ImageDataLayer : DataLayerProtocol {
     }
   }
   
-  func forward_gpu(bottom: [Tensor]?) {
-    forward_cpu(bottom)
+  func forwardGPU(bottom: [Tensor]?) {
+    forwardCPU(bottom)
   }
   
   func reshape(bottomDimensions: [Int]?) {
