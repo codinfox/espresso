@@ -28,11 +28,6 @@ public class SoftmaxWithLossLayer: ForwardBackwardLayerProtocol {
   func backwardCPU(topOpt: [Tensor]?) {}
   func backwardGPU(topOpt: [Tensor]?) {}
 
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    // Reshape the output (and gradient)
-    // \sum(e ** (-z))
-  }
-
   func initWeights() {
   }
 

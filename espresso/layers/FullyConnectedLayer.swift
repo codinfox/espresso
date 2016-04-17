@@ -57,10 +57,6 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
     forwardCPU(bottom)
   }
 
-  func reshape(bottomDimensions: [Int]?) {
-
-  }
-
   func backwardCPU(top: [Tensor]?) {}
   func backwardGPU(top: [Tensor]?) { backwardCPU(top) }
 

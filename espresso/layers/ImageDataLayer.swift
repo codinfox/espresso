@@ -16,24 +16,18 @@ public class ImageDataLayer : DataLayerProtocol {
   public var batchNo:Int
   public var engine: NetworkProperties.NetworkEngine
   var parameters: ImageDataParameters
-  var channelNo: Int
-  var height: Int
-  var width: Int
 
   public init(name:String, parameters:ImageDataParameters) {
     self.name = name
     self.parameters = parameters
     self.batchNo = 0
     self.parameters = parameters
-    self.channelNo = parameters.dimensions[0]
-    self.height = parameters.dimensions[1]
-    self.width = parameters.dimensions[2]
     self.output = []
     self.engine = .CPU
   }
 
   func forwardCPU(bottom: [Tensor]?) {
-    let imgSize = self.height * self.width
+    let imgSize = parameters.dimensions[1] * parameters.dimensions[2]
     let batchSize = 1
     let start = batchNo * batchSize
     if start > parameters.imgNames.count {
@@ -52,12 +46,9 @@ public class ImageDataLayer : DataLayerProtocol {
     forwardCPU(bottom)
   }
   
-  func reshape(bottomDimensions: [Int]?) {
-    if bottomDimensions != nil {
-      let dimensions = bottomDimensions!
-      self.channelNo = dimensions[0]
-      self.height = dimensions[1]
-      self.width = dimensions[2]
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    if bottomDimensionsOpt != nil {
+      let dimensions = bottomDimensionsOpt!
       let batchSize = 1
       for i in 0..<batchSize {
         if self.output.count <= i {

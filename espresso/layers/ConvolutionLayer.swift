@@ -36,10 +36,6 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     // TODO
   }
 
-  public func reshape(bottomDimensions: [Int]?) {
-    // Resize output and gradient
-  }
-
   public func backward(top: [Tensor]?) {
 
   }

@@ -12,8 +12,21 @@ protocol ForwardBackwardLayerProtocol : ForwardLayerProtocol, BackwardLayerProto
 
 }
 
-extension ForwardLayerProtocol {
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    // Reshape the output (and gradient)
+extension ForwardBackwardLayerProtocol {
+  mutating func reshape(bottomDimensionsOpt: [Int]?) {
+    if bottomDimensionsOpt != nil {
+      let dimensions = bottomDimensionsOpt!
+      let batchSize = 1
+      for i in 0..<batchSize {
+        if self.output.count <= i {
+          self.output.append(Tensor(dimensions: dimensions))
+          /* gradient?? */
+          self.gradient.append(Tensor(dimensions: dimensions))
+        } else {
+          self.output[i].reshape(dimensions)
+          self.gradient[i].reshape(dimensions)
+        }
+      }
+    }
   }
 }

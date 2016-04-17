@@ -86,10 +86,6 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
   func backwardCPU(topOpt: [Tensor]?) {}
   func backwardGPU(topOpt: [Tensor]?) {}
 
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    // Reshape the output (and gradient)
-  }
-
   func initWeights() {
   }
 
