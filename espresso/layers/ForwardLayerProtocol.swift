@@ -11,7 +11,6 @@ import Foundation
 /** @brief Protocol for Forward Layers
  */
 protocol ForwardLayerProtocol : LayerProtocol {
-  var isCpu: Bool {get set}
   var output: [Tensor] { get set }
 
   /** To be called in feedforward pass.
@@ -33,9 +32,10 @@ protocol ForwardLayerProtocol : LayerProtocol {
 
 extension ForwardLayerProtocol {
   func forward(bottom: [Tensor]?) {
-    if isCpu {
+    switch engine {
+    case .CPU:
       forward_cpu(bottom)
-    } else {
+    case .GPU:
       forward_gpu(bottom)
     }
   }

@@ -12,19 +12,26 @@ import Foundation
  */
 public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
+  public var engine: NetworkProperties.NetworkEngine
   public var output : [Tensor]
   public var gradient : [Tensor]
   public var weights: Tensor
-  public var isCpu : Bool
+  public var bias: Tensor
   var parameters: ConvolutionParameters
 
   public init(name : String = "conv", parameters: ConvolutionParameters) {
+    self.engine = .CPU
     self.name = name
     self.parameters = parameters
     self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, parameters.kernelSize, parameters.kernelSize])
+    self.bias = Tensor() // TODO
     self.output = []
     self.gradient = [] // Not initialized, needs to be resized
-    self.isCpu = parameters.isCpu
+  }
+
+  func layerSetUp(networkProperties: NetworkProperties) {
+    self.engine = networkProperties.engine
+    // TODO
   }
 
   public func reshape(bottomDimensions: [Int]?) {
@@ -101,7 +108,6 @@ public struct ConvolutionParameters: LayerParameterProtocol {
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public let isCpu : Bool
   public init(numKerns: Int,
               kernelChans: Int,
               kernelSize: Int,
@@ -111,8 +117,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              isCpu: Bool = true) {
+              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
     self.numKerns = numKerns
     self.kernelChans = kernelChans
     self.kernelSize = kernelSize
@@ -123,6 +128,5 @@ public struct ConvolutionParameters: LayerParameterProtocol {
     self.biasFiller = biasFiller
     self.biasLRMultiplier = biasLRMultiplier
     self.weightLRMultiplier = weightLRMultiplier
-    self.isCpu = isCpu
   }
 }
