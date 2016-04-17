@@ -12,11 +12,11 @@ import Foundation
  */
 public class DropoutLayer: ForwardBackwardLayerProtocol {
   public var name : String
-  public var isCpu: Bool
   public var output: [Tensor]
   public var gradient: [Tensor]
   public var weight: Tensor
   public var bias: Tensor
+  public var engine: NetworkProperties.NetworkEngine
 
   var parameters : DropoutParameters
 
@@ -41,10 +41,17 @@ public class DropoutLayer: ForwardBackwardLayerProtocol {
   func updateBias(biasGrad: Tensor) {
   }
 
+  public func layerSetUp(networkProperties: NetworkProperties) {
+  }
 
   public init(name: String = "dropout", parameters: DropoutParameters) {
     self.name = name
     self.parameters = parameters
+    self.output = []
+    self.gradient = [] // Not initialized, needs to be resized
+    self.weight = Tensor(dimensions: [])
+    self.bias = Tensor(dimensions: [])
+    self.engine = .CPU
   }
   // Implement protocols
 }

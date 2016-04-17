@@ -16,7 +16,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
   public var gradient : [Tensor]
   public var weights: Tensor
   public var bias : Tensor
-  public var isCpu : Bool
+  public var engine: NetworkProperties.NetworkEngine
   var parameters: ConvolutionParameters
 
   public init(name : String = "conv", parameters: ConvolutionParameters) {
@@ -25,7 +25,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, parameters.kernelSize, parameters.kernelSize])
     self.output = []
     self.gradient = [] // Not initialized, needs to be resized
-    self.isCpu = parameters.isCpu
+    self.engine = .CPU
   }
 
   public func reshape(bottomDimensions: [Int]?) {
@@ -56,7 +56,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
       let kernelSize = parameters.kernelSize
       let padedHeight = (height + 2 * padSize - kernelSize + 1)
       let padedWidth = (width + 2 * padSize - kernelSize + 1)
-      for i in 0..<parameters.numKerns {
+      for i in 0..<batchSize {
         output[i].reset(0)
       }
       for i in 0..<batchSize {
@@ -75,7 +75,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
                     }
                   }
                 }
-                output[kern][k, l] += conved
+                output[i][kern, k, l] += conved
               }
             }
           }
@@ -96,6 +96,8 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     backward_cpu(top)
   }
 
+  public func layerSetUp(networkProperties: NetworkProperties) {
+  }
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {
@@ -119,8 +121,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              isCpu: Bool = true) {
+              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
     self.numKerns = numKerns
     self.kernelChans = kernelChans
     self.kernelSize = kernelSize
@@ -131,6 +132,5 @@ public struct ConvolutionParameters: LayerParameterProtocol {
     self.biasFiller = biasFiller
     self.biasLRMultiplier = biasLRMultiplier
     self.weightLRMultiplier = weightLRMultiplier
-    self.isCpu = isCpu
   }
 }

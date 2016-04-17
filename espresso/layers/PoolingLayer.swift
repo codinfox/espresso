@@ -17,6 +17,7 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
   public var gradient: [Tensor]
   public var weight: Tensor
   public var bias: Tensor
+  public var engine: NetworkProperties.NetworkEngine
 
   var parameters : PoolingParameters
 
@@ -32,7 +33,7 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
       let kernelSize = parameters.kernelSize
       let padedHeight = (height + 2 * padSize - kernelSize + 1)
       let padedWidth = (width + 2 * padSize - kernelSize + 1)
-      for i in 0..<channels {
+      for i in 0..<batchSize {
         output[i].reset(0)
       }
       for i in 0..<batchSize {
@@ -76,31 +77,35 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
       }
     }
   }
-}
-func forward_gpu(bottomOpt: [Tensor]?) {}
 
-func backward_cpu(topOpt: [Tensor]?) {}
-func backward_gpu(topOpt: [Tensor]?) {}
+  public func layerSetUp(networkProperties: NetworkProperties) {
 
-func reshape(bottomDimensionsOpt: [Int]?) {
-  // Reshape the output (and gradient)
-}
+  }
 
-func initWeights() {
-}
+  func forward_gpu(bottomOpt: [Tensor]?) {}
 
-func updateWeights(weightGrad: Tensor){
-}
+  func backward_cpu(topOpt: [Tensor]?) {}
+  func backward_gpu(topOpt: [Tensor]?) {}
 
-func initBias() {}
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    // Reshape the output (and gradient)
+  }
 
-func updateBias(biasGrad: Tensor) {
-}
+  func initWeights() {
+  }
 
-public init(name: String = "pooling", parameters: PoolingParameters) {
-  self.name = name
-  self.parameters = parameters
-}
+  func updateWeights(weightGrad: Tensor){
+  }
+
+  func initBias() {}
+
+  func updateBias(biasGrad: Tensor) {
+  }
+
+  public init(name: String = "pooling", parameters: PoolingParameters) {
+    self.name = name
+    self.parameters = parameters
+  }
 
 
 }

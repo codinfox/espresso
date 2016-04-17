@@ -11,7 +11,6 @@ import Foundation
 /** @brief Protocol for Forward Layers
  */
 protocol ForwardLayerProtocol : LayerProtocol {
-  var isCpu: Bool {get set}
   var output: [Tensor] { get set }
 
   /** To be called in feedforward pass.

@@ -14,11 +14,12 @@ public class ImageDataLayer : DataLayerProtocol {
   public var name: String
   public var output: [Tensor]
   public var batchNo:Int
+  public var engine: NetworkProperties.NetworkEngine
   var parameters: ImageDataParameters
   var channelNo: Int
   var height: Int
   var width: Int
-  let isCpu: Bool
+
   public init(name:String, parameters:ImageDataParameters) {
     self.name = name
     self.parameters = parameters
@@ -28,7 +29,7 @@ public class ImageDataLayer : DataLayerProtocol {
     self.height = parameters.dimensions[1]
     self.width = parameters.dimensions[2]
     self.output = []
-    self.isCpu = parameters.isCpu
+    self.engine = .CPU
   }
 
   func forward_cpu(bottom: [Tensor]?) {
@@ -65,11 +66,9 @@ public struct ImageDataParameters: LayerParameterProtocol {
   public var imgNames: [String]
   public var dimensions:[Int]
   public var readImage: String->([Float], [Float])
-  public var isCpu : Bool
   public init(imgNames: [String], dimensions: [Int], readImage: String->([Float], [Float]), isCpu: Bool) {
     self.imgNames = imgNames
     self.dimensions = dimensions
     self.readImage = readImage
-    self.isCpu = isCpu
   }
 }
