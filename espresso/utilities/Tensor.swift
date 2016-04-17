@@ -14,32 +14,36 @@ import Foundation
  */
 public class Tensor {
   public typealias DataType = Float
-  
+
   public var storage : [DataType] = []
-  
+
   public private(set) var dimensions : [Int] = []
-  public private(set) var numel : Int = 0
+  public private(set) var numel : Int
   public private(set) var capacity : Int = 0
   private var indexAuxilary: [Int] = [1]
 
   /**
    * Initialize the Tensor with dimensionalities
    */
-  init() {}
+  init() {
+    self.numel = 1
+  }
   init(dimensions: [Int]) {
     self.dimensions = dimensions
     self.numel = 1
     for d in dimensions.reverse() {
-      self.numel *= d
+      self.numel = self.numel * d
+      print("n:" + self.numel.description)
       indexAuxilary.append(self.numel)
     }
     indexAuxilary.removeLast()
     indexAuxilary = indexAuxilary.reverse()
-
+    print("numel: " + self.numel.description)
     self.storage.reserveCapacity(numel)
-    capacity = numel
+    self.storage = Array(count: self.numel, repeatedValue: 0)
+    capacity = self.numel
   }
-  
+
   func index(idxs: [Int]) -> Int {
     var idx = 0
     for i in 0..<indexAuxilary.count {
@@ -48,10 +52,18 @@ public class Tensor {
     return idx
   }
 
-  func reshape(dimensions: [Int]) {
-    // Reshape the tensor, reallocate space or reinterpret
+  func numElements(dim: [Int]) -> Int {
+    return dim.reduce(1, combine: {$0 * $1})
   }
-  
+
+  func reshape(dimensions: [Int]) {
+    print("numElements:" + numElements(self.dimensions).description + "numElements: " + numElements(dimensions).description)
+    if numElements(self.dimensions) < numElements(dimensions) {
+      self.storage = Array(count: numElements(dimensions), repeatedValue: 0)
+    }
+    self.dimensions = dimensions
+  }
+
   func reset(val: DataType) {
     for i in 0..<dimensions[0] { /* channel */
       for j in 0..<dimensions[1] { /* height */
@@ -61,7 +73,7 @@ public class Tensor {
       }
     }
   }
-  
+
   subscript(idxs: Int...)->DataType {
     get {
       return self.storage[index(idxs)]

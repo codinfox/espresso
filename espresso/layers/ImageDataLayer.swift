@@ -36,12 +36,18 @@ public class ImageDataLayer : DataLayerProtocol {
     let imgSize = self.height * self.width
     let batchSize = 1
     let start = batchNo * batchSize
+    if start > parameters.imgNames.count {
+      print("error: not enough images")
+    }
     for i in 0..<batchSize {
       let data = parameters.readImage(parameters.imgNames[start + i])
       let trainData:[Float] = data.0
       // let trainLabel = data.1 //(TODO) Later
+      print(output[i].storage.count)
+      print((i+1)*imgSize)
       output[i].storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
     }
+    batchNo += 1
   }
   
   func forwardGPU(bottom: [Tensor]?) {
@@ -49,6 +55,7 @@ public class ImageDataLayer : DataLayerProtocol {
   }
   
   func reshape(bottomDimensions: [Int]?) {
+    print ("In reshape")
     if bottomDimensions != nil {
       let dimensions = bottomDimensions!
       self.channelNo = dimensions[0]
@@ -56,7 +63,11 @@ public class ImageDataLayer : DataLayerProtocol {
       self.width = dimensions[2]
       let batchSize = 1
       for i in 0..<batchSize {
-        self.output[i].reshape(dimensions)
+        if self.output.count <= i {
+          self.output.append(Tensor(dimensions: dimensions))
+        } else {
+          self.output[i].reshape(dimensions)
+        }
       }
     }
   }

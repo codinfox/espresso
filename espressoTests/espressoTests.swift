@@ -45,8 +45,8 @@ class ImageDataLayerTest0: XCTestCase {
   }
 
   func testInit() {
-    let params = ImageDataParameters(imgNames: ["mnist_train.csv"], dimensions: [], readImage: readImage)
-    let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
+    //let params = ImageDataParameters(imgNames: ["mnist_train.csv"], dimensions: [], readImage: readImage)
+    //let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
   }
 
   override func setUp() {
@@ -76,37 +76,33 @@ class ImageDataLayerTest0: XCTestCase {
 class ImageDataLayerTest1: XCTestCase {
 
   func readImage(name: String) -> ([Float], [Float]) {
-    return ([],[])
-  }
-
-  override func setUp() {
-    super.setUp()
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-    let params = ImageDataParameters(imgNames: ["mnist_train.csv"], dimensions: [], readImage: readImage)
-    let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
-    // dimension: channel * height * width
-    var bottomOpt = [Tensor(dimensions: [1, 6, 4])]
-    bottomOpt[0].storage = [1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]
-    imgDataLayer.forwardCPU(bottomOpt)
-    XCTAssert(imgDataLayer.output[0] === bottomOpt[0], "ImageDataLayer: output should be equal to input!")
-  }
-
-  override func tearDown() {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    super.tearDown()
+    return ([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4],[1])
   }
 
   func testExample() {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
+    // dimension: channel * height * width
+    let dimension = [1, 6, 4]
+    let params = ImageDataParameters(imgNames: ["mnist_train.csv"], dimensions: dimension, readImage: readImage)
+    let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
 
+    var bottomOpt = [Tensor(dimensions: dimension)]
+    bottomOpt[0].storage = [1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+
+    imgDataLayer.reshape(dimension)
+    let allZeros = Array(count: 24, repeatedValue: 0)
+    XCTAssert(imgDataLayer.output[0].storage == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output[0].storage.debugDescription)
+    imgDataLayer.forwardCPU(bottomOpt)
+    XCTAssert(imgDataLayer.output[0].storage == bottomOpt[0].storage, "ImageDataLayer: output should be equal to input!" + imgDataLayer.output[0].storage.debugDescription)
   }
 
-  func testPerformanceExample() {
-    // This is an example of a performance test case.
-    self.measureBlock {
-      // Put the code you want to measure the time of here.
-    }
-  }
+}
 
+
+class ConvolutionLayerTest0: XCTestCase {
+
+  func testExample() {
+
+  }
 }
