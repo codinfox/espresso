@@ -13,7 +13,7 @@ protocol ForwardBackwardLayerProtocol : ForwardLayerProtocol, BackwardLayerProto
 }
 
 extension ForwardLayerProtocol {
-  func reshape(bottomDimensions: [Int]?) {
+  func reshape(bottomDimensionsOpt: [Int]?) {
     // Reshape the output (and gradient)
   }
 }
