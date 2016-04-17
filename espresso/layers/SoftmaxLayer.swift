@@ -21,7 +21,7 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
 
   var parameters : SoftmaxParameters
 
-  func forward_cpu(bottomOpt: [Tensor]?) {
+  func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
       let batchSize = bottom.count
@@ -43,11 +43,11 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
     }
   }
 
-  func forward_gpu(bottomOpt: [Tensor]?) {
+  func forwardGPU(bottomOpt: [Tensor]?) {
   }
 
-  func backward_cpu(topOpt: [Tensor]?) {}
-  func backward_gpu(topOpt: [Tensor]?) {}
+  func backwardCPU(topOpt: [Tensor]?) {}
+  func backwardGPU(topOpt: [Tensor]?) {}
 
   func reshape(bottomDimensionsOpt: [Int]?) {
     // Reshape the output (and gradient)
@@ -75,11 +75,11 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
     self.bias = Tensor(dimensions: [])
     self.engine = .CPU
   }
-}
 
 public struct SoftmaxParameters : LayerParameterProtocol {
   public var negativeSlope : Tensor.DataType
   public init(negativeSlope: Tensor.DataType = 0) {
     self.negativeSlope = negativeSlope
   }
+}
 }

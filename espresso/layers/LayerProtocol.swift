@@ -16,34 +16,17 @@ public protocol LayerProtocol {
 //  var parameters : LayerParameterProtocol { get set }
 //  init(name: String, parameters : LayerParameterProtocol)
 
-  /**
-   Setup current layer when added to the network
-   
-   This is a life-cycle method, will be called once added to the network. This method will take parameters from the network to do necessary initialization.
-   This method is transparent to user and should be declared internal.
-   */
-  func layerSetUp(networkProperties: NetworkProperties)
 }
 
 extension LayerProtocol {
   /**
-   Default layerSetUp method, should be called everytime when calling layerSetUp
-   
-   Class/Struct conforming to this protocol should not override this method, and when calling layerSetUp, one should always call superLayerSetUp inside layerSetUp first
+   Setup current layer when added to the network
 
-   - parameter networkProperties:
+   This is a life-cycle method, will be called once added to the network. This method will take parameters from the network to do necessary initialization.
+   This method is transparent to user and should be declared internal.
    */
-  mutating func superLayerSetUp(networkProperties: NetworkProperties) {
-    self.engine = networkProperties.engine
-  }
 
-  /**
-   Don't forget to call superLayerSetUp first
-
-   - parameter networkProperties: 
-   */
-  mutating func layerSetUp(networkProperties: NetworkProperties) {
-    superLayerSetUp(networkProperties)
+  func layerSetUp(networkProperties: NetworkProperties) {
     // TODO: do setup
   }
 }
