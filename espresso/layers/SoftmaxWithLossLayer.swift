@@ -55,11 +55,10 @@ public class SoftmaxWithLossLayer: ForwardBackwardLayerProtocol {
     self.bias = Tensor(dimensions: [])
     self.engine = .CPU
   }
-}
 
 public struct SoftmaxWithLossParameters : LayerParameterProtocol {
   public var negativeSlope : Tensor.DataType
   public init(negativeSlope: Tensor.DataType = 0) {
     self.negativeSlope = negativeSlope
   }
-}
+}}

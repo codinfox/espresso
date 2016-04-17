@@ -31,17 +31,17 @@ protocol ForwardLayerProtocol : LayerProtocol {
 }
 
 extension ForwardLayerProtocol {
-  func forward(bottom: [Tensor]?) {
+  func forward(bottomOpt: [Tensor]?) {
     switch engine {
     case .CPU:
-      forward_cpu(bottom)
+      forward_cpu(bottomOpt)
     case .GPU:
-      forward_gpu(bottom)
+      forward_gpu(bottomOpt)
     }
   }
 
-  func forward_gpu(bottom: [Tensor]?) {
-    forward_cpu(bottom)
+  func forward_gpu(bottomOpt: [Tensor]?) {
+    forward_cpu(bottomOpt)
   }
 
 }

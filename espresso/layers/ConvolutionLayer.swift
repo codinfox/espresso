@@ -27,6 +27,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     self.bias = Tensor() // TODO
     self.output = []
     self.gradient = [] // Not initialized, needs to be resized
+    self.engine = .CPU
   }
 
   func layerSetUp(networkProperties: NetworkProperties) {

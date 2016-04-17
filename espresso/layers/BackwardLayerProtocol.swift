@@ -19,12 +19,12 @@ protocol BackwardLayerProtocol : LayerProtocol {
 }
 
 extension BackwardLayerProtocol {
-  func backward(top: [Tensor]?) {
+  func backward(topOpt: [Tensor]?) {
     switch engine {
     case .CPU:
-      backward_cpu(top)
+      backward_cpu(topOpt)
     case .GPU:
-      backward_gpu(top)
+      backward_gpu(topOpt)
     }
   }
 
