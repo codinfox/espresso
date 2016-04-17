@@ -12,7 +12,6 @@ import Foundation
  */
 public class PoolingLayer: ForwardBackwardLayerProtocol {
   public var name : String
-  public var isCpu: Bool
   public var output: [Tensor]
   public var gradient: [Tensor]
   public var weight: Tensor
@@ -105,8 +104,13 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
   public init(name: String = "pooling", parameters: PoolingParameters) {
     self.name = name
     self.parameters = parameters
+    self.bias = Tensor(dimensions: []) // TODO
+    self.output = []
+    self.gradient = [] // Not initialized, needs to be resized
+    self.weight = Tensor(dimensions: [])
+    self.bias = Tensor(dimensions: [])
+    self.engine = .CPU
   }
-
 
 }
 

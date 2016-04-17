@@ -104,8 +104,6 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     backwardCPU(top)
   }
 
-  public func layerSetUp(networkProperties: NetworkProperties) {
-  }
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {

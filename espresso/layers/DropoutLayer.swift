@@ -53,7 +53,6 @@ public class DropoutLayer: ForwardBackwardLayerProtocol {
     self.bias = Tensor(dimensions: [])
     self.engine = .CPU
   }
-  // Implement protocols
 }
 
 public struct DropoutParameters : LayerParameterProtocol {

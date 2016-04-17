@@ -16,18 +16,18 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
   public var gradient: [Tensor]
   public var weights : Tensor
   public var bias: Tensor
-  public var isCpu : Bool
+  public var engine: NetworkProperties.NetworkEngine
   var parameters : FullyConnectedParameters
 
   public init(name: String = "fc", parameters: FullyConnectedParameters) {
     self.name = name
     self.parameters = parameters
-    self.isCpu = parameters.isCpu
     self.output = []
     self.gradient = []
     // TODO Tensor(dimensions: [parameters.numNeurons, parameters])
     self.weights = Tensor(dimensions: [])
     self.bias = Tensor(dimensions: [])
+    self.engine = parameters.engine
   }
 
   func forwardCPU(bottomOpt: [Tensor]?) {
@@ -77,20 +77,20 @@ public struct FullyConnectedParameters : LayerParameterProtocol {
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public let isCpu: Bool
+  public let engine : NetworkProperties.NetworkEngine
   public init(numNeurons: Int,
               isBiasTerm: Bool = true,
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
               biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              isCpu: Bool) {
+              engine: NetworkProperties.NetworkEngine) {
     self.numNeurons = numNeurons
     self.isBiasTerm = isBiasTerm
     self.weightFiller = weightFiller
     self.biasFiller = biasFiller
     self.biasLRMultiplier = biasLRMultiplier
     self.weightLRMultiplier = weightLRMultiplier
-    self.isCpu = isCpu
+    self.engine = engine
   }
 }
