@@ -12,13 +12,43 @@ import Foundation
  */
 public class LRNLayer: ForwardBackwardLayerProtocol {
   public var name : String
+  public var output: [Tensor]
+  public var gradient: [Tensor]
+  public var weight: Tensor
+  public var bias: Tensor
+  public var engine: NetworkProperties.NetworkEngine
+
   var parameters : LRNParameters
+
+  func forwardCPU(bottomOpt: [Tensor]?) {}
+  func forwardGPU(bottomOpt: [Tensor]?) {}
+
+  func backwardCPU(topOpt: [Tensor]?) {}
+  func backwardGPU(topOpt: [Tensor]?) {}
+
+  func initWeights() {
+  }
+
+  func updateWeights(weightGrad: Tensor){
+  }
+
+  func initBias() {}
+
+  func updateBias(biasGrad: Tensor) {
+  }
+
+  public func layerSetUp(networkProperties: NetworkProperties) {
+  }
 
   public init(name: String = "lrn", parameters: LRNParameters) {
     self.name = name
     self.parameters = parameters
+    self.output = []
+    self.gradient = [] // Not initialized, needs to be resized
+    self.weight = Tensor(dimensions: [])
+    self.bias = Tensor(dimensions: [])
+    self.engine = .CPU
   }
-  // Implement protocols
 }
 
 public struct LRNParameters : LayerParameterProtocol {

@@ -13,5 +13,5 @@ import Foundation
 protocol Solver {
     var name:String {get}
     var parameters:[String:Double] {get set}
-    var net:Net{get set}
+    var net:Network{get set}
 }

@@ -27,16 +27,13 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     self.bias = Tensor() // TODO
     self.output = []
     self.gradient = [] // Not initialized, needs to be resized
+    self.bias = Tensor(dimensions: [])
     self.engine = .CPU
   }
 
   func layerSetUp(networkProperties: NetworkProperties) {
     self.engine = networkProperties.engine
     // TODO
-  }
-
-  public func reshape(bottomDimensions: [Int]?) {
-    // Resize output and gradient
   }
 
   public func backward(top: [Tensor]?) {
@@ -103,8 +100,6 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     backwardCPU(top)
   }
 
-  public func layerSetUp(networkProperties: NetworkProperties) {
-  }
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {

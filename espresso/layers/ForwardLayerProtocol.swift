@@ -27,7 +27,7 @@ protocol ForwardLayerProtocol : LayerProtocol {
 
    - parameter bottomDimensions: The dimension of the bottom layer
    */
-  func reshape(bottomDimensionsOpt: [Int]?)
+  mutating func reshape(bottomDimensionsOpt: [Int]?)
 }
 
 extension ForwardLayerProtocol {
