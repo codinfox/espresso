@@ -18,61 +18,60 @@ public class Tensor {
   public var storage : [DataType] = []
 
   public private(set) var dimensions : [Int] = []
-  public private(set) var numel : Int
-  public private(set) var capacity : Int = 0
-  private var indexAuxilary: [Int] = [1]
+  public private(set) var numel : Int = 0
+  public var capacity : Int {
+    // a better way may be storage.capacity, but how to?
+    return self.storage.count
+  }
+  var indexAuxilary: [Int] = []
 
   /**
    * Initialize the Tensor with dimensionalities
    */
-  init() {
-    self.numel = 1
-  }
-  init(dimensions: [Int]) {
-    self.dimensions = dimensions
-    self.numel = 1
-    for d in dimensions.reverse() {
-      self.numel = self.numel * d
-      indexAuxilary.append(self.numel)
-    }
-    indexAuxilary.removeLast()
-    indexAuxilary = indexAuxilary.reverse()
-    self.storage.reserveCapacity(numel)
-    self.storage = Array(count: self.numel, repeatedValue: 0)
-    capacity = self.numel
+  public init() {}
+
+  public init(dimensions: [Int]) {
+    reshape(dimensions)
   }
 
   func index(idxs: [Int]) -> Int {
     var idx = 0
-    for i in 0..<indexAuxilary.count {
+    for i in indexAuxilary.indices {
       idx += indexAuxilary[i] * idxs[i]
     }
     return idx
   }
 
-  func numElements(dim: [Int]) -> Int {
-    return dim.reduce(1, combine: {$0 * $1})
-  }
+  public func reshape(dimensions: [Int]) {
+    if self.dimensions == dimensions {
+      return
+    }
 
-  func reshape(dimensions: [Int]) {
-    if numElements(self.dimensions) < numElements(dimensions) {
-      self.storage = Array(count: numElements(dimensions), repeatedValue: 0)
+    let numElements = dimensions.reduce(1, combine: {$0 * $1})
+    if self.capacity < numElements {
+      self.storage = Array(count: numElements, repeatedValue: 0)
     }
     self.dimensions = dimensions
+    self.numel = numElements
+
+    self.indexAuxilary = [1]
+    for d in dimensions.reverse() {
+      indexAuxilary.append(d * indexAuxilary.last!)
+    }
+    assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
+    indexAuxilary.removeLast()
+    indexAuxilary = indexAuxilary.reverse()
   }
 
-  func reset(val: DataType) {
-    for i in 0..<dimensions[0] { /* channel */
-      for j in 0..<dimensions[1] { /* height */
-        for k in 0..<dimensions[2] { /* width */
-          storage[index([i, j, k])] = val
-        }
-      }
+  public func reset(val: DataType) {
+    for i in 0 ..< self.numel {
+      self.storage[i] = val
     }
   }
 
-  subscript(idxs: Int...)->DataType {
+  public subscript(idxs: Int...)->DataType {
     get {
+      // May be exceptions
       return self.storage[index(idxs)]
     }
 
