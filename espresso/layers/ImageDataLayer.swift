@@ -60,13 +60,17 @@ public class ImageDataLayer : DataLayerProtocol {
       }
     }
   }
+
+  public func layerSetUp(networkProperties: NetworkProperties) {
+
+  }
 }
 
 public struct ImageDataParameters: LayerParameterProtocol {
   public var imgNames: [String]
   public var dimensions:[Int]
   public var readImage: String->([Float], [Float])
-  public init(imgNames: [String], dimensions: [Int], readImage: String->([Float], [Float]), isCpu: Bool) {
+  public init(imgNames: [String], dimensions: [Int], readImage: String->([Float], [Float])) {
     self.imgNames = imgNames
     self.dimensions = dimensions
     self.readImage = readImage

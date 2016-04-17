@@ -25,6 +25,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, parameters.kernelSize, parameters.kernelSize])
     self.output = []
     self.gradient = [] // Not initialized, needs to be resized
+    self.bias = Tensor(dimensions: [])
     self.engine = .CPU
   }
 
