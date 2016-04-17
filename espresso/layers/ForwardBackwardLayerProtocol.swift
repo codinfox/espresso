@@ -19,6 +19,7 @@ extension ForwardBackwardLayerProtocol {
       let batchSize = 1
       for i in 0..<batchSize {
         if self.output.count <= i {
+          assert(self.output.count == self.gradient.count, "output and gradient numbers not match")
           self.output.append(Tensor(dimensions: dimensions))
           /* gradient?? */
           self.gradient.append(Tensor(dimensions: dimensions))

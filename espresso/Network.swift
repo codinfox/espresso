@@ -21,9 +21,9 @@ public class Network {
 
   public func add(layer: LayerProtocol) {
     var layer = layer // make layer mutable
-    let bottomNumNeurons : Int? = self.layers.last?.numNeurons()
+    let bottomNumOutputs : Int? = self.layers.last?.numOutput()
     self.layers.append(layer)
-    layer.layerSetUp(self.parameters, bottomNumNeurons: bottomNumNeurons)
+    layer.layerSetUp(self.parameters, bottomNumOutput: bottomNumOutputs)
   }
 
   public func forward() {
@@ -33,7 +33,7 @@ public class Network {
       guard l is ForwardLayerProtocol else {
         break
       }
-      let layer = l as! ForwardLayerProtocol
+      var layer = l as! ForwardLayerProtocol
       layer.reshape(bottomOutput?[0].dimensions)
       layer.forward(bottomOutput)
       bottomOutput = layer.output
@@ -47,7 +47,7 @@ public class Network {
       guard l is BackwardLayerProtocol else {
         break
       }
-      let layer = l as! BackwardLayerProtocol
+      var layer = l as! BackwardLayerProtocol
       layer.backward(topGradient)
       topGradient = layer.gradient
     }

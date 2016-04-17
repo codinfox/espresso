@@ -13,13 +13,13 @@ import Foundation
 protocol BackwardLayerProtocol : LayerProtocol {
   var gradient: [Tensor] { get set }
 
-  func backward(topOpt: [Tensor]?)
-  func backwardCPU(topOpt: [Tensor]?)
-  func backwardGPU(topOpt: [Tensor]?)
+  mutating func backward(topOpt: [Tensor]?)
+  mutating func backwardCPU(topOpt: [Tensor]?)
+  mutating func backwardGPU(topOpt: [Tensor]?)
 }
 
 extension BackwardLayerProtocol {
-  func backward(topOpt: [Tensor]?) {
+  mutating func backward(topOpt: [Tensor]?) {
     switch engine {
     case .CPU:
       backwardCPU(topOpt)
@@ -28,7 +28,7 @@ extension BackwardLayerProtocol {
     }
   }
 
-  func backwardGPU(topOpt: [Tensor]?) {
+  mutating func backwardGPU(topOpt: [Tensor]?) {
     backwardCPU(topOpt)
   }
 }
