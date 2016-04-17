@@ -109,7 +109,6 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
 
 public struct ConvolutionParameters: LayerParameterProtocol {
   public let numKerns : Int
-  public let kernelChans: Int
   public let kernelSize : Int
   public let stride : Int
   public let padSize : Int
@@ -119,7 +118,6 @@ public struct ConvolutionParameters: LayerParameterProtocol {
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
   public init(numKerns: Int,
-              kernelChans: Int,
               kernelSize: Int,
               stride: Int = 1,
               padSize: Int = 0,
@@ -129,7 +127,6 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
               biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
     self.numKerns = numKerns
-    self.kernelChans = kernelChans
     self.kernelSize = kernelSize
     self.stride = stride
     self.padSize = padSize

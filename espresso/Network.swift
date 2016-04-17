@@ -20,8 +20,10 @@ public class Network {
   }
 
   public func add(layer: LayerProtocol) {
+    var layer = layer // make layer mutable
+    let bottomNumNeurons : Int? = self.layers.last?.numNeurons()
     self.layers.append(layer)
-    layer.layerSetUp(self.parameters)
+    layer.layerSetUp(self.parameters, bottomNumNeurons: bottomNumNeurons)
   }
 
   public func forward() {
