@@ -43,6 +43,10 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     }
   }
 
+  func numOutput() -> Int {
+    return parameters.numOutput
+  }
+
   public func backward(top: [Tensor]?) {
 
   }
