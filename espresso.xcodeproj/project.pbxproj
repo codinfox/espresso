@@ -18,6 +18,8 @@
 		B5A6FF571CBC802A00085F1B /* espresso.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A6FF561CBC802A00085F1B /* espresso.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B5A6FF5E1CBC802A00085F1B /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6FF531CBC802A00085F1B /* espresso.framework */; };
 		B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A6FF621CBC802A00085F1B /* espressoTests.swift */; };
+		C431868A1CC55962006CFC24 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43186891CC55962006CFC24 /* MetalParameters.swift */; };
+		C431868B1CC55A24006CFC24 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43186891CC55962006CFC24 /* MetalParameters.swift */; };
 		C43E83C21CC01E7D004C0175 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C11CC01E7D004C0175 /* Network.swift */; };
 		C43E83C41CC01F6A004C0175 /* ForwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */; };
 		C43E83C61CC02479004C0175 /* ImageDataLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C51CC02479004C0175 /* ImageDataLayer.swift */; };
@@ -32,6 +34,10 @@
 		C43E83DA1CC033D6004C0175 /* LRNLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D91CC033D6004C0175 /* LRNLayer.swift */; };
 		C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49DC4C31CC2809F009E2076 /* MathFunctions.swift */; };
 		C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */; };
+		C4AAF30B1CC462FF00C5EC8A /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF30A1CC462FF00C5EC8A /* MetalUtilityFunctions.swift */; };
+		C4AAF30D1CC475B000C5EC8A /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF30C1CC475B000C5EC8A /* Shaders.metal */; };
+		C4AAF30E1CC475B000C5EC8A /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF30C1CC475B000C5EC8A /* Shaders.metal */; };
+		C4AAF30F1CC475B300C5EC8A /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF30A1CC462FF00C5EC8A /* MetalUtilityFunctions.swift */; };
 		C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */; };
 		C4EBC6CA1CC3AF21006E03C7 /* ImageDataLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C51CC02479004C0175 /* ImageDataLayer.swift */; };
 		C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */; };
@@ -80,6 +86,7 @@
 		B5A6FF5D1CBC802A00085F1B /* espressoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = espressoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6FF621CBC802A00085F1B /* espressoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = espressoTests.swift; sourceTree = "<group>"; };
 		B5A6FF641CBC802A00085F1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C43186891CC55962006CFC24 /* MetalParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalParameters.swift; sourceTree = "<group>"; };
 		C43E83C11CC01E7D004C0175 /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardLayerProtocol.swift; sourceTree = "<group>"; };
 		C43E83C51CC02479004C0175 /* ImageDataLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDataLayer.swift; sourceTree = "<group>"; };
@@ -94,6 +101,8 @@
 		C43E83D91CC033D6004C0175 /* LRNLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRNLayer.swift; sourceTree = "<group>"; };
 		C49DC4C31CC2809F009E2076 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSwiftV.swift; sourceTree = "<group>"; };
+		C4AAF30A1CC462FF00C5EC8A /* MetalUtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalUtilityFunctions.swift; sourceTree = "<group>"; };
+		C4AAF30C1CC475B000C5EC8A /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +161,9 @@
 				B527753F1CBDEE7C00A0FA0B /* Tensor.swift */,
 				B52775471CC0BE4100A0FA0B /* WeightFiller.swift */,
 				C49DC4C31CC2809F009E2076 /* MathFunctions.swift */,
+				C4AAF30A1CC462FF00C5EC8A /* MetalUtilityFunctions.swift */,
+				C4AAF30C1CC475B000C5EC8A /* Shaders.metal */,
+				C43186891CC55962006CFC24 /* MetalParameters.swift */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -320,13 +332,16 @@
 				C43E83C61CC02479004C0175 /* ImageDataLayer.swift in Sources */,
 				B52481681CC2CFC10015A403 /* DataLayerProtocol.swift in Sources */,
 				C43E83CC1CC03228004C0175 /* ConvolutionLayer.swift in Sources */,
+				C4AAF30B1CC462FF00C5EC8A /* MetalUtilityFunctions.swift in Sources */,
 				B52481661CC2CE960015A403 /* ForwardBackwardLayerProtocol.swift in Sources */,
+				C4AAF30D1CC475B000C5EC8A /* Shaders.metal in Sources */,
 				B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */,
 				C43E83D41CC03377004C0175 /* SoftmaxWithLossLayer.swift in Sources */,
 				C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */,
 				B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */,
 				C43E83C21CC01E7D004C0175 /* Network.swift in Sources */,
 				C43E83C81CC02537004C0175 /* BackwardLayerProtocol.swift in Sources */,
+				C431868A1CC55962006CFC24 /* MetalParameters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +349,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4AAF30E1CC475B000C5EC8A /* Shaders.metal in Sources */,
 				C4EBC6D61CC3AF58006E03C7 /* DropoutLayer.swift in Sources */,
 				C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */,
 				C4EBC6D71CC3AF5B006E03C7 /* LRNLayer.swift in Sources */,
@@ -352,11 +368,13 @@
 				C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */,
 				C4EBC6D51CC3AF55006E03C7 /* PoolingLayer.swift in Sources */,
 				C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */,
+				C431868B1CC55A24006CFC24 /* MetalParameters.swift in Sources */,
 				C4EBC6D41CC3AF51006E03C7 /* SoftmaxWithLossLayer.swift in Sources */,
 				B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */,
 				C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */,
 				C4EBC6D91CC3B0C2006E03C7 /* MathFunctions.swift in Sources */,
 				C4EBC6DA1CC3B0C5006E03C7 /* Tensor.swift in Sources */,
+				C4AAF30F1CC475B300C5EC8A /* MetalUtilityFunctions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

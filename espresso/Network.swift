@@ -7,37 +7,62 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Neural network.
  */
 public class Network {
   public var layers: [LayerProtocol]
+  var commandBuffers: [MTLCommandBuffer] = []
+  var metalDevice: MTLDevice!
+  var metalDefaultLibrary: MTLLibrary!
+  var metalCommandQueue: MTLCommandQueue!
+  var commandBufferQueue: [MTLCommandBuffer]
   var parameters : NetworkProperties
 
   public init(parameters: NetworkProperties) {
     self.layers = []
     self.parameters = parameters
+
+    if self.parameters.engine == .GPU {
+      // Initialize gpu
+      metalDevice = MTLCreateSystemDefaultDevice()
+
+      // Queue to handle an ordered list of command buffers
+      metalCommandQueue = metalDevice.newCommandQueue()
+
+      // Access to Metal functions that are stored in .metal file
+      metalDefaultLibrary = metalDevice.newDefaultLibrary()
+
+      commandBufferQueue = []
+    }
   }
 
   public func add(layer: LayerProtocol) {
     var layer = layer // make layer mutable
     let bottomNumOutputs : Int? = self.layers.last?.numOutput()
     self.layers.append(layer)
-    layer.layerSetUp(self.parameters, bottomNumOutput: bottomNumOutputs)
+    layer.layerSetUp(self.parameters, bottomNumOutput: bottomNumOutputs, metalDevice: self.metalDevice, metalDefaultLibrary: self.metalDefaultLibrary, metalCommandQueue: self.metalCommandQueue, commandBufferQueue: self.commandBufferQueue)
   }
 
   public func forward() {
     // The first layer does not take in any input
-    var bottomOutput : [Tensor]? = nil
+    var bottomOutput : Tensor? = nil
+    commandBufferQueue = []
     for l in self.layers {
       guard l is ForwardLayerProtocol else {
         break
       }
       var layer = l as! ForwardLayerProtocol
-      layer.reshape(bottomOutput?[0].dimensions)
+      layer.reshape(bottomOutput?.dimensions)
       layer.forward(bottomOutput)
       bottomOutput = layer.output
     }
+    commandBufferQueue.last?.waitUntilCompleted()
+    /* get final result */
+    var data = NSData(bytesNoCopy: bottomOutput!.mtlStorage.contents(), length: bottomOutput!.storage.count * sizeof(Float))
+    var finalResultArray = [Float](count: bottomOutput!.storage.count, repeatedValue: 0)
+    data.getBytes(&finalResultArray, length:bottomOutput!.storage.count * sizeof(Float))
   }
 
   public func backward() {

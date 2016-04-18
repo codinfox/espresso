@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Basic storage class
  *  Tensor is a multidimensional matrix. This serves as the fundamental storage class.
@@ -25,13 +26,17 @@ public class Tensor {
   }
   var indexAuxilary: [Int] = []
 
+  public var mtlStorage : MTLBuffer!
+  var metalDevice: MTLDevice!
+
   /**
    * Initialize the Tensor with dimensionalities
    */
   public init() {}
 
-  public init(dimensions: [Int]) {
+  public init(dimensions: [Int], metalDevice: MTLDevice) {
     reshape(dimensions)
+    self.metalDevice = metalDevice
   }
 
   func index(idxs: [Int]) -> Int {

@@ -7,14 +7,19 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief The base layer.
  */
 public protocol LayerProtocol {
   var name: String { get set }
   var engine: NetworkProperties.NetworkEngine { get set }
-//  var parameters : LayerParameterProtocol { get set }
-//  init(name: String, parameters : LayerParameterProtocol)
+  var metalDevice: MTLDevice! { get set }
+  var metalCommandQueue: MTLCommandQueue! { get set }
+  var metalDefaultLibrary: MTLLibrary! { get set }
+  var commandBufferQueue: [MTLCommandBuffer]! {get set}
+  //  var parameters : LayerParameterProtocol { get set }
+  //  init(name: String, parameters : LayerParameterProtocol)
 
 }
 
@@ -30,9 +35,14 @@ extension LayerProtocol {
    - parameter networkProperties:
    - parameter bottomNumNeurons:  number of outputs in the bottom layer
    */
-  mutating func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
+  mutating func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil,
+                           metalDevice: MTLDevice!, metalDefaultLibrary: MTLLibrary!, metalCommandQueue: MTLCommandQueue!, commandBufferQueue: [MTLCommandBuffer]!) {
     self.engine = networkProperties.engine
     // TODO: do setup
+    self.metalDevice = metalDevice
+    self.metalCommandQueue = metalCommandQueue
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.commandBufferQueue = commandBufferQueue
   }
 
   /**

@@ -16,10 +16,8 @@ extension ForwardBackwardLayerProtocol {
   mutating func reshape(bottomDimensionsOpt: [Int]?) {
     // invalid default reshape implementation
     if let dimensions = bottomDimensionsOpt {
-      for i in self.output.indices {
-        self.output[i].reshape(dimensions)
-        self.gradient[i].reshape(dimensions)
-      }
+      self.output.reshape(dimensions)
+      self.gradient.reshape(dimensions)
     }
   }
 }

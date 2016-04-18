@@ -13,10 +13,10 @@ import Foundation
 public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
   public var engine: NetworkProperties.NetworkEngine = .CPU
-  public var output : [Tensor] = []
-  public var gradient : [Tensor] = []
-  public var weights: Tensor = Tensor()
-  public var bias: Tensor = Tensor()
+  public var output : Tensor!
+  public var gradient : Tensor!
+  public var weights: Tensor!
+  public var bias: Tensor!
   var parameters: ConvolutionParameters
 
   public init(name : String = "conv", parameters: ConvolutionParameters) {
@@ -37,10 +37,10 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
     }
 
     // Set batch size
-    for _ in 0 ..< networkProperties.batchSize {
-      self.output.append(Tensor())
-      self.gradient.append(Tensor())
-    }
+//    for _ in 0 ..< networkProperties.batchSize {
+//      self.output.append(Tensor())
+//      self.gradient.append(Tensor())
+//    }
   }
 
   public func backward(top: [Tensor]?) {
