@@ -67,8 +67,8 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
       let bottomWidth = bottomDimensionsOpt[2]
 
       let channels = self.parameters.numOutput
-      let height = (bottomHeight + self.parameters.padSize * 2 - self.parameters.kernelSize + 1) / self.parameters.stride
-      let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize + 1) / self.parameters.stride
+      let height = (bottomHeight + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
+      let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
 
       for i in self.output.indices {
         self.output[i].reshape([channels, height, width])
@@ -91,8 +91,10 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
       let kernelSize = parameters.kernelSize
       let numOutput = parameters.numOutput
 
-      let padedHeight = (bottomHeight + 2 * padSize - kernelSize + 1)
-      let padedWidth = (bottomWidth + 2 * padSize - kernelSize + 1)
+      let paddedHeight = bottomHeight + 2 * padSize
+      let paddedWidth = bottomWidth + 2 * padSize
+      let boundKernelPositionY = (paddedHeight - kernelSize + stride) / stride * stride
+      let boundKernelPositionX = (paddedWidth - kernelSize + stride) / stride * stride
 
       for i in 0 ..< batchSize {
         output[i].reset(0)
@@ -101,19 +103,22 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
       for currentBatch in 0 ..< batchSize {
         for currentKernel in 0 ..< numOutput {
           for currentChannel in 0 ..< bottomChannels {
-            for kernelPositionY in 0.stride(to: padedHeight, by: stride) {
-              for kernelPositionX in 0.stride(to: padedWidth, by: stride) {
+            for kernelPositionY in 0.stride(to: boundKernelPositionY, by: stride) {
+              for kernelPositionX in 0.stride(to: boundKernelPositionX, by: stride) {
                 var conved: Tensor.DataType = 0
                 for y in 0 ..< kernelSize {
                   for x in 0 ..< kernelSize {
                     let row = kernelPositionY + y
                     let col = kernelPositionX + x
-                    if row >= padSize && row < padedHeight - padSize && col >= padSize && col < padedWidth - padSize {
+                    if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
                       conved += bottom[currentBatch][currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
                     }
                   }
                 }
                 output[currentBatch][currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
+                if currentChannel == 0 && parameters.isBiasTerm {
+                  output[currentBatch][currentKernel, kernelPositionY / stride, kernelPositionX / stride] += bias[currentKernel]
+                }
               }
             }
           }
