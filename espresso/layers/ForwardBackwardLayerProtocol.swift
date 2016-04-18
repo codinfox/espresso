@@ -14,19 +14,11 @@ protocol ForwardBackwardLayerProtocol : ForwardLayerProtocol, BackwardLayerProto
 
 extension ForwardBackwardLayerProtocol {
   mutating func reshape(bottomDimensionsOpt: [Int]?) {
-    if bottomDimensionsOpt != nil {
-      let dimensions = bottomDimensionsOpt!
-      let batchSize = 1
-      for i in 0..<batchSize {
-        if self.output.count <= i {
-          assert(self.output.count == self.gradient.count, "output and gradient numbers not match")
-          self.output.append(Tensor(dimensions: dimensions))
-          /* gradient?? */
-          self.gradient.append(Tensor(dimensions: dimensions))
-        } else {
-          self.output[i].reshape(dimensions)
-          self.gradient[i].reshape(dimensions)
-        }
+    // invalid default reshape implementation
+    if let dimensions = bottomDimensionsOpt {
+      for i in self.output.indices {
+        self.output[i].reshape(dimensions)
+        self.gradient[i].reshape(dimensions)
       }
     }
   }

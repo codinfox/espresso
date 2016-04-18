@@ -12,28 +12,35 @@ import Foundation
  */
 public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
-  public var engine: NetworkProperties.NetworkEngine
-  public var output : [Tensor]
-  public var gradient : [Tensor]
-  public var weights: Tensor
-  public var bias: Tensor
+  public var engine: NetworkProperties.NetworkEngine = .CPU
+  public var output : [Tensor] = []
+  public var gradient : [Tensor] = []
+  public var weights: Tensor = Tensor()
+  public var bias: Tensor = Tensor()
   var parameters: ConvolutionParameters
 
   public init(name : String = "conv", parameters: ConvolutionParameters) {
-    self.engine = .CPU
     self.name = name
     self.parameters = parameters
-    self.weights = Tensor(dimensions: [parameters.numKerns, parameters.kernelChans, parameters.kernelSize, parameters.kernelSize])
-    self.bias = Tensor() // TODO
-    self.output = []
-    self.gradient = [] // Not initialized, needs to be resized
-    self.bias = Tensor(dimensions: [])
-    self.engine = .CPU
   }
 
-  func layerSetUp(networkProperties: NetworkProperties) {
+  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
+    guard bottomNumOutput != nil && bottomNumOutput > 0 else {
+      // TODO: throw exception
+      return
+    }
+
+    self.weights.reshape([self.parameters.numOutput, bottomNumOutput!, self.parameters.kernelSize, self.parameters.kernelSize]);
     self.engine = networkProperties.engine
-    // TODO
+    if (self.parameters.isBiasTerm) {
+      self.bias.reshape([self.parameters.numOutput])
+    }
+
+    // Set batch size
+    for _ in 0 ..< networkProperties.batchSize {
+      self.output.append(Tensor())
+      self.gradient.append(Tensor())
+    }
   }
 
   public func backward(top: [Tensor]?) {
@@ -48,38 +55,61 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
 
   }
 
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    if let bottomDimensionsOpt = bottomDimensionsOpt {
+
+      // subject to change, currently just 3 dimensions
+      let bottomHeight = bottomDimensionsOpt[1]
+      let bottomWidth = bottomDimensionsOpt[2]
+
+      let channels = self.parameters.numOutput
+      let height = (bottomHeight + self.parameters.padSize * 2 - self.parameters.kernelSize + 1) / self.parameters.stride
+      let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize + 1) / self.parameters.stride
+
+      for i in self.output.indices {
+        self.output[i].reshape([channels, height, width])
+        self.gradient[i].reshape([channels, height, width])
+      }
+    }
+  }
+
   func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
       let batchSize = bottom.count
-      let channels = bottom[0].dimensions[0]
-      let height = bottom[0].dimensions[1]
-      let width = bottom[0].dimensions[2]
+
+      let bottomChannels = bottom[0].dimensions[0]
+      let bottomHeight = bottom[0].dimensions[1]
+      let bottomWidth = bottom[0].dimensions[2]
+
       let padSize = parameters.padSize
       let stride = parameters.stride
       let kernelSize = parameters.kernelSize
-      let padedHeight = (height + 2 * padSize - kernelSize + 1)
-      let padedWidth = (width + 2 * padSize - kernelSize + 1)
-      for i in 0..<batchSize {
+      let numOutput = parameters.numOutput
+
+      let padedHeight = (bottomHeight + 2 * padSize - kernelSize + 1)
+      let padedWidth = (bottomWidth + 2 * padSize - kernelSize + 1)
+
+      for i in 0 ..< batchSize {
         output[i].reset(0)
       }
-      for i in 0..<batchSize {
-        for kern in 0..<parameters.numKerns {
-          for j in 0..<channels {
-            for k in 0.stride(to: padedHeight, by: stride) {
-              for l in 0.stride(to: padedWidth, by: stride) {
-                var conved:Float = 0
-                for x in 0..<parameters.kernelSize {
-                  for y in 0..<parameters.kernelSize {
-                    let row = k + x
-                    let col = l + y
-                    if (row >= padSize && row < padedHeight - padSize
-                        && col >= padSize && col < padedWidth) {
-                      conved += bottom[i][j, row, col] * weights[kern, j, x, y]
+
+      for currentBatch in 0 ..< batchSize {
+        for currentKernel in 0 ..< numOutput {
+          for currentChannel in 0 ..< bottomChannels {
+            for kernelPositionY in 0.stride(to: padedHeight, by: stride) {
+              for kernelPositionX in 0.stride(to: padedWidth, by: stride) {
+                var conved: Tensor.DataType = 0
+                for y in 0 ..< kernelSize {
+                  for x in 0 ..< kernelSize {
+                    let row = kernelPositionY + y
+                    let col = kernelPositionX + x
+                    if row >= padSize && row < padedHeight - padSize && col >= padSize && col < padedWidth - padSize {
+                      conved += bottom[currentBatch][currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
                     }
                   }
                 }
-                output[i][kern, k, l] += conved
+                output[currentBatch][currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
               }
             }
           }
@@ -103,7 +133,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {
-  public let numKerns : Int
+  public let numOutput : Int
   public let kernelSize : Int
   public let stride : Int
   public let padSize : Int
@@ -112,7 +142,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public init(numKerns: Int,
+  public init(numOutput: Int,
               kernelSize: Int,
               stride: Int = 1,
               padSize: Int = 0,
@@ -121,7 +151,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
               biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
-    self.numKerns = numKerns
+    self.numOutput = numOutput
     self.kernelSize = kernelSize
     self.stride = stride
     self.padSize = padSize
