@@ -15,6 +15,8 @@
 		B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775431CBE0B8400A0FA0B /* Solver.swift */; };
 		B52775461CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775451CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift */; };
 		B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775471CC0BE4100A0FA0B /* WeightFiller.swift */; };
+		B52E8E901CC45E9700190FAE /* ConvolutionLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */; };
+		B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E911CC4615B00190FAE /* TensorTests.swift */; };
 		B5A6FF571CBC802A00085F1B /* espresso.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A6FF561CBC802A00085F1B /* espresso.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B5A6FF5E1CBC802A00085F1B /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6FF531CBC802A00085F1B /* espresso.framework */; };
 		B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A6FF621CBC802A00085F1B /* espressoTests.swift */; };
@@ -74,6 +76,8 @@
 		B52775431CBE0B8400A0FA0B /* Solver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
 		B52775451CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrainableLayerProtocol.swift; sourceTree = "<group>"; };
 		B52775471CC0BE4100A0FA0B /* WeightFiller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeightFiller.swift; sourceTree = "<group>"; };
+		B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConvolutionLayerTests.swift; sourceTree = "<group>"; };
+		B52E8E911CC4615B00190FAE /* TensorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TensorTests.swift; sourceTree = "<group>"; };
 		B5A6FF531CBC802A00085F1B /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = espresso.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6FF561CBC802A00085F1B /* espresso.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = espresso.h; sourceTree = "<group>"; };
 		B5A6FF581CBC802A00085F1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -193,6 +197,8 @@
 				B5A6FF621CBC802A00085F1B /* espressoTests.swift */,
 				B5A6FF641CBC802A00085F1B /* Info.plist */,
 				C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */,
+				B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */,
+				B52E8E911CC4615B00190FAE /* TensorTests.swift */,
 			);
 			path = espressoTests;
 			sourceTree = "<group>";
@@ -341,6 +347,7 @@
 				C4EBC6DD1CC3B0CF006E03C7 /* Solver.swift in Sources */,
 				C4EBC6CF1CC3AF3E006E03C7 /* TrainableLayerProtocol.swift in Sources */,
 				C4EBC6D11CC3AF47006E03C7 /* ReluLayer.swift in Sources */,
+				B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */,
 				C4EBC6CE1CC3AF3B006E03C7 /* ForwardBackwardLayerProtocol.swift in Sources */,
 				C4EBC6CD1CC3AF38006E03C7 /* BackwardLayerProtocol.swift in Sources */,
 				C4EBC6D21CC3AF4A006E03C7 /* FullyConnectedLayer.swift in Sources */,
@@ -356,6 +363,7 @@
 				B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */,
 				C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */,
 				C4EBC6D91CC3B0C2006E03C7 /* MathFunctions.swift in Sources */,
+				B52E8E901CC45E9700190FAE /* ConvolutionLayerTests.swift in Sources */,
 				C4EBC6DA1CC3B0C5006E03C7 /* Tensor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

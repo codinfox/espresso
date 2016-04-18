@@ -101,11 +101,3 @@ class ImageDataLayerTest1: XCTestCase {
   }
 
 }
-
-
-class ConvolutionLayerTest0: XCTestCase {
-
-  func testExample() {
-
-  }
-}
