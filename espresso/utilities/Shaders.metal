@@ -50,6 +50,19 @@ struct MetalSoftmaxParameter {
   int width;
 }
 
+struct MetalSoftmaxWithLossParameter {
+
+}
+
+struct MetalDropoutParameter {
+
+}
+
+struct MetalLrnParameter {
+  
+}
+
+
 /* Functions */
 kernel void convolutionForward(const device float *input [[ buffer(0) ]],
                                const device float *output [[ buffer(1) ]],
@@ -201,7 +214,6 @@ kernel void fullyConnectedForward(const device float *input [[ buffer(0) ]],
   int heightNo = withinChannel / width;
   int widthNo = withinChannel % width;
   output[batchNo * numNeurons + neuronNo] += input[batchNo * channel * height * width + channelNo * height * width + heightNo * width + widthNo] * weights[id] * bias[id];
-
 }
 
 kernel void softmaxForward(const device float *input [[ buffer(0) ]],
