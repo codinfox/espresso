@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Basic storage class
  *  Tensor is a multidimensional matrix. This serves as the fundamental storage class.
@@ -16,6 +17,7 @@ public class Tensor {
   public typealias DataType = Float
 
   public var storage : [DataType] = []
+  public var mtlStorage : MTLBuffer!
 
   public private(set) var dimensions : [Int] = []
   public private(set) var numel : Int = 0

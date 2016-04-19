@@ -32,6 +32,12 @@
 		C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D51CC0339D004C0175 /* PoolingLayer.swift */; };
 		C43E83D81CC033BC004C0175 /* DropoutLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D71CC033BC004C0175 /* DropoutLayer.swift */; };
 		C43E83DA1CC033D6004C0175 /* LRNLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D91CC033D6004C0175 /* LRNLayer.swift */; };
+		C4765F3F1CC5A3B000E8C9B0 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */; };
+		C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */; };
+		C4765F421CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */; };
+		C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */; };
+		C4765F451CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */; };
+		C4765F461CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */; };
 		C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49DC4C31CC2809F009E2076 /* MathFunctions.swift */; };
 		C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */; };
 		C4EBC6C91CC3AF1D006E03C7 /* DataLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481671CC2CFC10015A403 /* DataLayerProtocol.swift */; };
@@ -96,6 +102,9 @@
 		C43E83D51CC0339D004C0175 /* PoolingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoolingLayer.swift; sourceTree = "<group>"; };
 		C43E83D71CC033BC004C0175 /* DropoutLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropoutLayer.swift; sourceTree = "<group>"; };
 		C43E83D91CC033D6004C0175 /* LRNLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRNLayer.swift; sourceTree = "<group>"; };
+		C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalParameters.swift; sourceTree = "<group>"; };
+		C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalUtilityFunctions.swift; sourceTree = "<group>"; };
 		C49DC4C31CC2809F009E2076 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSwiftV.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -156,6 +165,9 @@
 				B527753F1CBDEE7C00A0FA0B /* Tensor.swift */,
 				B52775471CC0BE4100A0FA0B /* WeightFiller.swift */,
 				C49DC4C31CC2809F009E2076 /* MathFunctions.swift */,
+				C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */,
+				C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */,
+				C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -320,6 +332,7 @@
 				C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */,
 				C43E83C41CC01F6A004C0175 /* ForwardLayerProtocol.swift in Sources */,
 				B52775421CBE0B7600A0FA0B /* LayerProtocol.swift in Sources */,
+				C4765F3F1CC5A3B000E8C9B0 /* Shaders.metal in Sources */,
 				C43E83D01CC0330C004C0175 /* FullyConnectedLayer.swift in Sources */,
 				B52775461CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift in Sources */,
 				B52481641CC23DD60015A403 /* SGDSolver.swift in Sources */,
@@ -333,6 +346,8 @@
 				B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */,
 				C43E83C21CC01E7D004C0175 /* Network.swift in Sources */,
 				C43E83C81CC02537004C0175 /* BackwardLayerProtocol.swift in Sources */,
+				C4765F451CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */,
+				C4765F421CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,12 +357,15 @@
 			files = (
 				C4EBC6D61CC3AF58006E03C7 /* DropoutLayer.swift in Sources */,
 				C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */,
+				C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */,
 				C4EBC6D71CC3AF5B006E03C7 /* LRNLayer.swift in Sources */,
 				C4EBC6DB1CC3B0C8006E03C7 /* WeightFiller.swift in Sources */,
+				C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */,
 				C4EBC6DD1CC3B0CF006E03C7 /* Solver.swift in Sources */,
 				C4EBC6CF1CC3AF3E006E03C7 /* TrainableLayerProtocol.swift in Sources */,
 				C4EBC6D11CC3AF47006E03C7 /* ReluLayer.swift in Sources */,
 				B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */,
+				C4765F461CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */,
 				C4EBC6CE1CC3AF3B006E03C7 /* ForwardBackwardLayerProtocol.swift in Sources */,
 				C4EBC6CD1CC3AF38006E03C7 /* BackwardLayerProtocol.swift in Sources */,
 				C4EBC6D21CC3AF4A006E03C7 /* FullyConnectedLayer.swift in Sources */,
