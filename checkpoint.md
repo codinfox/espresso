@@ -22,6 +22,7 @@ For the next half of the project, we will explore the possibilities to run a com
 
 ### Revised Schedule
 
+
 |   Time    | What we plan to do | Status |
 |:---------:|:-------------------|:-----:|
 | April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso | DONE |
@@ -30,6 +31,7 @@ For the next half of the project, we will explore the possibilities to run a com
 | April 22 ~ April 28 | <del>Train neural networks on espresso</del> Run MNIST network(and test our implementations) |  |
 | April 29 ~ May 5   | <del>Study neural network compression and try to run compressed model</del> Try to run a compressed model trained by Caffe or other common frameworks |   |
 | May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
+
 ----
 
 ##### References:
