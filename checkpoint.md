@@ -14,47 +14,19 @@ sup:after { content: "]"; }
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
 ### Process Review
-By far we have finished the forward CPU version of the framework.
-
+By far we have implemented a naive CPU and GPU version for the forward path of the neuro network framework. In the first week, we designed the framework according to the achitecture of Caffe and learned Swift programming language and Metal framework. In the second week, we implemented the forward CPU version and tested a few layers. Currently we are implementing the GPU version.
 ### Goals and Deliverables
-
+We started with the goal of training a small neural network using the framework, however, as we learn more about the constraint we have running the framework on mobile devices and the reality of huge memory consumption of common neural networks, we decided to focus on running a trained model rather than actually training them. We will compare the running time, memory cost and energy consumption of the CPU and GPU version in MNIST.
+For the next half of the project, we will explore the possibilities to run a compressed model in our framework. Also, we'll try to support the caffe format models.
 ### Revised Schedule
-|   Time    | What we plan to do | What we actually did  |
+|   Time    | What we plan to do | Status |
 |:---------:|:-------------------|:-----:|
-| April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso |  |
-| April 8 ~ April 14  | Develop and test the CPU version |    |
-| April 15 ~ April 21 | Develop and test the GPU version |     |
-| April 22 ~ April 28 | Train neural networks on espresso |  |
-| April 29 ~ May 5   | Study neural network compression and try to run compressed model |   |
+| April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso | DONE |
+| April 8 ~ April 14  | Develop and test the CPU version | Finished development, need more thorough testing   |
+| April 15 ~ April 21 | Develop and test the GPU version | Finished development, need testing    |
+| April 22 ~ April 28 | <del>Train neural networks on espresso</del> Run MNIST network(and test our implementations) |  |
+| April 29 ~ May 5   | <del>Study neural network compression and try to run compressed model</del> Try to run a compressed model trained by Caffe or other common frameworks |   |
 | May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
-
-#### PLAN TO ACHIEVE
-In this project, we want to develop a Caffe-like deep neural network framework running on iOS/OSX devices, in both CPU and GPU, that provides usable primitives to
-
-* Define a neural netowrk
-* Train a small neural network
-* Run compressed models
-
-To achieve this, we will implement
-
-* **Layers**
-	* `ImageData` layer
-	* `Convolution` layer
-	* `ReLU` layer
-	* `FullyConnected` layer
-	* `Softmax` layer: as output layer, no BP needed
-	* `SoftmaxWithLoss` layer
-	* `Pooling` layer: max pooling and average pooling
-	* `Dropout` layer
-	* `LRN` layer
-* **Optimizer**
-	* `SGDOptimizer`
-
-We want our system to be usable in mobile devices, therefore, the performance goal would be to have a user acceptable memory, energy, computation cost and response time to train on a reasonably sized dataset, and to run a compressed model.
-
-#### Demo
-We will be demonstrating an application developed based on our framework. It could be a application to recognize things. Also, we will be comparing the CPU implementation and GPU implementation in terms of speedup and energy consumption.
-
 ----
 
 ##### References:
