@@ -17,6 +17,7 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
   public var gradient: [Tensor] = []
   public var engine: NetworkProperties.NetworkEngine = .CPU
   var parameters : SoftmaxParameters
+  private var myNumOutput: Int = 0
 
   public init(name: String = "softmax", parameters: SoftmaxParameters) {
     self.name = name
@@ -25,6 +26,7 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
 
   func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
     self.engine = networkProperties.engine
+    self.myNumOutput = bottomNumOutput!;
     // Set batch size
     for _ in 0 ..< networkProperties.batchSize {
       self.output.append(Tensor())
@@ -43,7 +45,7 @@ public class SoftmaxLayer: ForwardBackwardLayerProtocol {
 
   func numOutput() -> Int {
     // When?
-    return parameters.numOutput
+    return self.myNumOutput
   }
 
   func forwardCPU(bottomOpt: [Tensor]?) {

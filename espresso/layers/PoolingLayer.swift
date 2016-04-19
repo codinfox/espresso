@@ -12,18 +12,15 @@ import Foundation
  */
 public class PoolingLayer: ForwardBackwardLayerProtocol {
   public var name : String
-  public var output: [Tensor]
-  public var gradient: [Tensor]
-  public var engine: NetworkProperties.NetworkEngine
-
   var parameters : PoolingParameters
+  public var output: [Tensor] = []
+  public var gradient: [Tensor] = []
+  public var engine: NetworkProperties.NetworkEngine = .CPU
+  private var myNumOutput : Int = 0
 
   public init(name: String = "pooling", parameters: PoolingParameters) {
     self.name = name
     self.parameters = parameters
-    self.output = []
-    self.gradient = [] // Not initialized, needs to be resized
-    self.engine = .CPU
   }
 
   func forwardCPU(bottomOpt: [Tensor]?) {
@@ -93,6 +90,7 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
 
   func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
     self.engine = networkProperties.engine
+    self.myNumOutput = bottomNumOutput!
     // Set batch size
     for _ in 0 ..< networkProperties.batchSize {
       self.output.append(Tensor())
@@ -111,7 +109,7 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
 
   func numOutput() -> Int {
     // When?
-    return parameters.numOutput
+    return myNumOutput
   }
 
   func forwardGPU(bottomOpt: [Tensor]?) {}
