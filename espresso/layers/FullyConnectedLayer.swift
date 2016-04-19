@@ -44,7 +44,7 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
           for k in 0..<channels {
             for l in 0..<height {
               for m in 0..<width {
-                output[i][j] += bottom[i][k, l, m] * weights[k, l, m] + bias[k, l, m]
+                output[i][j] += bottom[i][k, l, m] * weights[j, k, l, m] + bias[j, k, l, m]
               }
             }
           }

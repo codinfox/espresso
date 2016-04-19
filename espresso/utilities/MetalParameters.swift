@@ -8,6 +8,21 @@
 
 import Foundation
 
+
+public struct MetalConvolutionParameter {
+  var padSize: Int
+  var kernelSize: Int
+  var stride: Int
+  var batchSize: Int
+  var inputChannel: Int
+  var inputHeight: Int
+  var inputWidth: Int
+  var outputChannel: Int
+  var outputHeight: Int
+  var outputWidth: Int
+}
+
+
 public struct MetalReluParameter {
   var negativeSlope: Float
   init(negativeSlope: Float, inputDim: [Int]) {
