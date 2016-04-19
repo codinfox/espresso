@@ -14,62 +14,76 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
   public var name : String
   public var output: [Tensor]
   public var gradient: [Tensor]
-  public var weight: Tensor
-  public var bias: Tensor
   public var engine: NetworkProperties.NetworkEngine
 
   var parameters : PoolingParameters
+
+  public init(name: String = "pooling", parameters: PoolingParameters) {
+    self.name = name
+    self.parameters = parameters
+    self.output = []
+    self.gradient = [] // Not initialized, needs to be resized
+    self.engine = .CPU
+  }
 
   func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
       let batchSize = bottom.count
-      let channels = bottom[0].dimensions[0]
-      let height = bottom[0].dimensions[1]
-      let width = bottom[0].dimensions[2]
+
+      let bottomChannels = bottom[0].dimensions[0]
+      let bottomHeight = bottom[0].dimensions[1]
+      let bottomWidth = bottom[0].dimensions[2]
+
       let padSize = parameters.padSize
       let stride = parameters.stride
       let kernelSize = parameters.kernelSize
-      let padedHeight = (height + 2 * padSize - kernelSize + 1)
-      let padedWidth = (width + 2 * padSize - kernelSize + 1)
-      for i in 0..<batchSize {
+
+      let paddedHeight = bottomHeight + 2 * padSize
+      let paddedWidth = bottomWidth + 2 * padSize
+      let boundKernelPositionY = (paddedHeight - kernelSize + stride) / stride * stride
+      let boundKernelPositionX = (paddedWidth - kernelSize + stride) / stride * stride
+
+      for i in 0 ..< batchSize {
         output[i].reset(0)
       }
-      for i in 0..<batchSize {
-        for j in 0..<channels {
-          for k in 0.stride(to: padedHeight, by: stride) {
-            for l in 0.stride(to: padedWidth, by: stride) {
-              var pooled:Float = 0
-              var count = 0
-              if (parameters.method == .AVG) {
-                for x in 0..<parameters.kernelSize {
-                  for y in 0..<parameters.kernelSize {
-                    let row = k + x
-                    let col = l + y
-                    if (row >= padSize && row < padedHeight - padSize
-                      && col >= padSize && col < padedWidth) {
-                      pooled += bottom[i][j, row, col]
-                      count += 1
+
+      for currentBatch in 0 ..< batchSize {
+        for currentChannel in 0 ..< bottomChannels {
+          for kernelPositionY in 0.stride(to: boundKernelPositionY, by: stride) {
+            for kernelPositionX in 0.stride(to: boundKernelPositionX, by: stride) {
+              var pooled: Tensor.DataType
+              switch parameters.method {
+              case .MAX:
+                pooled = -Tensor.DataType.infinity
+                for y in 0 ..< kernelSize {
+                  for x in 0 ..< kernelSize {
+                    let row = kernelPositionY + y
+                    let col = kernelPositionX + x
+                    if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
+                      if bottom[currentBatch][currentChannel, row - padSize, col - padSize] > pooled {
+                        pooled = bottom[currentBatch][currentChannel, row - padSize, col - padSize]
+                      }
+                    } else {
+                      if 0 > pooled {
+                        pooled = 0
+                      }
                     }
                   }
                 }
-                if count > 0 {
-                  pooled = pooled / Float(count)
-                }
-              } else if (parameters.method == .MAX) {
-                pooled = -Float.infinity
-                for x in 0..<parameters.kernelSize {
-                  for y in 0..<parameters.kernelSize {
-                    let row = k + x
-                    let col = l + y
-                    if (row >= padSize && row < padedHeight - padSize
-                      && col >= padSize && col < padedWidth) {
-                      pooled = max(pooled, bottom[i][j, row, col])
+              case .AVG:
+                pooled = 0
+                for y in 0 ..< kernelSize {
+                  for x in 0 ..< kernelSize {
+                    let row = kernelPositionY + y
+                    let col = kernelPositionX + x
+                    if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
+                      pooled = bottom[currentBatch][currentChannel, row - padSize, col - padSize] / (Tensor.DataType(kernelSize * kernelSize))
                     }
                   }
                 }
+                output[currentBatch][currentChannel, kernelPositionY / stride, kernelPositionX / stride] += pooled
               }
-              output[i][j, k, l] = pooled
             }
           }
         }
@@ -77,37 +91,33 @@ public class PoolingLayer: ForwardBackwardLayerProtocol {
     }
   }
 
-  public func layerSetUp(networkProperties: NetworkProperties) {
+  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
+    self.engine = networkProperties.engine
+    // Set batch size
+    for _ in 0 ..< networkProperties.batchSize {
+      self.output.append(Tensor())
+      self.gradient.append(Tensor())
+    }
+  }
 
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    if let bottomDimensionsOpt = bottomDimensionsOpt {
+      for i in self.output.indices {
+        self.output[i].reshape(bottomDimensionsOpt)
+        self.gradient[i].reshape(bottomDimensionsOpt)
+      }
+    }
+  }
+
+  func numOutput() -> Int {
+    // When?
+    return parameters.numOutput
   }
 
   func forwardGPU(bottomOpt: [Tensor]?) {}
 
   func backwardCPU(topOpt: [Tensor]?) {}
   func backwardGPU(topOpt: [Tensor]?) {}
-
-  func initWeights() {
-  }
-
-  func updateWeights(weightGrad: Tensor){
-  }
-
-  func initBias() {}
-
-  func updateBias(biasGrad: Tensor) {
-  }
-
-  public init(name: String = "pooling", parameters: PoolingParameters) {
-    self.name = name
-    self.parameters = parameters
-    self.bias = Tensor(dimensions: []) // TODO
-    self.output = []
-    self.gradient = [] // Not initialized, needs to be resized
-    self.weight = Tensor(dimensions: [])
-    self.bias = Tensor(dimensions: [])
-    self.engine = .CPU
-  }
-
 }
 
 public struct PoolingParameters: LayerParameterProtocol {

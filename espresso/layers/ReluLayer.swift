@@ -13,66 +13,57 @@ import Metal
  */
 public class ReluLayer: ForwardBackwardLayerProtocol {
   public var name : String
-  public var output: [Tensor]
-  public var gradient: [Tensor]
-  public var weight: Tensor
-  public var bias: Tensor
   var parameters : ReLUParameters
-  var negativeSlope : Tensor.DataType
-  public var engine: NetworkProperties.NetworkEngine
+  public var output: [Tensor] = []
+  public var gradient: [Tensor] = []
+  public var engine: NetworkProperties.NetworkEngine = .CPU
+
+  public init(name: String = "relu", parameters: ReLUParameters) {
+    self.name = name
+    self.parameters = parameters
+  }
+
+  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
+    self.engine = networkProperties.engine
+    // Set batch size
+    for _ in 0 ..< networkProperties.batchSize {
+      self.output.append(Tensor())
+      self.gradient.append(Tensor())
+    }
+  }
+
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    if let bottomDimensionsOpt = bottomDimensionsOpt {
+      for i in self.output.indices {
+        self.output[i].reshape(bottomDimensionsOpt)
+        self.gradient[i].reshape(bottomDimensionsOpt)
+      }
+    }
+  }
+
+  func numOutput() -> Int {
+    // When?
+    return parameters.numOutput
+  }
 
   func forwardCPU(bottomOpt: [Tensor]?) {
     if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
       let batchSize = bottom.count
-      let channels = bottom[0].dimensions[0]
-      let height = bottom[0].dimensions[1]
-      let width = bottom[0].dimensions[2]
-      for i in 0..<batchSize {
-        output[i].reset(0)
-      }
-      for i in 0..<batchSize {
-        for j in 0..<channels {
-          for k in 0..<height {
-            for l in 0..<width {
-              output[i][j,k,l] = max(0, bottom[i][j,k,l]) + negativeSlope * min(0, bottom[i][j,k,l])
-            }
-          }
+
+      for currentBatch in 0 ..< batchSize {
+        for i in bottom[currentBatch].storage.indices {
+          output[currentBatch].storage[i] = max(0, bottom[currentBatch].storage[i]) + parameters.negativeSlope * min(0, bottom[currentBatch].storage[i])
         }
       }
     }
   }
+
   func forwardGPU(bottomOpt: [Tensor]?) {}
 
   func backwardCPU(topOpt: [Tensor]?) {}
   func backwardGPU(topOpt: [Tensor]?) {}
 
-  func initWeights() {
-  }
-
-  func updateWeights(weightGrad: Tensor){
-  }
-
-  func initBias() {}
-
-  func updateBias(biasGrad: Tensor) {
-  }
-
-  public init(name: String = "relu", parameters: ReLUParameters) {
-    self.name = name
-    self.parameters = parameters
-    self.negativeSlope = parameters.negativeSlope
-    self.output = []
-    self.gradient = [] // Not initialized, needs to be resized
-    self.weight = Tensor(dimensions: [])
-    self.bias = Tensor(dimensions: [])
-    self.negativeSlope = parameters.negativeSlope
-    self.engine = .CPU
-  }
-
-  public func layerSetUp(networkProperties: NetworkProperties) {
-
-  }
 
 }
 

@@ -12,42 +12,64 @@ import Foundation
  */
 public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
-  public var output: [Tensor]
-  public var gradient: [Tensor]
-  public var weights : Tensor
-  public var bias: Tensor
-  public var engine: NetworkProperties.NetworkEngine
+  public var output: [Tensor] = []
+  public var gradient: [Tensor] = []
+  public var weights : Tensor = Tensor()
+  public var bias: Tensor = Tensor()
+  public var engine: NetworkProperties.NetworkEngine = .CPU
   var parameters : FullyConnectedParameters
 
   public init(name: String = "fc", parameters: FullyConnectedParameters) {
     self.name = name
     self.parameters = parameters
-    self.output = []
-    self.gradient = []
-    // TODO Tensor(dimensions: [parameters.numNeurons, parameters])
-    self.weights = Tensor(dimensions: [])
-    self.bias = Tensor(dimensions: [])
-    self.engine = parameters.engine
+  }
+
+  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
+    guard bottomNumOutput != nil && bottomNumOutput > 0 else {
+      // TODO: throw exception
+      return
+    }
+    // Fully connected layer will not initialize weights in the layerSetUp as it needs the output dimension of the bottom layer
+    self.engine = networkProperties.engine
+    if (self.parameters.isBiasTerm) {
+      self.bias.reshape([self.parameters.numOutput])
+    }
+
+    // Set batch size
+    for _ in 0 ..< networkProperties.batchSize {
+      self.output.append(Tensor(dimensions: [self.parameters.numOutput]))
+      self.gradient.append(Tensor(dimensions: [self.parameters.numOutput]))
+    }
+  }
+
+  func numOutput() -> Int {
+    return parameters.numOutput
+  }
+
+  func reshape(bottomDimensionsOpt: [Int]?) {
+    if let bottomDimensionsOpt = bottomDimensionsOpt {
+      var bottomDimensions = bottomDimensionsOpt
+      bottomDimensions.insert(parameters.numOutput, atIndex: 0)
+      self.weights.reshape(bottomDimensions)
+    }
   }
 
   func forwardCPU(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil && (bottomOpt!.count > 0) {
+    if bottomOpt != nil && (bottomOpt!.count > 0){
       let bottom = bottomOpt!
-      let channels = bottom[0].dimensions[0]
-      let height = bottom[0].dimensions[1]
-      let width = bottom[0].dimensions[2]
-      for i in 0..<parameters.numNeurons {
-        output[i].reset(0)
-      }
-      for i in 0..<bottom.count {
-        for j in 0..<parameters.numNeurons {
-          for k in 0..<channels {
-            for l in 0..<height {
-              for m in 0..<width {
-                output[i][j] += bottom[i][k, l, m] * weights[k, l, m] + bias[k, l, m]
-              }
-            }
+      let batchSize = bottom.count
+
+      let numOutput = parameters.numOutput
+
+      for currentBatch in 0 ..< batchSize {
+        for currentOutput in 0 ..< numOutput {
+          var tmpResult : Tensor.DataType = 0
+          // FIXME: bad API design
+          for i in bottom[currentBatch].storage.indices {
+            // FIXME: Hack
+            tmpResult += self.weights[currentOutput, 0, 0, i] * bottom[currentBatch].storage[i]
           }
+          self.output[currentBatch][currentOutput] = tmpResult
         }
       }
     }
@@ -67,26 +89,23 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
 }
 
 public struct FullyConnectedParameters : LayerParameterProtocol {
-  public let numNeurons : Int
+  public let numOutput : Int
   public let isBiasTerm : Bool
   public let biasLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public let engine : NetworkProperties.NetworkEngine
-  public init(numNeurons: Int,
+  public init(numOutput: Int,
               isBiasTerm: Bool = true,
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
-              engine: NetworkProperties.NetworkEngine) {
-    self.numNeurons = numNeurons
+              biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
+    self.numOutput = numOutput
     self.isBiasTerm = isBiasTerm
     self.weightFiller = weightFiller
     self.biasFiller = biasFiller
     self.biasLRMultiplier = biasLRMultiplier
     self.weightLRMultiplier = weightLRMultiplier
-    self.engine = engine
   }
 }
