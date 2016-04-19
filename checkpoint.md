@@ -19,6 +19,7 @@ By far we have implemented a naive CPU and GPU version for the forward path of t
 ### Goals and Deliverables
 We started with the goal of training a small neural network using the framework, however, as we learn more about the constraint we have running the framework on mobile devices and the reality of huge memory consumption of common neural networks, we decided to focus on running a trained model rather than actually training them. We will compare the running time, memory cost and energy consumption of the CPU and GPU version in MNIST.
 For the next half of the project, we will explore the possibilities to run a compressed model in our framework. Also, we'll try to support the caffe format models.
+In the parallelism competition, we plan to compare the cost of CPU and GPU implementations and run the compressed AlexNet on our framework.
 
 ### Revised Schedule
 
@@ -29,23 +30,7 @@ For the next half of the project, we will explore the possibilities to run a com
 | April 8 ~ April 14  | Develop and test the CPU version | Finished development, need more thorough testing   |
 | April 15 ~ April 21 | Develop and test the GPU version | Finished development, need testing    |
 | April 22 ~ April 28 | <del>Train neural networks on espresso</del> <br> Run MNIST network(and test our implementations) |  |
-| April 29 ~ May 5   | <del>Study neural network compression and try to run compressed model</del> <br>Try to run a compressed model trained by Caffe or other common frameworks |   |
+| April 29 ~ May 5   | <del>Study neural network compression and try to run compressed model</del> <br>Run a compressed model trained by Caffe or other common frameworks |   |
 | May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
 
 ----
-
-##### References:
-
-[^1]: Kim, Yong-Deok, et al. "Compression of Deep Convolutional Neural Networks for Fast and Low Power Mobile Applications." *arXiv preprint arXiv:1511.06530* (2015).
-
-[^2]: Han, Song, Huizi Mao, and William J. Dally. "A deep neural network compression pipeline: Pruning, quantization, huffman encoding." *arXiv preprint arXiv:1510.00149* (2015).
-
-[^3]: Chen, Wenlin, et al. "Compressing neural networks with the hashing trick." *arXiv preprint arXiv:1504.04788* (2015).
-
-[^4]: Courbariaux, Matthieu, Yoshua Bengio, and Jean-Pierre David. "Low precision arithmetic for deep learning." *arXiv preprint arXiv:1412.7024* (2014).
-
-[^5]: Gupta, Suyog, et al. "Deep learning with limited numerical precision." *arXiv preprint arXiv:1502.02551* (2015).
-
-[^6]: Huberty, K., Lipacis, C. M., Holt, A., Gelblum, E., Devitt, S., Swinburne, B., ... & Chen, G. (2011). Tablet Demand and Disruption. *Tablet*.
-
-[^7]: Jia, Yangqing, et al. "Caffe: Convolutional architecture for fast feature embedding." *Proceedings of the ACM International Conference on Multimedia. ACM*, 2014.
