@@ -15,10 +15,13 @@ sup:after { content: "]"; }
 
 ### Process Review
 By far we have implemented a naive CPU and GPU version for the forward path of the neuro network framework. In the first week, we designed the framework according to the achitecture of Caffe and learned Swift programming language and Metal framework. In the second week, we implemented the forward CPU version and tested a few layers. Currently we are implementing the GPU version.
+
 ### Goals and Deliverables
 We started with the goal of training a small neural network using the framework, however, as we learn more about the constraint we have running the framework on mobile devices and the reality of huge memory consumption of common neural networks, we decided to focus on running a trained model rather than actually training them. We will compare the running time, memory cost and energy consumption of the CPU and GPU version in MNIST.
 For the next half of the project, we will explore the possibilities to run a compressed model in our framework. Also, we'll try to support the caffe format models.
+
 ### Revised Schedule
+
 |   Time    | What we plan to do | Status |
 |:---------:|:-------------------|:-----:|
 | April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso | DONE |
