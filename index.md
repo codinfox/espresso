@@ -91,8 +91,7 @@ OSX and iOS based on Metal framework.
 | April 22 ~ April 28 | Run MNIST network(and test our implementations) |  |
 | April 29 ~ May 5   | Run a compressed model trained by Caffe or other common frameworks |   |
 | May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
-**Share the excitement with your friends by**
-{% include sharing.html %}
+
 
 ----
 
