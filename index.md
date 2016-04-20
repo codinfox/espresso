@@ -15,6 +15,7 @@ sup:after { content: "]"; }
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
+<a href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a>
 
 ### Background
 
@@ -93,7 +94,6 @@ OSX and iOS based on Metal framework.
 | May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
 
 
-----
 
 ##### References:
 
