@@ -66,7 +66,7 @@ public class LRNLayer: ForwardBackwardLayerProtocol {
                   let currentMask = currentChannel - parameters.localSize / 2 + maskIndex
                   Z += bottom[currentBatch][currentMask, y, x] * bottom[currentBatch][currentMask, y, x]
                 }
-                output[currentBatch][currentChannel, y, x] = pow(1 + parameters.alpha / Tensor.DataType(parameters.localSize * parameters.localSize) * Z, parameters.beta)
+                output[currentBatch][currentChannel, y, x] = pow(1 + parameters.alpha / Tensor.DataType(parameters.localSize * parameters.localSize) / Z, parameters.beta)
               }
             }
           }
@@ -88,7 +88,7 @@ public class LRNLayer: ForwardBackwardLayerProtocol {
                     Z += bottom[currentBatch][currentChannel, maskY + kernelY, maskX + kernelX] * bottom[currentBatch][currentChannel, maskY + kernelY, maskX + kernelX]
                   }
                 }
-                output[currentBatch][currentChannel, y, x] = pow(1 + parameters.alpha / Tensor.DataType(parameters.localSize * parameters.localSize) * Z, parameters.beta)
+                output[currentBatch][currentChannel, y, x] = pow(1 + parameters.alpha / Tensor.DataType(parameters.localSize * parameters.localSize) / Z, parameters.beta)
               }
             }
           }
