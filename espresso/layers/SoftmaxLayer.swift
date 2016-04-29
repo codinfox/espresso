@@ -51,8 +51,8 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 //    self.gradient.reshape(oneBottomDimensionsSample)
   }
 
-  func forwardCPU(bottom: [Tensor]?) {
-    if let bottom = bottom where bottom.count > 0 {
+  func forwardCPU(bottom: [Tensor]) {
+    if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
       // how many bins does an output distribution has
@@ -87,7 +87,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]) {
     forwardCPU(bottom)
   }
 }

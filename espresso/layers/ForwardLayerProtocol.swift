@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias ForwardLayerMethodType = ([Tensor]?)->()
+typealias ForwardLayerMethodType = ([Tensor])->()
 /** @brief Protocol for Forward Layers
  */
 protocol ForwardLayerProtocol : LayerProtocol {
@@ -23,9 +23,9 @@ protocol ForwardLayerProtocol : LayerProtocol {
    
    - parameter bottom: Some layer can accept multiple inputs, thus this is an array of tensors. All tensors should have the same batchSize
    */
-  mutating func forward(bottom: [Tensor]?)
-  mutating func forwardCPU(bottom: [Tensor]?)
-  mutating func forwardGPU(bottom: [Tensor]?)
+  mutating func forward(bottom: [Tensor])
+  mutating func forwardCPU(bottom: [Tensor])
+  mutating func forwardGPU(bottom: [Tensor])
 
   /**
    Output dimensions
@@ -48,7 +48,7 @@ protocol ForwardLayerProtocol : LayerProtocol {
 }
 
 extension ForwardLayerProtocol {
-  mutating func forward(bottom: [Tensor]?) {
+  mutating func forward(bottom: [Tensor]) {
     self.forwardMethod!(bottom)
   }
 

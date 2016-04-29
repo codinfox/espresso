@@ -59,9 +59,9 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
 //    self.gradient.reshape([batchSize, channels])
   }
 
-  func forwardCPU(bottom: [Tensor]?) {
+  func forwardCPU(bottom: [Tensor]) {
     // Preprocess bottom to fit this layer
-    if let bottom = bottom where bottom.count > 0 {
+    if bottom.count > 0 {
       let bottom = bottom[0] // in fc layer, bottom is really just a single Tensor
 
       let batchSize = bottom.dimensions[0]
@@ -84,7 +84,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
     }
   }
 
-  func forwardGPU(bottom: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]) {
     forwardCPU(bottom)
   }
 }

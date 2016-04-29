@@ -57,8 +57,8 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     //    self.gradient.reshape(dimensions) // may need to be handled differently
   }
 
-  func forwardCPU(bottom: [Tensor]?) {
-    if let bottom = bottom where bottom.count > 0 {
+  func forwardCPU(bottom: [Tensor]) {
+    if bottom.count > 0 {
       let elementsBeforeTargetAxis = output.count(toDimension: self.parameters.axis - 1)
 
       var currentOutputCursor = 0
@@ -75,7 +75,7 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]) {
     forwardCPU(bottom)
   }
 }

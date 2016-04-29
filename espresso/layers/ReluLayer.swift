@@ -49,8 +49,8 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 //    self.gradient.reshape(oneBottomDimensionsSample)
   }
 
-  func forwardCPU(bottom: [Tensor]?) {
-    if let bottom = bottom where bottom.count > 0 {
+  func forwardCPU(bottom: [Tensor]) {
+    if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
       for index in bottom.storage.indices {
@@ -59,7 +59,7 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]) {
     forwardCPU(bottom)
   }
 }

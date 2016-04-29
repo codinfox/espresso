@@ -11,46 +11,50 @@ import Foundation
 /** @brief Neural network.
  */
 public class Network {
-  public var layers: [LayerProtocol]
+  var layers : [LayerProtocol]
   var parameters : NetworkProperties
+  var layerDependencyMapping : [Int : [Int]]
+  var layerNameIndexMapping : [String : Int]
 
   public init(parameters: NetworkProperties) {
     self.layers = []
     self.parameters = parameters
+    self.layerDependencyMapping = [:]
+    self.layerNameIndexMapping = [:]
   }
 
-  public func add(layer: LayerProtocol) {
-    var layer = layer // make layer mutable
-    let bottomNumOutputs : Int? = self.layers.last?.numOutput()
+  public func add(layer: AnyObject) {
+    var layer = layer as! LayerProtocol // make layer mutable
+    let bottomDimensions : [[Int]]? = (self.layers.last as! ForwardLayerProtocol).outputDimensions()
+    let currentLayerIndex = layers.count
+    let currentLayerName = layer.name
+    let currentLayerDependencies = layer.dependencies
+
+    layerNameIndexMapping[currentLayerName] = currentLayerIndex
+    layerDependencyMapping[currentLayerIndex] = []
+    for depName in currentLayerDependencies {
+      layerDependencyMapping[currentLayerIndex]?.append(layerNameIndexMapping[depName]!)
+    }
+
     self.layers.append(layer)
-    layer.layerSetUp(self.parameters, bottomNumOutput: bottomNumOutputs)
+    layer.layerSetUp(engine: self.parameters.engine, bottomDimensions: bottomDimensions)
   }
 
   public func forward() {
-    // The first layer does not take in any input
-    var bottomOutput : [Tensor]? = nil
-    for l in self.layers {
-      guard l is ForwardLayerProtocol else {
-        break
+    for index in self.layers.indices {
+      var layer = self.layers[index] as! ForwardLayerProtocol // may exception, but should not
+
+      var bottom : [Tensor] = []
+      for dep in layerDependencyMapping[index]! {
+        bottom.append((layers[dep] as! ForwardLayerProtocol).output)
       }
-      var layer = l as! ForwardLayerProtocol
-      layer.reshape(bottomOutput?[0].dimensions)
-      layer.forward(bottomOutput)
-      bottomOutput = layer.output
+
+      layer.forward(bottom)
     }
   }
 
   public func backward() {
-    // Last layer does not take any input
-    var topGradient : [Tensor]? = nil
-    for l in self.layers {
-      guard l is BackwardLayerProtocol else {
-        break
-      }
-      var layer = l as! BackwardLayerProtocol
-      layer.backward(topGradient)
-      topGradient = layer.gradient
-    }
+    // TODO
   }
 
   public func update() {
