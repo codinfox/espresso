@@ -11,81 +11,97 @@ import Foundation
 /** @brief Softmax layer.
  This can also be not backwardable
  */
-public class SoftmaxLayer: ForwardBackwardLayerProtocol {
-  public var name : String
-  public var output: [Tensor] = []
-  public var gradient: [Tensor] = []
-  public var engine: NetworkProperties.NetworkEngine = .CPU
+public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+  public var name : String {
+    return parameters.name
+  }
+
+  public var dependencies: [String] {
+    return self.parameters.dependencies
+  }
+
+  public var output: Tensor = Tensor()
+  public var gradient: Tensor = Tensor()
   var parameters : SoftmaxParameters
+  var forwardMethod: ForwardLayerMethodType? = nil
+  var backwardMethod: BackwardLayerMethodType? = nil
+
   private var myNumOutput: Int = 0
 
-  public init(name: String = "softmax", parameters: SoftmaxParameters) {
-    self.name = name
+  public init(parameters: SoftmaxParameters) {
     self.parameters = parameters
   }
 
-  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
-    self.engine = networkProperties.engine
-    self.myNumOutput = bottomNumOutput!;
-    // Set batch size
-    for _ in 0 ..< networkProperties.batchSize {
-      self.output.append(Tensor())
-      self.gradient.append(Tensor())
+  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                         bottomDimensions: [[Int]]? = nil) {
+    switch engine {
+    case .CPU:
+      self.forwardMethod = forwardCPU
+    case .GPU:
+      self.forwardMethod = forwardGPU
     }
+
+    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
   }
 
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    if let bottomDimensionsOpt = bottomDimensionsOpt {
-      for i in self.output.indices {
-        self.output[i].reshape(bottomDimensionsOpt)
-        self.gradient[i].reshape(bottomDimensionsOpt)
-      }
-    }
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+    let oneBottomDimensionsSample = bottomDimensions[0]
+
+    self.output.reshape(oneBottomDimensionsSample)
+//    self.gradient.reshape(oneBottomDimensionsSample)
   }
 
-  func numOutput() -> Int {
-    // When?
-    return self.myNumOutput
-  }
+  func forwardCPU(bottom: [Tensor]?) {
+    if let bottom = bottom where bottom.count > 0 {
+      let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
-  func forwardCPU(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil && (bottomOpt!.count > 0){
-      let bottom = bottomOpt!
-      let batchSize = bottom.count
+      // how many bins does an output distribution has
+      let outDistributionBins = bottom.dimensions[self.parameters.axis]
+      // for conv feature maps, this is just height * width
+      let mapSizeToPerformOn = bottom.count(fromDimension: self.parameters.axis + 1)
+      // totally how many distributions should we get
+      let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
 
-      let bottomChannels = bottom[0].dimensions[0]
-      let bottomHeight = bottom[0].dimensions[1]
-      let bottomWidth = bottom[0].dimensions[2]
-
-      for i in 0..<batchSize {
-        output[i].reset(0)
-      }
-
-      for currentBatch in 0 ..< batchSize {
-        for y in 0 ..< bottomHeight {
-          for x in 0 ..< bottomWidth {
-            var Z : Tensor.DataType = 0
-            for currentChannel in 0 ..< bottomChannels {
-              let currentTerm = exp(bottom[currentBatch][currentChannel, y, x])
-              output[currentBatch][currentChannel, y, x] = currentTerm
-              Z += currentTerm
-            }
-            for currentChannel in 0 ..< bottomChannels {
-              output[currentBatch][currentChannel, y, x] /= Z
-            }
+      /**
+       *  For the typical 4-dimensional case [batchSize, channel, height, width], the typical axis to perform softmax on is 1, which is the channel dimension:
+       *      `totalNumberOfDistributions` == batchSize,
+       *      `outDistributionBins` == channels,
+       *      `totalNumberOfDistributions` == height * width
+       */
+      for mapIndex in 0 ..< totalNumberOfDistributions {
+        for gridIndex in 0 ..< mapSizeToPerformOn {
+          var Z : Tensor.DataType = 0
+          for currentBin in 0 ..< outDistributionBins {
+            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+            // FIXME: Bad API
+            let currentTerm = exp(bottom.storage[index])
+            output[index] = currentTerm
+            Z += currentTerm
+          }
+          for currentBin in 0 ..< outDistributionBins {
+            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+            output[index] /= Z
           }
         }
       }
     }
   }
 
-  func forwardGPU(bottomOpt: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]?) {
+    forwardCPU(bottom)
   }
-
-  func backwardCPU(topOpt: [Tensor]?) {}
-  func backwardGPU(topOpt: [Tensor]?) {}
-
 }
 
 public struct SoftmaxParameters : LayerParameterProtocol {
+  public let name : String
+  public let dependencies: [String]
+    /// Perform Softmax on which axis (usually 1, the channel axis). For example, FC layers, if have 1000 outputs (1000 channels), we perform on these 1000 channels and get 1000 probabilities (distribution)
+  public let axis : Int
+  public init(name: String,
+              dependencies: [String],
+              axis: Int = 1) {
+    self.name = name
+    self.dependencies = dependencies
+    self.axis = axis
+  }
 }

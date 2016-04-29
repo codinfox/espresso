@@ -44,12 +44,20 @@ public class Tensor {
     return idx
   }
 
+  public func count(fromDimension fromDimension: Int = 0, toDimension: Int = -1) -> Int {
+    var toDimension = toDimension
+    if toDimension < 0 {
+      toDimension = dimensions.count + toDimension
+    }
+    return self.dimensions[fromDimension...toDimension].reduce(1, combine: {$0 * $1})
+  }
+
   public func reshape(dimensions: [Int]) {
     if self.dimensions == dimensions {
       return
     }
 
-    let numElements = dimensions.reduce(1, combine: {$0 * $1})
+    let numElements = self.count()
     if self.capacity < numElements {
       self.storage = Array(count: numElements, repeatedValue: 0)
     }

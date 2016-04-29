@@ -10,66 +10,75 @@ import Foundation
 
 /** @brief Fully connected layer.
  */
-public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
-  public var name : String
-  public var output: [Tensor] = []
-  public var gradient: [Tensor] = []
-  public var weights : Tensor = Tensor()
-  public var bias: Tensor = Tensor()
-  public var engine: NetworkProperties.NetworkEngine = .CPU
-  var parameters : FullyConnectedParameters
+public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+  public var name : String {
+    return parameters.name
+  }
 
-  public init(name: String = "fc", parameters: FullyConnectedParameters) {
-    self.name = name
+  public var dependencies: [String] {
+    return self.parameters.dependencies
+  }
+
+  public var output: Tensor = Tensor()
+  public var gradient: Tensor = Tensor()
+  public var weights: Tensor = Tensor()
+  public var bias: Tensor = Tensor()
+  var parameters : FullyConnectedParameters
+  var forwardMethod: ForwardLayerMethodType? = nil
+  var backwardMethod: BackwardLayerMethodType? = nil
+
+  public init(parameters: FullyConnectedParameters) {
     self.parameters = parameters
   }
 
-  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
-    guard bottomNumOutput != nil && bottomNumOutput > 0 else {
-      // TODO: throw exception
-      return
+  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                         bottomDimensions: [[Int]]? = nil) {
+    switch engine {
+    case .CPU:
+      self.forwardMethod = forwardCPU
+    case .GPU:
+      self.forwardMethod = forwardGPU
     }
-    // Fully connected layer will not initialize weights in the layerSetUp as it needs the output dimension of the bottom layer
-    self.engine = networkProperties.engine
+
+    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
+  }
+
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+    let oneBottomDimensionsSample = bottomDimensions[0]
+    // subject to change, currently just 4 dimensions
+    let batchSize = oneBottomDimensionsSample[0]
+    let channels = self.parameters.numOutput
+
+    var weightDimensions = oneBottomDimensionsSample
+    weightDimensions[0] = channels // change batchSize to channels of current layer, hacky
+    self.weights.reshape(weightDimensions)
     if (self.parameters.isBiasTerm) {
-      self.bias.reshape([self.parameters.numOutput])
+      self.bias.reshape([channels])
     }
-
-    // Set batch size
-    for _ in 0 ..< networkProperties.batchSize {
-      self.output.append(Tensor(dimensions: [self.parameters.numOutput]))
-      self.gradient.append(Tensor(dimensions: [self.parameters.numOutput]))
-    }
+    self.output.reshape([batchSize, channels])
+//    self.gradient.reshape([batchSize, channels])
   }
 
-  func numOutput() -> Int {
-    return parameters.numOutput
-  }
+  func forwardCPU(bottom: [Tensor]?) {
+    // Preprocess bottom to fit this layer
+    if let bottom = bottom where bottom.count > 0 {
+      let bottom = bottom[0] // in fc layer, bottom is really just a single Tensor
 
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    if let bottomDimensionsOpt = bottomDimensionsOpt {
-      var bottomDimensions = bottomDimensionsOpt
-      bottomDimensions.insert(parameters.numOutput, atIndex: 0)
-      self.weights.reshape(bottomDimensions)
-    }
-  }
-
-  func forwardCPU(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil && (bottomOpt!.count > 0){
-      let bottom = bottomOpt!
-      let batchSize = bottom.count
-
+      let batchSize = bottom.dimensions[0]
       let numOutput = parameters.numOutput
+
+      let numElementsPerBatch = bottom.count(fromDimension: 1)
+      assert(numElementsPerBatch == self.weights.count() / numOutput, "Num elements not match")
 
       for currentBatch in 0 ..< batchSize {
         for currentOutput in 0 ..< numOutput {
           var tmpResult : Tensor.DataType = 0
           // FIXME: bad API design
-          for i in bottom[currentBatch].storage.indices {
+          for i in 0 ..< numElementsPerBatch {
             // FIXME: Hack
-            tmpResult += self.weights[currentOutput, 0, 0, i] * bottom[currentBatch].storage[i]
+            tmpResult += self.weights[currentOutput, 0, 0, i] * bottom.storage[currentBatch * numElementsPerBatch + i]
           }
-          self.output[currentBatch][currentOutput] = tmpResult
+          self.output[currentBatch, currentOutput] = tmpResult
         }
       }
     }
@@ -78,29 +87,27 @@ public class FullyConnectedLayer: ForwardBackwardLayerProtocol, TrainableLayerPr
   func forwardGPU(bottom: [Tensor]?) {
     forwardCPU(bottom)
   }
-
-  func backwardCPU(top: [Tensor]?) {}
-  func backwardGPU(top: [Tensor]?) { backwardCPU(top) }
-
-  func initWeights() {}
-  func updateWeights(weightGrad: Tensor) {}
-
-
 }
 
 public struct FullyConnectedParameters : LayerParameterProtocol {
+  public let name : String
+  public let dependencies: [String]
   public let numOutput : Int
   public let isBiasTerm : Bool
   public let biasLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public init(numOutput: Int,
+  public init(name: String,
+              dependencies: [String],
+              numOutput: Int,
               isBiasTerm: Bool = true,
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
               biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
+    self.name = name
+    self.dependencies = dependencies
     self.numOutput = numOutput
     self.isBiasTerm = isBiasTerm
     self.weightFiller = weightFiller

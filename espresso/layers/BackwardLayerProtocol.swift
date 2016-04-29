@@ -8,27 +8,29 @@
 
 import Foundation
 
+typealias BackwardLayerMethodType = ([Tensor]?)->()
 /** @brief Protocol for Backward Layers
  */
 protocol BackwardLayerProtocol : LayerProtocol {
-  var gradient: [Tensor] { get set }
+  var gradient: Tensor { get set }
+  var backwardMethod: BackwardLayerMethodType? { get set }
 
-  mutating func backward(topOpt: [Tensor]?)
-  mutating func backwardCPU(topOpt: [Tensor]?)
-  mutating func backwardGPU(topOpt: [Tensor]?)
+  /**
+   This method does not need to be implemented in the code.
+   */
+  mutating func backward(top: [Tensor]?)
+  mutating func backwardCPU(top: [Tensor]?)
+  mutating func backwardGPU(top: [Tensor]?)
 }
 
 extension BackwardLayerProtocol {
-  mutating func backward(topOpt: [Tensor]?) {
-    switch engine {
-    case .CPU:
-      backwardCPU(topOpt)
-    case .GPU:
-      backwardGPU(topOpt)
-    }
+  mutating func backward(top: [Tensor]?) {
+    self.backwardMethod!(top)
   }
-
-  mutating func backwardGPU(topOpt: [Tensor]?) {
-    backwardCPU(topOpt)
+  mutating func backwardCPU(top: [Tensor]?) {
+    // Do nothing
+  }
+  mutating func backwardGPU(top: [Tensor]?) {
+    // Do nothing
   }
 }

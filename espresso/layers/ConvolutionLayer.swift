@@ -10,81 +10,72 @@ import Foundation
 
 /** @brief Convolution layer.
  */
-public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProtocol {
-  public var name : String
-  public var engine: NetworkProperties.NetworkEngine = .CPU
-  public var output : [Tensor] = []
-  public var gradient : [Tensor] = []
+public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
+  public var name : String {
+    return parameters.name
+  }
+
+  public var dependencies: [String] {
+    return self.parameters.dependencies
+  }
+
+  public var output: Tensor = Tensor()
+  public var gradient: Tensor = Tensor()
   public var weights: Tensor = Tensor()
   public var bias: Tensor = Tensor()
   var parameters: ConvolutionParameters
+  var forwardMethod: ForwardLayerMethodType? = nil
+  var backwardMethod: BackwardLayerMethodType? = nil
 
-  public init(name : String = "conv", parameters: ConvolutionParameters) {
-    self.name = name
+  public init(parameters: ConvolutionParameters) {
     self.parameters = parameters
   }
 
-  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
-    guard bottomNumOutput != nil && bottomNumOutput > 0 else {
-      // TODO: throw exception
-      return
+  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                         bottomDimensions: [[Int]]? = nil) {
+    switch engine {
+    case .CPU:
+      self.forwardMethod = forwardCPU
+    case .GPU:
+      self.forwardMethod = forwardGPU
     }
 
-    self.weights.reshape([self.parameters.numOutput, bottomNumOutput!, self.parameters.kernelSize, self.parameters.kernelSize]);
-    self.engine = networkProperties.engine
-    if (self.parameters.isBiasTerm) {
-      self.bias.reshape([self.parameters.numOutput])
+    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
+  }
+
+  func outputDimensions() -> [[Int]] {
+    return [output.dimensions]
+  }
+
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+    let oneBottomDimensionsSample = bottomDimensions[0]
+    // subject to change, currently just 4 dimensions
+    let batchSize = oneBottomDimensionsSample[0]
+    let bottomChannels = oneBottomDimensionsSample[1]
+    let bottomHeight = oneBottomDimensionsSample[2]
+    let bottomWidth = oneBottomDimensionsSample[3]
+
+    let channels = self.parameters.numOutput
+    let height = (bottomHeight + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
+    let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
+
+    self.weights.reshape([channels, bottomChannels, self.parameters.kernelSize, self.parameters.kernelSize])
+    if self.parameters.isBiasTerm {
+      self.bias.reshape([channels])
     }
-
-    // Set batch size
-    for _ in 0 ..< networkProperties.batchSize {
-      self.output.append(Tensor())
-      self.gradient.append(Tensor())
-    }
+    self.output.reshape([batchSize, channels, height, width])
+//    self.gradient.reshape([batchSize, channels, height, width])
   }
 
-  func numOutput() -> Int {
-    return parameters.numOutput
-  }
+  func forwardCPU(bottom: [Tensor]?) {
+    // Preprocess bottom to fit this layer
+    if let bottom = bottom where bottom.count > 0 {
+      let bottom = bottom[0] // in conv layer, bottom is really just a single Tensor
 
-  public func backward(top: [Tensor]?) {
-
-  }
-
-  public func initWeights() {
-    // weightFiller, biasFiller --> self.weights
-  }
-
-  public func updateWeights(weightGrad: Tensor) {
-
-  }
-
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    if let bottomDimensionsOpt = bottomDimensionsOpt {
-
-      // subject to change, currently just 3 dimensions
-      let bottomHeight = bottomDimensionsOpt[1]
-      let bottomWidth = bottomDimensionsOpt[2]
-
-      let channels = self.parameters.numOutput
-      let height = (bottomHeight + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
-      let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
-
-      for i in self.output.indices {
-        self.output[i].reshape([channels, height, width])
-        self.gradient[i].reshape([channels, height, width])
-      }
-    }
-  }
-
-  func forwardCPU(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil && (bottomOpt!.count > 0){
-      let bottom = bottomOpt!
-      let batchSize = bottom.count
-
-      let bottomChannels = bottom[0].dimensions[0]
-      let bottomHeight = bottom[0].dimensions[1]
-      let bottomWidth = bottom[0].dimensions[2]
+      let batchSize = bottom.dimensions[0]
+      let bottomChannels = bottom.dimensions[1]
+      let bottomHeight = bottom.dimensions[2]
+      let bottomWidth = bottom.dimensions[3]
 
       let padSize = parameters.padSize
       let stride = parameters.stride
@@ -96,9 +87,7 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
       let boundKernelPositionY = (paddedHeight - kernelSize + stride) / stride * stride
       let boundKernelPositionX = (paddedWidth - kernelSize + stride) / stride * stride
 
-      for i in 0 ..< batchSize {
-        output[i].reset(0)
-      }
+      output.reset(0)
 
       for currentBatch in 0 ..< batchSize {
         for currentKernel in 0 ..< numOutput {
@@ -111,13 +100,13 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
                     let row = kernelPositionY + y
                     let col = kernelPositionX + x
                     if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
-                      conved += bottom[currentBatch][currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
+                      conved += bottom[currentBatch, currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
                     }
                   }
                 }
-                output[currentBatch][currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
+                output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
                 if currentChannel == 0 && parameters.isBiasTerm {
-                  output[currentBatch][currentKernel, kernelPositionY / stride, kernelPositionX / stride] += bias[currentKernel]
+                  output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += bias[currentKernel]
                 }
               }
             }
@@ -130,18 +119,11 @@ public class ConvolutionLayer: ForwardBackwardLayerProtocol, TrainableLayerProto
   func forwardGPU(bottom: [Tensor]?) {
     forwardCPU(bottom)
   }
-
-  func backwardCPU(top: [Tensor]?) {
-
-  }
-
-  func backwardGPU(top: [Tensor]?) {
-    backwardCPU(top)
-  }
-
 }
 
 public struct ConvolutionParameters: LayerParameterProtocol {
+  public let name : String
+  public let dependencies: [String]
   public let numOutput : Int
   public let kernelSize : Int
   public let stride : Int
@@ -151,7 +133,9 @@ public struct ConvolutionParameters: LayerParameterProtocol {
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightFiller : WeightFiller
   public let biasFiller : WeightFiller
-  public init(numOutput: Int,
+  public init(name: String,
+              dependencies: [String],
+              numOutput: Int,
               kernelSize: Int,
               stride: Int = 1,
               padSize: Int = 0,
@@ -160,6 +144,8 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               weightLRMultiplier : Tensor.DataType = 1,
               weightFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1),
               biasFiller: WeightFiller = gaussianWeightFiller(mean: 0, std: 1)) {
+    self.name = name
+    self.dependencies = dependencies
     self.numOutput = numOutput
     self.kernelSize = kernelSize
     self.stride = stride

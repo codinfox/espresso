@@ -11,67 +11,68 @@ import Metal
 
 /** @brief ReLU layer.
  */
-public class ReluLayer: ForwardBackwardLayerProtocol {
-  public var name : String
-  var parameters : ReLUParameters
-  public var output: [Tensor] = []
-  public var gradient: [Tensor] = []
-  public var engine: NetworkProperties.NetworkEngine = .CPU
-  private var myNumOutput : Int = 0
+public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
+  public var name : String {
+    return parameters.name
+  }
 
-  public init(name: String = "relu", parameters: ReLUParameters) {
-    self.name = name
+  public var dependencies: [String] {
+    return self.parameters.dependencies
+  }
+
+  public var output: Tensor = Tensor()
+  public var gradient: Tensor = Tensor()
+  var parameters : ReLUParameters
+  var forwardMethod: ForwardLayerMethodType? = nil
+  var backwardMethod: BackwardLayerMethodType? = nil
+
+  public init(parameters: ReLUParameters) {
     self.parameters = parameters
   }
 
-  func layerSetUp(networkProperties: NetworkProperties, bottomNumOutput: Int? = nil) {
-    self.engine = networkProperties.engine
-    self.myNumOutput = bottomNumOutput!
-    // Set batch size
-    for _ in 0 ..< networkProperties.batchSize {
-      self.output.append(Tensor())
-      self.gradient.append(Tensor())
+  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                         bottomDimensions: [[Int]]? = nil) {
+    switch engine {
+    case .CPU:
+      self.forwardMethod = forwardCPU
+    case .GPU:
+      self.forwardMethod = forwardGPU
     }
+
+    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
   }
 
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    if let bottomDimensionsOpt = bottomDimensionsOpt {
-      for i in self.output.indices {
-        self.output[i].reshape(bottomDimensionsOpt)
-        self.gradient[i].reshape(bottomDimensionsOpt)
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+    let oneBottomDimensionsSample = bottomDimensions[0]
+
+    self.output.reshape(oneBottomDimensionsSample)
+//    self.gradient.reshape(oneBottomDimensionsSample)
+  }
+
+  func forwardCPU(bottom: [Tensor]?) {
+    if let bottom = bottom where bottom.count > 0 {
+      let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
+
+      for index in bottom.storage.indices {
+        output.storage[index] = max(0, bottom.storage[index]) + self.parameters.negativeSlope * min(0, bottom.storage[index])
       }
     }
   }
 
-  func numOutput() -> Int {
-    // When?
-    return myNumOutput
+  func forwardGPU(bottom: [Tensor]?) {
+    forwardCPU(bottom)
   }
-
-  func forwardCPU(bottomOpt: [Tensor]?) {
-    if bottomOpt != nil && (bottomOpt!.count > 0){
-      let bottom = bottomOpt!
-      let batchSize = bottom.count
-
-      for currentBatch in 0 ..< batchSize {
-        for i in bottom[currentBatch].storage.indices {
-          output[currentBatch].storage[i] = max(0, bottom[currentBatch].storage[i]) + parameters.negativeSlope * min(0, bottom[currentBatch].storage[i])
-        }
-      }
-    }
-  }
-
-  func forwardGPU(bottomOpt: [Tensor]?) {}
-
-  func backwardCPU(topOpt: [Tensor]?) {}
-  func backwardGPU(topOpt: [Tensor]?) {}
-
-
 }
 
 public struct ReLUParameters : LayerParameterProtocol {
+  public let name : String
+  public let dependencies: [String]
   public var negativeSlope : Tensor.DataType
-  public init(negativeSlope: Tensor.DataType = 0) {
+  public init(name: String,
+              dependencies: [String],
+              negativeSlope: Tensor.DataType = 0) {
     self.negativeSlope = negativeSlope
+    self.name = name
+    self.dependencies = dependencies
   }
 }
