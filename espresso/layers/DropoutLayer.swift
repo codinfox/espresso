@@ -10,21 +10,22 @@ import Foundation
 
 /** @brief Dropout layer.
  */
-public class DropoutLayer: ForwardBackwardLayerProtocol {
+public class DropoutLayer: ForwardLayerProtocol, BackwardLayerProtocol, TrainableLayerProtocol {
   public var name : String
-  public var output: [Tensor]
-  public var gradient: [Tensor]
+  public var dependencies : [String]
+  public var output: Tensor = Tensor()
+  public var gradient: Tensor = Tensor()
   public var weight: Tensor
   public var bias: Tensor
   public var engine: NetworkProperties.NetworkEngine
 
   var parameters : DropoutParameters
 
-  func forwardCPU(bottomOpt: [Tensor]?) {}
-  func forwardGPU(bottomOpt: [Tensor]?) {}
+  func forwardCPU(bottomOpt: [Tensor]) {}
+  func forwardGPU(bottomOpt: [Tensor]) {}
 
-  func backwardCPU(topOpt: [Tensor]?) {}
-  func backwardGPU(topOpt: [Tensor]?) {}
+  func backwardCPU(topOpt: [Tensor]) {}
+  func backwardGPU(topOpt: [Tensor]) {}
 
   func initWeights() {
   }
@@ -37,14 +38,17 @@ public class DropoutLayer: ForwardBackwardLayerProtocol {
   func updateBias(biasGrad: Tensor) {
   }
 
-  public func layerSetUp(networkProperties: NetworkProperties) {
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+
   }
 
-  public init(name: String = "dropout", parameters: DropoutParameters) {
-    self.name = name
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                                bottomDimensions: [[Int]]?) {
+  }
+
+  public init(parameters: DropoutParameters) {
+    self.name = parameters.name
     self.parameters = parameters
-    self.output = []
-    self.gradient = [] // Not initialized, needs to be resized
     self.weight = Tensor(dimensions: [])
     self.bias = Tensor(dimensions: [])
     self.engine = .CPU
@@ -52,8 +56,12 @@ public class DropoutLayer: ForwardBackwardLayerProtocol {
 }
 
 public struct DropoutParameters : LayerParameterProtocol {
+  public var name: String
   public let dropoutRatio : Float
-  public init(dropoutRatio: Float = 0.5) {
+  public var dependencies: [String]
+  public init(name: String = "Dropout Layer", dependencies: [String], dropoutRatio: Float = 0.5) {
+    self.name = name
     self.dropoutRatio = dropoutRatio
+    self.dependencies = dependencies
   }
 }

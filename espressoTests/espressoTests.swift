@@ -68,10 +68,10 @@ class ImageDataLayerTest0: XCTestCase {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
     let dim = [1, 28, 28]
-    let params = ImageDataParameters(imgNames: ["small.csv"], dimensions: dim, readImage: readImage)
-    let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
-    imgDataLayer.reshape(dim)
-    imgDataLayer.forwardCPU(nil)
+    let params = ImageDataParameters(name: "Image Layer Test", imgNames: ["small.csv"], dimensions: dim, dependencies: [], readImage: readImage)
+    let imgDataLayer = ImageDataLayer(parameters:params)
+    imgDataLayer.reshapeByBottomDimensions([dim])
+    imgDataLayer.forwardCPU([])
   }
 
 }
@@ -85,19 +85,19 @@ class ImageDataLayerTest1: XCTestCase {
   func testExample() {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
-    // dimension: channel * height * width
-    let dimension = [1, 6, 4]
-    let params = ImageDataParameters(imgNames: ["mnist_train.csv"], dimensions: dimension, readImage: readImage)
-    let imgDataLayer = ImageDataLayer(name:"Image Data Layer Test", parameters:params)
+    // dimension: batchSize * channel * height * width
+    let dimension = [1, 1, 6, 4]
+    let params = ImageDataParameters(name: "Image Layer Test", imgNames: ["mnist_train.csv"], dimensions: dimension, dependencies: [], readImage: readImage)
+    let imgDataLayer = ImageDataLayer(parameters:params)
 
-    var bottomOpt = [Tensor(dimensions: dimension)]
-    bottomOpt[0].storage = [1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+    let bottomOpt = Tensor(dimensions: dimension)
+    bottomOpt.storage = [1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]
 
-    imgDataLayer.reshape(dimension)
+    imgDataLayer.reshapeByBottomDimensions([dimension])
     let allZeros = Array(count: 24, repeatedValue: 0)
-    XCTAssert(imgDataLayer.output[0].storage == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output[0].storage.debugDescription)
-    imgDataLayer.forwardCPU(bottomOpt)
-    XCTAssert(imgDataLayer.output[0].storage == bottomOpt[0].storage, "ImageDataLayer: output should be equal to input!" + imgDataLayer.output[0].storage.debugDescription)
+    XCTAssert(imgDataLayer.output.storage == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output.storage.debugDescription)
+    imgDataLayer.forwardCPU([])
+    XCTAssert(imgDataLayer.output.storage == bottomOpt.storage, "ImageDataLayer: output should be equal to input!" + imgDataLayer.output.storage.debugDescription)
   }
 
 }

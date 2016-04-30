@@ -10,25 +10,29 @@ import Foundation
 
 /** @brief The image data input layer.
  */
-public class ImageDataLayer : DataLayerProtocol {
-  public var name: String
-  public var output: [Tensor]
-  public var batchNo:Int
-  public var engine: NetworkProperties.NetworkEngine
-  var parameters: ImageDataParameters
-
-  public init(name:String, parameters:ImageDataParameters) {
-    self.name = name
-    self.parameters = parameters
-    self.batchNo = 0
-    self.parameters = parameters
-    self.output = []
-    self.engine = .CPU
+public class ImageDataLayer : ForwardLayerProtocol {
+  public var name : String {
+    return parameters.name
   }
 
-  func forwardCPU(bottom: [Tensor]?) {
+  public var dependencies: [String] {
+    return self.parameters.dependencies
+  }
+
+  public var output: Tensor = Tensor()
+  public var batchNo:Int
+  var parameters: ImageDataParameters
+
+  public init(parameters:ImageDataParameters) {
+    self.parameters = parameters
+    self.batchNo = 0
+  }
+
+  var forwardMethod: ForwardLayerMethodType? = nil
+
+  func forwardCPU(bottom: [Tensor]) {
     let imgSize = parameters.dimensions[1] * parameters.dimensions[2]
-    let batchSize = 1
+    let batchSize = parameters.dimensions[0]
     let start = batchNo * batchSize
     if start > parameters.imgNames.count {
       print("error: not enough images")
@@ -37,41 +41,47 @@ public class ImageDataLayer : DataLayerProtocol {
       let data = parameters.readImage(parameters.imgNames[start + i])
       let trainData:[Float] = data.0
       // let trainLabel = data.1 //(TODO) Later
-      output[i].storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
+      output.storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
     }
     batchNo += 1
   }
   
-  func forwardGPU(bottom: [Tensor]?) {
+  func forwardGPU(bottom: [Tensor]) {
     forwardCPU(bottom)
   }
-  
-  func reshape(bottomDimensionsOpt: [Int]?) {
-    if bottomDimensionsOpt != nil {
-      let dimensions = bottomDimensionsOpt!
-      let batchSize = 1
-      for i in 0..<batchSize {
-        if self.output.count <= i {
-          self.output.append(Tensor(dimensions: dimensions))
-        } else {
-          self.output[i].reshape(dimensions)
-        }
-      }
-    }
+
+  func outputDimensions() -> [[Int]] {
+    return [output.dimensions]
   }
+  
+  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+    let dimensions = parameters.dimensions
+    self.output.reshape(dimensions)
+   }
 
-  public func layerSetUp(networkProperties: NetworkProperties) {
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine, bottomDimensions: [[Int]]) {
+    switch engine {
+    case .CPU:
+      self.forwardMethod = forwardCPU
+    case .GPU:
+      self.forwardMethod = forwardGPU
+    }
 
+    self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 }
 
 public struct ImageDataParameters: LayerParameterProtocol {
+  public var name: String
   public var imgNames: [String]
-  public var dimensions:[Int]
+  public var dimensions:[Int] // batchSize, channel, height, width
+  public var dependencies: [String]
   public var readImage: String->([Float], [Float])
-  public init(imgNames: [String], dimensions: [Int], readImage: String->([Float], [Float])) {
+  public init(name: String, imgNames: [String], dimensions: [Int], dependencies: [String], readImage: String->([Float], [Float])) {
+    self.name = name
     self.imgNames = imgNames
     self.dimensions = dimensions
     self.readImage = readImage
+    self.dependencies = dependencies
   }
 }

@@ -1,15 +1,16 @@
 //
-//  ConvolutionLayerTests.swift
+//  ReluLayerTests.swift
 //  espresso
 //
-//  Created by Zhihao Li on 4/17/16.
+//  Created by Jerry Zhang on 4/30/16.
 //  Copyright © 2016 CMU. All rights reserved.
 //
 
 import XCTest
 @testable import espresso
 
-class ConvolutionLayerFeedforwardTests: XCTestCase {
+
+class ReluLayerTests: XCTestCase {
 
   var layer : ConvolutionLayer? = nil
   let params = ConvolutionParameters(name: "Conv Layer Test", dependencies: ["Image Data Layer"], numOutput: 2,
