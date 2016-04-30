@@ -30,7 +30,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]? = nil) {
+                         bottomDimensions: [[Int]]) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -38,7 +38,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       self.forwardMethod = forwardGPU
     }
 
-    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
+    self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
   func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {

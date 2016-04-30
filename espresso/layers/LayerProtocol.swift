@@ -22,7 +22,7 @@ protocol LayerProtocol {
    This method is transparent to user and should be declared internal.
    */
   mutating func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                                  bottomDimensions: [[Int]]?)
+                                  bottomDimensions: [[Int]])
 }
 
 protocol LayerParameterProtocol {

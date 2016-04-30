@@ -32,7 +32,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]? = nil) {
+                         bottomDimensions: [[Int]]) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -40,7 +40,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       self.forwardMethod = forwardGPU
     }
 
-    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
+    self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
   func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {

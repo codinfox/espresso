@@ -25,7 +25,7 @@ public class Network {
 
   public func add(layer: AnyObject) {
     var layer = layer as! LayerProtocol // make layer mutable
-    let bottomDimensions : [[Int]]? = (self.layers.last as! ForwardLayerProtocol).outputDimensions()
+    var bottomDimensions : [[Int]] = []
     let currentLayerIndex = layers.count
     let currentLayerName = layer.name
     let currentLayerDependencies = layer.dependencies
@@ -33,7 +33,9 @@ public class Network {
     layerNameIndexMapping[currentLayerName] = currentLayerIndex
     layerDependencyMapping[currentLayerIndex] = []
     for depName in currentLayerDependencies {
-      layerDependencyMapping[currentLayerIndex]?.append(layerNameIndexMapping[depName]!)
+      let depIndex = layerNameIndexMapping[depName]!
+      layerDependencyMapping[currentLayerIndex]?.append(depIndex)
+      bottomDimensions.appendContentsOf(((layers[depIndex] as! ForwardLayerProtocol).outputDimensions()))
     }
 
     self.layers.append(layer)

@@ -32,7 +32,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]? = nil) {
+                         bottomDimensions: [[Int]]) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -40,7 +40,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       self.forwardMethod = forwardGPU
     }
 
-    self.reshapeByBottomDimensions(bottomDimensions!) // may exception (should not)
+    self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
   func outputDimensions() -> [[Int]] {
