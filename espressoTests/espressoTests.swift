@@ -67,7 +67,7 @@ class ImageDataLayerTest0: XCTestCase {
   func testExample() {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
-    let dim = [1, 28, 28]
+    let dim = [1, 1, 28, 28]
     let params = ImageDataParameters(name: "Image Layer Test", imgNames: ["small.csv"], dimensions: dim, dependencies: [], readImage: readImage)
     let imgDataLayer = ImageDataLayer(parameters:params)
     imgDataLayer.reshapeByBottomDimensions([dim])
@@ -79,7 +79,12 @@ class ImageDataLayerTest0: XCTestCase {
 class ImageDataLayerTest1: XCTestCase {
 
   func readImage(name: String) -> ([Float], [Float]) {
-    return ([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4],[1])
+    return ([1,2,3,4,
+             1,2,3,4,
+             1,2,3,4,
+             1,2,3,4,
+             1,2,3,4,
+             1,2,3,4],[1])
   }
 
   func testExample() {
@@ -91,13 +96,18 @@ class ImageDataLayerTest1: XCTestCase {
     let imgDataLayer = ImageDataLayer(parameters:params)
 
     let bottomOpt = Tensor(dimensions: dimension)
-    bottomOpt.storage = [1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+    bottomOpt.storage = [1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4]
 
     imgDataLayer.reshapeByBottomDimensions([dimension])
-    let allZeros = Array(count: 24, repeatedValue: 0)
+    let allZeros = Array(count: bottomOpt.count(), repeatedValue: 0)
     XCTAssert(imgDataLayer.output.storage == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output.storage.debugDescription)
     imgDataLayer.forwardCPU([])
-    XCTAssert(imgDataLayer.output.storage == bottomOpt.storage, "ImageDataLayer: output should be equal to input!" + imgDataLayer.output.storage.debugDescription)
+    XCTAssert(imgDataLayer.output.storage == bottomOpt.storage, "ImageDataLayer: output should be equal to input!" + bottomOpt.storage.debugDescription)
   }
 
 }

@@ -64,7 +64,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       self.bias.reshape([channels])
     }
     self.output.reshape([batchSize, channels, height, width])
-//    self.gradient.reshape([batchSize, channels, height, width])
+    self.gradient.reshape([batchSize, channels, height, width])
   }
 
   func forwardCPU(bottom: [Tensor]) {

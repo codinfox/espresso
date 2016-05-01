@@ -31,7 +31,7 @@ public class ImageDataLayer : ForwardLayerProtocol {
   var forwardMethod: ForwardLayerMethodType? = nil
 
   func forwardCPU(bottom: [Tensor]) {
-    let imgSize = parameters.dimensions[1] * parameters.dimensions[2]
+    let imgSize = parameters.dimensions[1] * parameters.dimensions[2] * parameters.dimensions[3]
     let batchSize = parameters.dimensions[0]
     let start = batchNo * batchSize
     if start > parameters.imgNames.count {

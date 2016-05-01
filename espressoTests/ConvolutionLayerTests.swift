@@ -12,13 +12,16 @@ import XCTest
 class ConvolutionLayerFeedforwardTests: XCTestCase {
 
   var layer : ConvolutionLayer? = nil
-  let params = ConvolutionParameters(name: "Conv Layer Test", dependencies: ["Image Data Layer"], numOutput: 2,
+  let params = ConvolutionParameters(name: "Conv Layer Test",
+                                     dependencies: ["Image Data Layer"],
+                                     numOutput: 2,
                                      kernelSize: 2,
                                      stride: 2,
                                      padSize: 2,
                                      isBiasTerm: true)
   let network = NetworkProperties(batchSize: 5, engine: .CPU)
-  let bottomDimensions = [[1,2,3,4]]
+  let bottomDimensions = [[5,2,3,4]]
+  // assert network.batchSize == bottomDimens[0][0]??
 
   override func setUp() {
     super.setUp()
@@ -33,11 +36,15 @@ class ConvolutionLayerFeedforwardTests: XCTestCase {
   }
 
   func testLayerSetUp() {
+    let channels = params.numOutput
+    let kernelSize = params.kernelSize
+    let bottomChannels = bottomDimensions[0][1]
+    let weightDim = [channels, bottomChannels, kernelSize, kernelSize]
     layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
-    XCTAssertEqual((layer?.weights.dimensions)!, bottomDimensions)
-    XCTAssertEqual((layer?.bias.dimensions)!, [bottomDimensions[0]])
-    XCTAssertEqual(layer?.output.count(), network.batchSize)
-    XCTAssertEqual(layer?.gradient.count(), network.batchSize)
+    XCTAssertEqual((layer?.weights.dimensions)!, weightDim)
+    XCTAssertEqual((layer?.bias.dimensions)!, [channels])
+    XCTAssertEqual(layer?.output.dimensions[0], network.batchSize)
+    XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
   }
 
   func testReshape() {
@@ -51,8 +58,8 @@ class ConvolutionLayerFeedforwardTests: XCTestCase {
     let outWidth = (width + params.padSize * 2 - params.kernelSize + params.stride) / params.stride
     layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
     layer?.reshapeByBottomDimensions(bottomDimensions)
-    XCTAssertEqual((layer?.output.dimensions)!, [params.numOutput, outHeight, outWidth])
-    XCTAssertEqual((layer?.gradient.dimensions)!, [params.numOutput, outHeight, outWidth])
+    XCTAssertEqual((layer?.output.dimensions)!, [batchSize, params.numOutput, outHeight, outWidth])
+    XCTAssertEqual((layer?.gradient.dimensions)!, [batchSize, params.numOutput, outHeight, outWidth])
   }
 
   func testForwardCPU() {

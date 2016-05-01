@@ -33,11 +33,13 @@ public class Tensor {
   public init() {}
 
   public init(dimensions: [Int]) {
+    print("init" + dimensions.description)
     reshape(dimensions)
   }
 
   func index(idxs: [Int]) -> Int {
     var idx = 0
+    print("in index, indexAuxilary: " + indexAuxilary.description)
     for i in indexAuxilary.indices {
       idx += indexAuxilary[i] * idxs[i]
     }
@@ -45,6 +47,10 @@ public class Tensor {
   }
 
   public func count(fromDimension fromDimension: Int = 0, toDimension: Int = -1) -> Int {
+    print("count:" + dimensions.description)
+    if dimensions.count == 0 {
+      return 0
+    }
     var toDimension = toDimension
     if toDimension < 0 {
       toDimension = dimensions.count + toDimension
@@ -53,11 +59,14 @@ public class Tensor {
   }
 
   public func reshape(dimensions: [Int]) {
+    print("reshape" + dimensions.description)
     if self.dimensions == dimensions {
       return
     }
-
+    self.dimensions = dimensions
     let numElements = self.count()
+    print("numElements" + numElements.description)
+    print("self.capacity:" + self.capacity.description)
     if self.capacity < numElements {
       self.storage = Array(count: numElements, repeatedValue: 0)
     }
@@ -68,6 +77,7 @@ public class Tensor {
     for d in dimensions.reverse() {
       indexAuxilary.append(d * indexAuxilary.last!)
     }
+    print(indexAuxilary)
     assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
     indexAuxilary.removeLast()
     indexAuxilary = indexAuxilary.reverse()
@@ -86,6 +96,7 @@ public class Tensor {
     }
 
     set(newValue) {
+      print("setting new value at index" + index(idxs).description)
       self.storage[index(idxs)] = newValue
     }
   }
