@@ -15,10 +15,12 @@ extension Network {
     for (layerName, param) in params {
       let layerIndex = layerNameIndexMapping[layerName as! String]
       let layer = layers[layerIndex!] as! TrainableLayerProtocol
+
       assert(layer.weights.numel == param[0].count)
-      layer.weights.storage = param[0]
+      layer.weights.storage = param[0] as! [Tensor.DataType]
       assert(layer.bias.numel == param[1].count)
-      layer.bias.storage = param[1]
+      layer.bias.storage = param[1] as! [Tensor.DataType]
+      print("hello world")
     }
   }
 }

@@ -22,6 +22,7 @@
 		B5A6FF571CBC802A00085F1B /* espresso.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A6FF561CBC802A00085F1B /* espresso.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B5A6FF5E1CBC802A00085F1B /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6FF531CBC802A00085F1B /* espresso.framework */; };
 		B5A6FF631CBC802A00085F1B /* espressoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A6FF621CBC802A00085F1B /* espressoTests.swift */; };
+		B5FFAE171CD6837600672F70 /* Network+Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5706FAF1CD552BA00E5B56F /* Network+Import.swift */; };
 		C43E83C21CC01E7D004C0175 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C11CC01E7D004C0175 /* Network.swift */; };
 		C43E83C41CC01F6A004C0175 /* ForwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */; };
 		C43E83C61CC02479004C0175 /* ImageDataLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C51CC02479004C0175 /* ImageDataLayer.swift */; };
@@ -366,6 +367,7 @@
 				C4EBC6CA1CC3AF21006E03C7 /* ImageDataLayer.swift in Sources */,
 				C4EBC6CC1CC3AF35006E03C7 /* ForwardLayerProtocol.swift in Sources */,
 				C4EBC6D81CC3B0BE006E03C7 /* Network.swift in Sources */,
+				B5FFAE171CD6837600672F70 /* Network+Import.swift in Sources */,
 				C4EBC6DC1CC3B0CC006E03C7 /* SGDSolver.swift in Sources */,
 				C4EBC6D01CC3AF43006E03C7 /* ConvolutionLayer.swift in Sources */,
 				C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */,
