@@ -55,6 +55,11 @@ class TensorTests: XCTestCase {
     XCTAssertEqual((tensor?.dimensions)!, dim)
     XCTAssertEqual((tensor?.numel)!, 3*4*4)
     XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
+
+    // Reshape to null tensor
+    tensor?.reshape([])
+    XCTAssertEqual((tensor?.dimensions)!, [])
+    XCTAssertEqual((tensor?.numel)!, 0)
   }
 
   func testSubscript() {
