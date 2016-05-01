@@ -77,6 +77,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
           for i in 0 ..< numElementsPerBatch {
             // FIXME: Hack
             tmpResult += self.weights[currentOutput, 0, 0, i] * bottom.storage[currentBatch * numElementsPerBatch + i]
+            print(self.weights[currentOutput, 0, 0, i])
           }
           self.output[currentBatch, currentOutput] = tmpResult
         }

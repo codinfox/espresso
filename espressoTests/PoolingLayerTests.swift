@@ -13,7 +13,7 @@ class PoolingLayerTests: XCTestCase {
   var layer : PoolingLayer? = nil
   let params = PoolingParameters(name: "Pooling Layer Test",
                               dependencies: ["Conv Layer"], /* whatever */
-                              kernelSize: 2,
+                              kernelSize: 3,
                               stride: 2,
                               padSize: 2,
                               method: .MAX)
@@ -35,7 +35,7 @@ class PoolingLayerTests: XCTestCase {
   func testLayerSetUp() {
     layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
     XCTAssertEqual(layer?.output.dimensions[0], network.batchSize)
-    XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
+    //XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
   }
 
   func testReshape() {
@@ -49,7 +49,7 @@ class PoolingLayerTests: XCTestCase {
     layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
     layer?.reshapeByBottomDimensions(bottomDimensions)
     XCTAssertEqual((layer?.output.dimensions)!, [batchSize, bottomNumOutput, outHeight, outWidth])
-    XCTAssertEqual((layer?.gradient.dimensions)!, [batchSize, bottomNumOutput, outHeight, outWidth])
+    //XCTAssertEqual((layer?.gradient.dimensions)!, [batchSize, bottomNumOutput, outHeight, outWidth])
   }
 
   func testForwardCPU() {
@@ -80,16 +80,19 @@ class PoolingLayerTests: XCTestCase {
     layer?.forwardCPU([bottom])
 
     let output = layer?.output
-    XCTAssertEqual(output!.storage, [
-      100,100,100,100,
-      100,128,144,100,
-      100,192,208,100,
-      100,100,100,100,
+    let expected: [Float] = [
+      1,3,4,
+      9,11,12,
+      13,15,16,
 
-      200,200,200,200,
-      200,228,244,200,
-      200,292,308,200,
-      200,200,200,200
-      ])
+      1,3,4,
+      9,11,12,
+      13,15,16,
+
+      1,3,4,
+      9,11,12,
+      13,15,16,
+      ]
+    XCTAssertEqual(output!.storage, expected)
   }
 }
