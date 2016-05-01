@@ -45,12 +45,13 @@ public class Tensor {
   }
 
   public func count(fromDimension fromDimension: Int = 0, toDimension: Int = -1) -> Int {
-    if dimensions.count == 0 {
-      return 0
-    }
     var toDimension = toDimension
     if toDimension < 0 {
       toDimension = dimensions.count + toDimension
+    }
+    guard fromDimension <= toDimension && fromDimension < dimensions.count else {
+      // TODO: may need exception throw
+      return 0
     }
     return self.dimensions[fromDimension...toDimension].reduce(1, combine: {$0 * $1})
   }
