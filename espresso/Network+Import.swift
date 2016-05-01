@@ -11,10 +11,10 @@ import Foundation
 extension Network {
   public func importFromFile(filename: String) {
     let data = NSData(contentsOfFile: filename)
-    let params = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! NSDictionary as Dictionary
+    let params = NSKeyedUnarchiver.unarchiveObjectWithData(data!) as! NSDictionary as Dictionary
     for (layerName, param) in params {
-      let layerIndex = layerNameIndexMapping[layerName]
-      let layer = layers[layerIndex] as! TrainableLayerProtocol
+      let layerIndex = layerNameIndexMapping[layerName as! String]
+      let layer = layers[layerIndex!] as! TrainableLayerProtocol
       assert(layer.weights.numel == param[0].count)
       layer.weights.storage = param[0]
       assert(layer.bias.numel == param[1].count)

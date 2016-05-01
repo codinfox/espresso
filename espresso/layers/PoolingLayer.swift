@@ -54,7 +54,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
 
     self.output.reshape([batchSize, channels, height, width])
-    //    self.gradient.reshape([batchSize, channels, height, width])
+    self.gradient.reshape([batchSize, channels, height, width])
   }
 
   func forwardCPU(bottom: [Tensor]) {
