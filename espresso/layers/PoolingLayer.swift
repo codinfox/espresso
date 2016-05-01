@@ -91,9 +91,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
                     let row = kernelPositionY + y
                     let col = kernelPositionX + x
                     if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
-                      if bottom[currentBatch, currentChannel, row - padSize, col - padSize] > pooled {
-                        pooled = bottom[currentBatch, currentChannel, row - padSize, col - padSize]
-                      }
+                      pooled = max(pooled, bottom[currentBatch, currentChannel, row - padSize, col - padSize])
                     } else {
                       if 0 > pooled {
                         pooled = 0
@@ -103,17 +101,20 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
                 }
               case .AVG:
                 pooled = 0
+                var count = 0
                 for y in 0 ..< kernelSize {
                   for x in 0 ..< kernelSize {
                     let row = kernelPositionY + y
                     let col = kernelPositionX + x
                     if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
-                      pooled = bottom[currentBatch, currentChannel, row - padSize, col - padSize] / (Tensor.DataType(kernelSize * kernelSize))
+                      pooled += bottom[currentBatch, currentChannel, row - padSize, col - padSize] / (Tensor.DataType(kernelSize * kernelSize))
+                      count += 1
                     }
                   }
                 }
-                output[currentBatch, currentChannel, kernelPositionY / stride, kernelPositionX / stride] += pooled
+                pooled /= Float(count)
               }
+              output[currentBatch, currentChannel, kernelPositionY / stride, kernelPositionX / stride] = pooled
             }
           }
         }

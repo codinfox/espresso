@@ -44,7 +44,7 @@ class ConvolutionLayerFeedforwardTests: XCTestCase {
     XCTAssertEqual((layer?.weights.dimensions)!, weightDim)
     XCTAssertEqual((layer?.bias.dimensions)!, [channels])
     XCTAssertEqual(layer?.output.dimensions[0], network.batchSize)
-    XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
+    //XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
   }
 
   func testReshape() {

@@ -72,15 +72,13 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
         for gridIndex in 0 ..< mapSizeToPerformOn {
           var Z : Tensor.DataType = 0
           for currentBin in 0 ..< outDistributionBins {
-            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
             // FIXME: Bad API
-            let currentTerm = exp(bottom.storage[index])
-            output[index] = currentTerm
+            let currentTerm = exp(bottom[mapIndex, currentBin, 0, gridIndex])//exp(bottom.storage[index])
+            output[mapIndex, currentBin, 0, gridIndex] = currentTerm
             Z += currentTerm
           }
           for currentBin in 0 ..< outDistributionBins {
-            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
-            output[index] /= Z
+            output[mapIndex, currentBin, 0, gridIndex] /= Z
           }
         }
       }
