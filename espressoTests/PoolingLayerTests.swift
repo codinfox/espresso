@@ -95,4 +95,44 @@ class PoolingLayerTests: XCTestCase {
       ]
     XCTAssertEqual(output!.storage, expected)
   }
+
+  func testGlobalPooling() {
+    layer = PoolingLayer(parameters: PoolingParameters(
+      name: "Pooling Layer Test",
+      dependencies: ["Conv Layer"], /* whatever */
+      method: .AVG,
+      globalPooling: true
+      ))
+
+    let batchSize = 1
+    let chan = 3
+    let height = 4
+    let width = 4
+    let bottomDimensions = [[batchSize, chan, height, width]]
+    let bottom = Tensor(dimensions: [batchSize, chan, height, width])
+    bottom.storage = [ 1, 2, 3, 4,
+                       5, 6, 7, 8,
+                       9,10,11,12,
+                       13,14,15,16,
+
+                       1, 2, 3, 4,
+                       5, 6, 7, 8,
+                       9,10,11,12,
+                       13,14,15,16,
+
+                       1, 2, 3, 4,
+                       5, 6, 7, 8,
+                       9,10,11,12,
+                       13,14,15,16]
+    let network = NetworkProperties(batchSize: 1, engine: .CPU)
+    layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
+    layer?.reshapeByBottomDimensions(bottomDimensions)
+
+    layer?.forwardCPU([bottom])
+
+    let output = layer?.output
+    let expected: [Float] = [ 8.5, 8.5, 8.5 ]
+    XCTAssertEqual(output!.storage, expected)
+  }
+
 }

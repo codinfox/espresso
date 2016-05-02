@@ -38,6 +38,14 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       self.forwardMethod = forwardGPU
     }
 
+    if self.parameters.globalPooling {
+      let oneBottomDimensionsSample = bottomDimensions[0]
+      let bottomHeight = oneBottomDimensionsSample[2]
+
+      // TODO: should support height != width
+      self.parameters.kernelSize = bottomHeight
+    }
+
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -101,18 +109,15 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
                 }
               case .AVG:
                 pooled = 0
-                var count = 0
                 for y in 0 ..< kernelSize {
                   for x in 0 ..< kernelSize {
                     let row = kernelPositionY + y
                     let col = kernelPositionX + x
                     if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
                       pooled += bottom[currentBatch, currentChannel, row - padSize, col - padSize] / (Tensor.DataType(kernelSize * kernelSize))
-                      count += 1
                     }
                   }
                 }
-                pooled /= Float(count)
               }
               output[currentBatch, currentChannel, kernelPositionY / stride, kernelPositionX / stride] = pooled
             }
@@ -136,7 +141,7 @@ public struct PoolingParameters: LayerParameterProtocol {
 
   public let name : String
   public let dependencies: [String]
-  public let kernelSize : Int
+  public var kernelSize : Int // TODO: bad?
   public let stride : Int
   public let padSize : Int
   public let method : PoolingMethod
