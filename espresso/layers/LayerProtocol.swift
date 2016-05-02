@@ -7,12 +7,16 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief The base layer.
  */
 protocol LayerProtocol {
   var name : String { get }
   var dependencies : [String] { get }
+  var metalDevice: MTLDevice! { get set }
+  var metalCommandQueue: MTLCommandQueue! { get set }
+  var metalDefaultLibrary: MTLLibrary! { get set }
 
   //!!! API subject to change
   /**
@@ -22,7 +26,10 @@ protocol LayerProtocol {
    This method is transparent to user and should be declared internal.
    */
   mutating func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                                  bottomDimensions: [[Int]])
+                           bottomDimensions: [[Int]],
+                           metalDevice: MTLDevice!,
+                           metalDefaultLibrary: MTLLibrary!,
+                           metalCommandQueue: MTLCommandQueue!)
 }
 
 protocol LayerParameterProtocol {

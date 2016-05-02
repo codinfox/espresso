@@ -28,6 +28,16 @@ public class Network {
     self.parameters = parameters
     self.layerDependencyMapping = [:]
     self.layerNameIndexMapping = [:]
+    if parameters.engine == .GPU {
+      // Initialize gpu
+      metalDevice = MTLCreateSystemDefaultDevice()
+
+      // Queue to handle an ordered list of command buffers
+      metalCommandQueue = metalDevice.newCommandQueue()
+
+      // Access to Metal functions that are stored in .metal file
+      metalDefaultLibrary = metalDevice.newDefaultLibrary()
+    }
   }
 
   public func add(layer: AnyObject) {
@@ -46,7 +56,7 @@ public class Network {
     }
 
     self.layers.append(layer)
-    layer.layerSetUp(engine: self.parameters.engine, bottomDimensions: bottomDimensions)
+    layer.layerSetUp(engine: self.parameters.engine, bottomDimensions: bottomDimensions, metalDevice: self.metalDevice, metalDefaultLibrary: self.metalDefaultLibrary, metalCommandQueue: self.metalCommandQueue)
   }
 
   public func forward() {

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Softmax layer.
  This can also be not backwardable
@@ -19,6 +20,10 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var dependencies: [String] {
     return self.parameters.dependencies
   }
+
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
 
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
@@ -33,14 +38,19 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+                         bottomDimensions: [[Int]],
+                         metalDevice: MTLDevice!,
+                         metalDefaultLibrary: MTLLibrary!,
+                         metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -48,7 +58,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     let oneBottomDimensionsSample = bottomDimensions[0]
 
     self.output.reshape(oneBottomDimensionsSample)
-//    self.gradient.reshape(oneBottomDimensionsSample)
+    //    self.gradient.reshape(oneBottomDimensionsSample)
   }
 
   func forwardCPU(bottom: [Tensor]) {
@@ -95,14 +105,29 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if (bottom.count > 0) {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+      // how many bins does an output distribution has
+      let numOutput = bottom.dimensions[self.parameters.axis]
+      // for conv feature maps, this is just height * width
+      let mapSizeToPerformOn = bottom.count(fromDimension: self.parameters.axis + 1)
+      // totally how many distributions should we get
+      let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
+
+      // copy the parameters to metal
+      let paramBuffer = createSoftmaxParameter(MetalSoftmaxParameter(numOutput: numOutput, totalNumberOfDistributions: totalNumberOfDistributions, mapSizeToPerformOn: mapSizeToPerformOn), metalDevice: metalDevice)
+      // perform computation
+      submitComputeJob("softmaxForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 
 public struct SoftmaxParameters : LayerParameterProtocol {
   public let name : String
   public let dependencies: [String]
-    /// Perform Softmax on which axis (usually 1, the channel axis). For example, FC layers, if have 1000 outputs (1000 channels), we perform on these 1000 channels and get 1000 probabilities (distribution)
+  /// Perform Softmax on which axis (usually 1, the channel axis). For example, FC layers, if have 1000 outputs (1000 channels), we perform on these 1000 channels and get 1000 probabilities (distribution)
   public let axis : Int
   public init(name: String,
               dependencies: [String],

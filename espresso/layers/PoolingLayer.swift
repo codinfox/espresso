@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Polling layer.
  */
@@ -19,6 +20,10 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     return self.parameters.dependencies
   }
 
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
+
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
   var parameters : PoolingParameters
@@ -30,14 +35,19 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+                         bottomDimensions: [[Int]],
+                         metalDevice: MTLDevice!,
+                         metalDefaultLibrary: MTLLibrary!,
+                         metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -127,7 +137,34 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if (bottom.count > 0) {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+
+      let padSize = parameters.padSize
+      let kernelSize = parameters.kernelSize
+      let stride = parameters.stride
+
+      let inputChannel = bottom.dimensions[1]
+      let inputHeight = bottom.dimensions[2]
+      let inputWidth = bottom.dimensions[3]
+
+      let outputChannel = inputChannel
+      let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride
+      let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride
+
+      // copy the parameters to metal
+      let paramBuffer = createPoolingParameter(MetalPoolingParameter(padSize: padSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
+      // perform computation
+      var funcName = ""
+      if (parameters.method == .MAX) {
+        funcName = "poolingMaxForward"
+      } else {
+        funcName = "poolingAvgForward"
+      }
+      submitComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 

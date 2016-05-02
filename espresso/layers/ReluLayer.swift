@@ -20,6 +20,10 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     return self.parameters.dependencies
   }
 
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
+
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
   var parameters : ReLUParameters
@@ -30,15 +34,20 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.parameters = parameters
   }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                                bottomDimensions: [[Int]],
+                                metalDevice: MTLDevice!,
+                                metalDefaultLibrary: MTLLibrary!,
+                                metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -60,7 +69,12 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    let commandBuffer = self.metalCommandQueue.commandBuffer()
+    // copy the parameters to metal
+    let paramBuffer = createReluParam(MetalReluParameter(negativeSlope: self.parameters.negativeSlope, inputDim: bottom[0].dimensions), metalDevice: metalDevice)
+    // perform computation
+    submitComputeJob("reluForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom[0], outputData: self.output, commandBuffer: commandBuffer)
+    commandBuffer.waitUntilCompleted()
   }
 }
 

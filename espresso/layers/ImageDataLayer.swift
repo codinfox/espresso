@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief The image data input layer.
  */
@@ -21,6 +22,10 @@ public class ImageDataLayer : ForwardLayerProtocol {
 
   public var output: Tensor = Tensor()
   public var batchNo:Int
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
+
   var parameters: ImageDataParameters
 
   public init(parameters:ImageDataParameters) {
@@ -37,17 +42,31 @@ public class ImageDataLayer : ForwardLayerProtocol {
     if start > parameters.imgNames.count {
       print("error: not enough images")
     }
-    for i in 0..<batchSize {
-      let data = parameters.readImage(parameters.imgNames[start + i])
+    for curBatch in 0..<batchSize {
+      let data = parameters.readImage(parameters.imgNames[start + curBatch])
       let trainData:[Float] = data.0
       // let trainLabel = data.1 //(TODO) Later
-      output.storage.replaceRange(i*imgSize..<(i+1)*imgSize, with: trainData)
+      output.storage.replaceRange(curBatch*imgSize..<(curBatch+1)*imgSize, with: trainData)
     }
     batchNo += 1
   }
   
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    let imgSize = parameters.dimensions[1] * parameters.dimensions[2] * parameters.dimensions[3]
+    let batchSize = parameters.dimensions[0]
+    let start = batchNo * batchSize
+    if start > parameters.imgNames.count {
+      print("error: not enough images")
+    }
+    for curBatch in 0..<batchSize {
+      let data = parameters.readImage(parameters.imgNames[start + curBatch])
+      let trainData:[Float] = data.0
+      // let trainLabel = data.1 //(TODO) Later
+      output.storage.replaceRange(curBatch*imgSize..<(curBatch+1)*imgSize, with: trainData)
+    }
+    // put the image array in metal buffer
+    output.mtlStorage = createFloatArray(output.storage, metalDevice: metalDevice)
+    batchNo += 1
   }
 
   func outputDimensions() -> [[Int]] {
@@ -59,14 +78,20 @@ public class ImageDataLayer : ForwardLayerProtocol {
     self.output.reshape(dimensions)
    }
 
-  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine, bottomDimensions: [[Int]]) {
+  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                                bottomDimensions: [[Int]],
+                                metalDevice: MTLDevice!,
+                                metalDefaultLibrary: MTLLibrary!,
+                                metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 }

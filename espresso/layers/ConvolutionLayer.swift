@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Convolution layer.
  */
@@ -18,6 +19,10 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   public var dependencies: [String] {
     return self.parameters.dependencies
   }
+
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
 
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
@@ -31,15 +36,20 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     self.parameters = parameters
   }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                                bottomDimensions: [[Int]],
+                                metalDevice: MTLDevice!,
+                                metalDefaultLibrary: MTLLibrary!,
+                                metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -117,7 +127,28 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if bottom.count > 0 {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+
+      let padSize = parameters.padSize
+      let kernelSize = parameters.kernelSize
+      let stride = parameters.stride
+
+      let inputChannel = bottom.dimensions[1]
+      let inputHeight = bottom.dimensions[2]
+      let inputWidth = bottom.dimensions[3]
+
+      let outputChannel = parameters.numOutput
+      let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride
+      let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride
+
+      // copy the parameters to metal
+      let paramBuffer = createConvolutionParameter(MetalConvolutionParameter(padSize: padSize, kernelSize: kernelSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
+      // perform computation
+      submitComputeJob("convolutionForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 

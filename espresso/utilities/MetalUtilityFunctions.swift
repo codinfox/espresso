@@ -10,6 +10,7 @@ import Foundation
 import Metal
 
 
+/* Creating buffer utilities */
 func createFloatArray(array: [Float], metalDevice: MTLDevice) -> MTLBuffer {
   let length = array.count * sizeof(Float)
   return metalDevice.newBufferWithBytes(array, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
@@ -21,6 +22,29 @@ func createReluParam(param: MetalReluParameter, metalDevice: MTLDevice) -> MTLBu
   return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
 }
 
+func createConvolutionParameter(param: MetalConvolutionParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalConvolutionParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createFullyConnectedParameter(param: MetalFullyConnectedParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalFullyConnectedParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createSoftmaxParameter(param: MetalSoftmaxParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalSoftmaxParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createPoolingParameter(param: MetalPoolingParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalPoolingParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
 
 func createComputePipeline(funcName: String, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice) -> MTLComputePipelineState! {
   let function = metalDefaultLibrary.newFunctionWithName(funcName)

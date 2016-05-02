@@ -108,7 +108,7 @@ kernel void convolutionForward(const device float *input [[ buffer(0) ]],
   }
 }
 
-kernel void pollingMaxForward(const device float *input [[ buffer(0) ]],
+kernel void poolingMaxForward(const device float *input [[ buffer(0) ]],
                               const device float *output [[ buffer(1) ]],
                               const MetalPollingParameter *poolingParams [[ buffer(2) ]],
                               const id [[ thread_position_in_grid ]]) {
@@ -150,7 +150,7 @@ kernel void pollingMaxForward(const device float *input [[ buffer(0) ]],
   }
 }
 
-kernel void pollingAvgForward(const device float *input [[ buffer(0) ]],
+kernel void poolingAvgForward(const device float *input [[ buffer(0) ]],
                               const device float *output [[ buffer(1) ]],
                               const MetalPollingParameter *poolingParams [[ buffer(2) ]],
                               const id [[ thread_position_in_grid ]]) {

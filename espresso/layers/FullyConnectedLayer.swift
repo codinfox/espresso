@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Fully connected layer.
  */
@@ -18,6 +19,11 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   public var dependencies: [String] {
     return self.parameters.dependencies
   }
+
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
+
 
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
@@ -32,14 +38,19 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+                         bottomDimensions: [[Int]],
+                         metalDevice: MTLDevice!,
+                         metalDefaultLibrary: MTLLibrary!,
+                         metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -86,7 +97,18 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if (bottom.count > 0) {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+
+      let numOutput = parameters.numOutput
+      let numElementsPerBatch = bottom.count(fromDimension: 1)
+      // copy the parameters to metal
+      let paramBuffer = createFullyConnectedParameter(MetalFullyConnectedParameter(numOutput: numOutput, numElementsPerBatch: numElementsPerBatch), metalDevice: self.metalDevice)
+      // perform computation
+      submitComputeJob("fullyConnectedForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 

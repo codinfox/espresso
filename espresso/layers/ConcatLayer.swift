@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var name : String {
@@ -16,6 +17,10 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var dependencies: [String] {
     return self.parameters.dependencies
   }
+
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
 
   public var output: Tensor = Tensor()
   public var gradient: Tensor = Tensor()
@@ -27,15 +32,20 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.parameters = parameters
   }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+                                bottomDimensions: [[Int]],
+                                metalDevice: MTLDevice!,
+                                metalDefaultLibrary: MTLLibrary!,
+                                metalCommandQueue: MTLCommandQueue!) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
