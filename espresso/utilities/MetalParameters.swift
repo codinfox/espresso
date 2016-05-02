@@ -41,15 +41,14 @@ public struct MetalPoolingParameter {
 }
 
 public struct MetalFullyConnectedParameter {
-  var numNeurons: Int
-  var channel: Int
-  var height: Int
-  var width: Int
+  var numOutput: Int
+  var numElementsPerBatch: Int
 }
 
 public struct MetalSoftmaxParameter {
-  var height: Int
-  var width: Int
+  var numOutput: Int
+  var totalNumberOfDistributions: Int
+  var mapSizeToPerformOn: Int
 }
 
 public struct MetalSoftmaxWithLossParameter {

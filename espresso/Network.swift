@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import Metal
+
 
 /** @brief Neural network.
  */
@@ -15,6 +17,11 @@ public class Network {
   var parameters : NetworkProperties
   var layerDependencyMapping : [Int : [Int]]
   var layerNameIndexMapping : [String : Int]
+  // Metal
+  var metalDevice: MTLDevice!
+  var metalDefaultLibrary: MTLLibrary!
+  var metalCommandQueue: MTLCommandQueue!
+
 
   public init(parameters: NetworkProperties) {
     self.layers = []

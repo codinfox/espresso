@@ -112,7 +112,11 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
                     }
                   }
                 }
-                pooled /= Float(count)
+                if (count == 0) {
+                  pooled = 0
+                } else {
+                  pooled /= Float(count)
+                }
               }
               output[currentBatch, currentChannel, kernelPositionY / stride, kernelPositionX / stride] = pooled
             }

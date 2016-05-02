@@ -56,7 +56,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
       // how many bins does an output distribution has
-      let outDistributionBins = bottom.dimensions[self.parameters.axis]
+      let numOutput = bottom.dimensions[self.parameters.axis]
       // for conv feature maps, this is just height * width
       let mapSizeToPerformOn = bottom.count(fromDimension: self.parameters.axis + 1)
       // totally how many distributions should we get
@@ -66,7 +66,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
        *  For the typical 4-dimensional case [batchSize, channel, height, width], the typical axis to perform softmax on is 1, which is the channel dimension:
        *      `totalNumberOfDistributions` == batchSize,
        *      `outDistributionBins` == channels,
-       *      `totalNumberOfDistributions` == height * width
+       *      `mapSizeToPerformOn` == height * width
        */
       for mapIndex in 0 ..< totalNumberOfDistributions {
         for gridIndex in 0 ..< mapSizeToPerformOn {
@@ -74,19 +74,19 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
           var maxPixel : Tensor.DataType = -Tensor.DataType.infinity
 
           // get the max for each "pixel" across all the channels(parameters.axis)
-          for currentBin in 0 ..< outDistributionBins {
-            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+          for currentBin in 0 ..< numOutput {
+            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
             maxPixel = max(maxPixel, bottom.storage[index])
           }
-          for currentBin in 0 ..< outDistributionBins {
-            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+          for currentBin in 0 ..< numOutput {
+            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
             // FIXME: Bad API
             let currentTerm = exp(bottom.storage[index] - maxPixel)
             output.storage[index] = currentTerm
             Z += currentTerm
           }
-          for currentBin in 0 ..< outDistributionBins {
-            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+          for currentBin in 0 ..< numOutput {
+            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
             output.storage[index] /= Z
           }
         }
