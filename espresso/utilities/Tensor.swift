@@ -45,12 +45,13 @@ public class Tensor {
   }
 
   public func count(fromDimension fromDimension: Int = 0, toDimension: Int = -1) -> Int {
-    if dimensions.count == 0 {
-      return 0
-    }
     var toDimension = toDimension
     if toDimension < 0 {
       toDimension = dimensions.count + toDimension
+    }
+    guard fromDimension <= toDimension && fromDimension < dimensions.count else {
+      // TODO: may need exception throw
+      return 0
     }
     return self.dimensions[fromDimension...toDimension].reduce(1, combine: {$0 * $1})
   }
@@ -59,21 +60,26 @@ public class Tensor {
     if self.dimensions == dimensions {
       return
     }
-    let numElements = dimensions.reduce(1, combine: {$0 * $1})
-    if self.capacity < numElements {
-      self.storage = Array(count: numElements, repeatedValue: 0)
+    let numNewElements = dimensions.count == 0 ? 0 : dimensions.reduce(1, combine: {$0 * $1})
+    if self.capacity < numNewElements {
+      self.storage = Array(count: numNewElements, repeatedValue: 0)
     }
     self.dimensions = dimensions
-    self.numel = numElements
+    self.numel = numNewElements
+    assert(self.numel >= 0)
 
-    self.indexAuxilary = [1]
-    for d in dimensions.reverse() {
-      indexAuxilary.append(d * indexAuxilary.last!)
+    if self.numel != 0 {
+      self.indexAuxilary = [1]
+      for d in dimensions.reverse() {
+        indexAuxilary.append(d * indexAuxilary.last!)
+      }
+      assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
+      indexAuxilary.removeLast()
+      indexAuxilary = indexAuxilary.reverse()
+    } else {
+      // FIXME: bad hack?
+      self.indexAuxilary = []
     }
-    self.numel = self.count()
-    assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
-    indexAuxilary.removeLast()
-    indexAuxilary = indexAuxilary.reverse()
   }
 
   public func reset(val: DataType) {
