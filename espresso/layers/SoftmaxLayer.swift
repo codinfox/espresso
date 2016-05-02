@@ -71,14 +71,23 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       for mapIndex in 0 ..< totalNumberOfDistributions {
         for gridIndex in 0 ..< mapSizeToPerformOn {
           var Z : Tensor.DataType = 0
+          var maxPixel : Tensor.DataType = -Tensor.DataType.infinity
+
+          // get the max for each "pixel" across all the channels(parameters.axis)
           for currentBin in 0 ..< outDistributionBins {
+            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+            maxPixel = max(maxPixel, bottom.storage[index])
+          }
+          for currentBin in 0 ..< outDistributionBins {
+            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
             // FIXME: Bad API
-            let currentTerm = exp(bottom[mapIndex, currentBin, 0, gridIndex])//exp(bottom.storage[index])
-            output[mapIndex, currentBin, 0, gridIndex] = currentTerm
+            let currentTerm = exp(bottom.storage[index] - maxPixel)
+            output.storage[index] = currentTerm
             Z += currentTerm
           }
           for currentBin in 0 ..< outDistributionBins {
-            output[mapIndex, currentBin, 0, gridIndex] /= Z
+            let index = mapIndex * outDistributionBins * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+            output.storage[index] /= Z
           }
         }
       }

@@ -75,9 +75,9 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
           var tmpResult : Tensor.DataType = 0
           // FIXME: bad API design
           for i in 0 ..< numElementsPerBatch {
+            let index = currentOutput * numElementsPerBatch + i
             // FIXME: Hack
-            tmpResult += self.weights[currentOutput, 0, 0, i] * bottom.storage[currentBatch * numElementsPerBatch + i]
-            print(self.weights[currentOutput, 0, 0, i])
+            tmpResult += self.weights.storage[index] * bottom.storage[currentBatch * numElementsPerBatch + i]
           }
           self.output[currentBatch, currentOutput] = tmpResult
         }
