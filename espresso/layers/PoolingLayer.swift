@@ -140,17 +140,20 @@ public struct PoolingParameters: LayerParameterProtocol {
   public let stride : Int
   public let padSize : Int
   public let method : PoolingMethod
+  public let globalPooling : Bool
   public init(name: String,
               dependencies: [String],
-              kernelSize: Int,
+              kernelSize: Int = 1,
               stride: Int = 1,
               padSize: Int = 0,
-              method: PoolingMethod = .MAX) {
+              method: PoolingMethod = .MAX,
+              globalPooling : Bool = false) {
     self.name = name
     self.dependencies = dependencies
     self.kernelSize = kernelSize
     self.stride = stride
     self.padSize = padSize
     self.method = method
+    self.globalPooling = globalPooling
   }
 }
