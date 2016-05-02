@@ -17,6 +17,7 @@ class MnistTests: XCTestCase {
   var curImageNo = 0
   var trainingData:[[Tensor.DataType]] = []
   var trainingLabels:[Tensor.DataType] = []
+  let imageNum = 10
 
   func initImages(name: String) {
     let csvText:String?
@@ -47,7 +48,7 @@ class MnistTests: XCTestCase {
     network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
     network?.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
-      imgNames: [""],
+      imgNames: Array(count: imageNum, repeatedValue: ""),
       dimensions: [1,1,28,28],
       dependencies: [],
       readImage: { _ in self.readImage("") }
@@ -112,8 +113,9 @@ class MnistTests: XCTestCase {
     if let network = network {
       initImages(mnistTrainPath)
       network.importFromFile(modelFileName)
-      network.forward()
-      print(network.layers.last.debugDescription)
+      for _ in 0..<imageNum {
+        network.forward()
+      }
     }
   }
 
