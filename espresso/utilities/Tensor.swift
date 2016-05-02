@@ -71,7 +71,6 @@ public class Tensor {
       indexAuxilary.append(d * indexAuxilary.last!)
     }
     self.numel = self.count()
-    print(indexAuxilary)
     assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
     indexAuxilary.removeLast()
     indexAuxilary = indexAuxilary.reverse()

@@ -20,7 +20,6 @@ extension Network {
       layer.weights.storage = param[0] as! [Tensor.DataType]
       assert(layer.bias.numel == param[1].count)
       layer.bias.storage = param[1] as! [Tensor.DataType]
-      print("hello world")
     }
   }
 }
