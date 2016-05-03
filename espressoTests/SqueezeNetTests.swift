@@ -11,6 +11,42 @@ import XCTest
 class SqueezeNetTests: XCTestCase {
 
   var network : Network!
+  let filename = "/Users/Ben/Projects/espresso/models/squeezenet.espressomodel"
+
+  func readUIImageToTensor() -> Tensor {
+    let inputCGImage = UIImage(contentsOfFile: "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg")!.CGImage
+    let width = 227 // CGImageGetWidth(inputCGImage)
+    let height = 227 // CGImageGetHeight(inputCGImage)
+
+    let tensor = Tensor(dimensions: [1,3,height,width]) // FIXME: demo
+
+    let bytesPerPixel = 4
+    let bytesPerRow = bytesPerPixel * width
+    let bitsPerComponent = 8
+
+    let pixels = UnsafeMutablePointer<UInt32>(calloc(height * width, sizeof(UInt32)))
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+    let context = CGBitmapContextCreate(pixels, width, height, bitsPerComponent, bytesPerRow, colorSpace, CGImageAlphaInfo.PremultipliedFirst.rawValue)
+
+    // will automatically resize image to [width, height]
+    CGContextDrawImage(context, CGRectMake(0, 0, CGFloat(width), CGFloat(height)), inputCGImage)
+
+    let dataPointer = UnsafePointer<UInt8>(pixels)
+
+    for j in 0 ..< height {
+      for i in 0 ..< width {
+        let offset = 4*((Int(width) * Int(j)) + Int(i))
+        //        let alphaValue = dataType[offset] as UInt8
+        tensor[0,0,j,i] = Tensor.DataType(dataPointer[offset+3]) - 104 // blue (- mean)
+        tensor[0,1,j,i] = Tensor.DataType(dataPointer[offset+2]) - 117 // green (- mean)
+        tensor[0,2,j,i] = Tensor.DataType(dataPointer[offset+1]) - 123 // red (- mean)
+      }
+    }
+
+    free(pixels)
+    return tensor
+  }
 
   override func setUp() {
     super.setUp()
@@ -21,7 +57,7 @@ class SqueezeNetTests: XCTestCase {
       imgNames: [""],
       dimensions: [1,3,227,227],
       dependencies: [],
-      readImage: { _ in ([],[]) }
+      readImage: { _ in (self.readUIImageToTensor().storage, [0])}
       )))
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
       name: "conv1",
@@ -375,15 +411,10 @@ class SqueezeNetTests: XCTestCase {
   }
 
   func testExample() {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
+    network.importFromFile(filename)
+    network.forward()
+    print((network.layers.last as! ForwardLayerProtocol).output.storage)
+    print("Hello world")
   }
 
-  func testPerformanceExample() {
-    // This is an example of a performance test case.
-    self.measureBlock {
-      // Put the code you want to measure the time of here.
-    }
-  }
-  
 }
