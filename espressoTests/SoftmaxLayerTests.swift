@@ -76,21 +76,22 @@ class SoftmaxLayerTests: XCTestCase {
     layer?.forwardCPU([bottom])
 
     let output = layer?.output
+    let Z:Float = exp(0) + exp(-1) + exp(-1)
     let expected: [Float] = [
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
-      1/3, 1/3, 1/3, exp(1)/(exp(1)+2),
+      1/3, 1/3, 1/3, 1/Z,
 
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
-      1/3, 1/3, 1/3, 1/(exp(1)+2),
+      1/3, 1/3, 1/3, exp(-1)/Z,
 
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, 1/3,
-      1/3, 1/3, 1/3, 1/(exp(1)+2)
+      1/3, 1/3, 1/3, exp(-1)/Z
       ]
     XCTAssertEqual(output!.storage, expected)
   }

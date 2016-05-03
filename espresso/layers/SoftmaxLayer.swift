@@ -25,8 +25,8 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var metalCommandQueue: MTLCommandQueue!
   public var metalDefaultLibrary: MTLLibrary!
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
+  public var output: Tensor!
+  public var gradient: Tensor!
   var parameters : SoftmaxParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -39,9 +39,9 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                          bottomDimensions: [[Int]],
-                         metalDevice: MTLDevice!,
-                         metalDefaultLibrary: MTLLibrary!,
-                         metalCommandQueue: MTLCommandQueue!) {
+                         metalDevice: MTLDevice! = nil,
+                         metalDefaultLibrary: MTLLibrary! = nil,
+                         metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -51,6 +51,8 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.metalDevice = metalDevice
     self.metalDefaultLibrary = metalDefaultLibrary
     self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -118,8 +120,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       // copy the parameters to metal
       let paramBuffer = createSoftmaxParameter(MetalSoftmaxParameter(numOutput: numOutput, totalNumberOfDistributions: totalNumberOfDistributions, mapSizeToPerformOn: mapSizeToPerformOn), metalDevice: metalDevice)
       // perform computation
-      submitComputeJob("softmaxForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
-      commandBuffer.waitUntilCompleted()
+      submitCommonComputeJob("softmaxForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
     }
   }
 }

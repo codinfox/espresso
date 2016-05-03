@@ -24,8 +24,8 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var metalCommandQueue: MTLCommandQueue!
   public var metalDefaultLibrary: MTLLibrary!
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
+  public var output: Tensor!
+  public var gradient: Tensor!
   var parameters : ReLUParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -36,9 +36,9 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
   public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
-                                metalDevice: MTLDevice!,
-                                metalDefaultLibrary: MTLLibrary!,
-                                metalCommandQueue: MTLCommandQueue!) {
+                                metalDevice: MTLDevice! = nil,
+                                metalDefaultLibrary: MTLLibrary! = nil,
+                                metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -48,6 +48,8 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.metalDevice = metalDevice
     self.metalDefaultLibrary = metalDefaultLibrary
     self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -69,12 +71,14 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    let commandBuffer = self.metalCommandQueue.commandBuffer()
-    // copy the parameters to metal
-    let paramBuffer = createReluParam(MetalReluParameter(negativeSlope: self.parameters.negativeSlope, inputDim: bottom[0].dimensions), metalDevice: metalDevice)
-    // perform computation
-    submitComputeJob("reluForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom[0], outputData: self.output, commandBuffer: commandBuffer)
-    commandBuffer.waitUntilCompleted()
+    if bottom.count > 0 {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+      // copy the parameters to metal
+      let paramBuffer = createReluParam(MetalReluParameter(negativeSlope: self.parameters.negativeSlope), metalDevice: metalDevice)
+      // perform computation
+      submitCommonComputeJob("reluForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+    }
   }
 }
 

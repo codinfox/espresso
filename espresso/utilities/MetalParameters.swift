@@ -24,9 +24,6 @@ public struct MetalConvolutionParameter {
 
 public struct MetalReluParameter {
   var negativeSlope: Float
-  init(negativeSlope: Float, inputDim: [Int]) {
-    self.negativeSlope = negativeSlope
-  }
 }
 
 public struct MetalPoolingParameter {

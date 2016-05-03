@@ -22,8 +22,8 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var metalCommandQueue: MTLCommandQueue!
   public var metalDefaultLibrary: MTLLibrary!
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
+  public var output: Tensor!
+  public var gradient: Tensor!
   var parameters : ConcatParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -34,9 +34,9 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
   public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
-                                metalDevice: MTLDevice!,
-                                metalDefaultLibrary: MTLLibrary!,
-                                metalCommandQueue: MTLCommandQueue!) {
+                                metalDevice: MTLDevice! = nil,
+                                metalDefaultLibrary: MTLLibrary! = nil,
+                                metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -46,6 +46,8 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.metalDevice = metalDevice
     self.metalDefaultLibrary = metalDefaultLibrary
     self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -86,7 +88,22 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if bottom.count > 0 {
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+      let mtlBlitCommandEncoder = commandBuffer.blitCommandEncoder()
+      let batchSize = bottom[0].dimensions[0]
+      var cursor = 0
+      for curBatch in 0..<batchSize {
+        for i in 0..<bottom.count {
+          let elementsPerBatch = bottom[i].count(fromDimension: self.parameters.axis)
+          mtlBlitCommandEncoder.copyFromBuffer(bottom[i].mtlStorage, sourceOffset: curBatch * elementsPerBatch, toBuffer: self.output.mtlStorage, destinationOffset: cursor, size: elementsPerBatch)
+          cursor += elementsPerBatch
+        }
+      }
+      mtlBlitCommandEncoder.endEncoding()
+      commandBuffer.commit()
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 

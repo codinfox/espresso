@@ -20,7 +20,7 @@ public class ImageDataLayer : ForwardLayerProtocol {
     return self.parameters.dependencies
   }
 
-  public var output: Tensor = Tensor()
+  public var output: Tensor!
   public var batchNo:Int
   public var metalDevice: MTLDevice!
   public var metalCommandQueue: MTLCommandQueue!
@@ -80,9 +80,9 @@ public class ImageDataLayer : ForwardLayerProtocol {
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
-                                metalDevice: MTLDevice!,
-                                metalDefaultLibrary: MTLLibrary!,
-                                metalCommandQueue: MTLCommandQueue!) {
+                                metalDevice: MTLDevice! = nil,
+                                metalDefaultLibrary: MTLLibrary! = nil,
+                                metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -92,6 +92,7 @@ public class ImageDataLayer : ForwardLayerProtocol {
     self.metalDevice = metalDevice
     self.metalDefaultLibrary = metalDefaultLibrary
     self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 }

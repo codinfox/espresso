@@ -12,7 +12,7 @@ typealias BackwardLayerMethodType = ([Tensor]?)->()
 /** @brief Protocol for Backward Layers
  */
 protocol BackwardLayerProtocol : LayerProtocol {
-  var gradient: Tensor { get set }
+  var gradient: Tensor! { get set }
   var backwardMethod: BackwardLayerMethodType? { get set }
 
   /**

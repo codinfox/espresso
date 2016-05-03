@@ -39,15 +39,14 @@ struct MetalReluParameter {
 }
 
 struct MetalFullyConnectedParameter {
-  int numNeurons;
-  int channel;
-  int height;
-  int width;
+  int numOutput;
+  int numElementsPerBatch;
 }
 
 struct MetalSoftmaxParameter {
-  int height;
-  int width;
+  int numOutput;
+  int totalNumberOfDistributions;
+  int mapSizeToPerformOn;
 }
 
 struct MetalSoftmaxWithLossParameter {
@@ -62,12 +61,12 @@ struct MetalLrnParameter {
 
 }
 
-
 /* Functions */
 kernel void convolutionForward(const device float *input [[ buffer(0) ]],
                                const device float *output [[ buffer(1) ]],
-                               const device float *kernels [[ buffer(2) ]],
-                               const MetalConvolutionParameter *convolvParams [[ buffer(3) ]],
+                               const device float *weights [[ buffer(2) ]],
+                               const device float *bias [[ buffer(3) ]],
+                               const MetalConvolutionParameter *convolvParams [[ buffer(4) ]],
                                const id [[ thread_position_in_grid ]]) {
   int padSize = convolvParams[0].padSize;
   int kernelSize = convolvParams[0].kernelSize;
@@ -101,11 +100,12 @@ kernel void convolutionForward(const device float *input [[ buffer(0) ]],
         if (row >= padSize && row < inputHeight + padSize &&
             col >= padSize && col < inputWidth + padSize) {
           output[id] += input[inputOffset + inputChanNo * inputHeight * inputWidth + (row - padSize) * inputWidth + (col - padSize)]
-          * kernels[inputChanNo * kernelSize * kernelSize + i * kernelSize + j];
+          * weights[inputChanNo * kernelSize * kernelSize + i * kernelSize + j];
         }
       }
     }
   }
+  output[id] += bias[channelNo]
 }
 
 kernel void poolingMaxForward(const device float *input [[ buffer(0) ]],
@@ -200,7 +200,7 @@ kernel void poolingAvgForward(const device float *input [[ buffer(0) ]],
 }
 
 kernel void reluForward(const device float *input [[ buffer(0) ]],
-                        const device flaot *output [[ buffer(1) ]],
+                        const device float *output [[ buffer(1) ]],
                         const device MetalReluParameter *reluParameters [[ buffer(2) ]],
                         uint id [[ thread_position_in_grid ]]) {
   // count = batchSize * input dimension
@@ -210,7 +210,7 @@ kernel void reluForward(const device float *input [[ buffer(0) ]],
 
 
 kernel void fullyConnectedForward(const device float *input [[ buffer(0) ]],
-                                  const device flaot *output [[ buffer(1) ]],
+                                  const device float *output [[ buffer(1) ]],
                                   const device float *weights [[ buffer(2) ]],
                                   const device float *bias [[ buffer(3) ]],
                                   const device MetalFullyConnectedParameter *fcParams [[ buffer(4) ]],
@@ -226,7 +226,7 @@ kernel void fullyConnectedForward(const device float *input [[ buffer(0) ]],
 }
 
 kernel void softmaxForward(const device float *input [[ buffer(0) ]],
-                           const device flaot *output [[ buffer(1) ]],
+                           const device float *output [[ buffer(1) ]],
                            const device MetalSoftmaxParameter *softmaxParam [[ buffer(2) ]],
                            uint id [[ thread_position_in_grid ]]) {
   // count = batchSize * height * width
@@ -253,5 +253,4 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
   for (int curChan = 0; curChan < numOutput; curChan++) {
     output[fixedOffset + curChan * mapSizeToPerformOn + gridIndex] /= Z;
   }
-
 }

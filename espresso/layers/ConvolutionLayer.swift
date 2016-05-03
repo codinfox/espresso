@@ -24,10 +24,10 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   public var metalCommandQueue: MTLCommandQueue!
   public var metalDefaultLibrary: MTLLibrary!
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
-  public var weights: Tensor = Tensor()
-  public var bias: Tensor = Tensor()
+  public var output: Tensor!
+  public var gradient: Tensor!
+  public var weights: Tensor!
+  public var bias: Tensor!
   var parameters: ConvolutionParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -38,9 +38,9 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
   public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
-                                metalDevice: MTLDevice!,
-                                metalDefaultLibrary: MTLLibrary!,
-                                metalCommandQueue: MTLCommandQueue!) {
+                                metalDevice: MTLDevice! = nil,
+                                metalDefaultLibrary: MTLLibrary! = nil,
+                                metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -50,6 +50,10 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     self.metalDevice = metalDevice
     self.metalDefaultLibrary = metalDefaultLibrary
     self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
+    self.weights = Tensor(metalDevice: metalDevice)
+    self.bias = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -70,9 +74,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
 
     self.weights.reshape([channels, bottomChannels, self.parameters.kernelSize, self.parameters.kernelSize])
-    if self.parameters.isBiasTerm {
-      self.bias.reshape([channels])
-    }
+    self.bias.reshape([channels])
     self.output.reshape([batchSize, channels, height, width])
     self.gradient.reshape([batchSize, channels, height, width])
   }
@@ -146,7 +148,14 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       // copy the parameters to metal
       let paramBuffer = createConvolutionParameter(MetalConvolutionParameter(padSize: padSize, kernelSize: kernelSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
       // perform computation
-      submitComputeJob("convolutionForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      let (computeCommandEncoder, computePipelineState) = setupComputEncoder("convolutionForward", commandBuffer: commandBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice)
+      computeCommandEncoder.setBuffer(bottom.mtlStorage, offset: 0, atIndex: 0)
+      computeCommandEncoder.setBuffer(self.output.mtlStorage, offset: 0, atIndex: 1)
+      computeCommandEncoder.setBuffer(self.weights.mtlStorage, offset: 0, atIndex: 2)
+      computeCommandEncoder.setBuffer(self.bias.mtlStorage, offset: 0, atIndex: 3)
+      computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 4)
+      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
+      commandBuffer.commit()
       commandBuffer.waitUntilCompleted()
     }
   }

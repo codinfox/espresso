@@ -24,8 +24,8 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public var metalCommandQueue: MTLCommandQueue!
   public var metalDefaultLibrary: MTLLibrary!
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
+  public var output: Tensor!
+  public var gradient: Tensor!
   var parameters : PoolingParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -36,9 +36,9 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                          bottomDimensions: [[Int]],
-                         metalDevice: MTLDevice!,
-                         metalDefaultLibrary: MTLLibrary!,
-                         metalCommandQueue: MTLCommandQueue!) {
+                         metalDevice: MTLDevice! = nil,
+                         metalDefaultLibrary: MTLLibrary! = nil,
+                         metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
@@ -55,6 +55,8 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       // TODO: should support height != width
       self.parameters.kernelSize = bottomHeight
     }
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -162,8 +164,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       } else {
         funcName = "poolingAvgForward"
       }
-      submitComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
-      commandBuffer.waitUntilCompleted()
+      submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
     }
   }
 }

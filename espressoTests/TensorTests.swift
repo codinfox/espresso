@@ -79,13 +79,12 @@ class TensorTests: XCTestCase {
 
   func testCount() {
     tensor = Tensor()
-    XCTAssertEqual(tensor?.count(), 0)
-    XCTAssertEqual(tensor?.count(fromDimension: 1,toDimension: 2), 0)
+    XCTAssertEqual(tensor?.count(), 1)
+    XCTAssertEqual(tensor?.count(fromDimension: 1,toDimension: 2), 1)
     tensor = Tensor(dimensions: [2,2,3])
     XCTAssertEqual(tensor?.count(), 12)
     XCTAssertEqual(tensor?.count(fromDimension: 1), 6)
     XCTAssertEqual(tensor?.count(toDimension: 1), 4)
     XCTAssertEqual(tensor?.count(fromDimension: 1, toDimension: 1), 2)
-    XCTAssertEqual(tensor?.count(fromDimension: 2, toDimension: 1), 0)
   }
 }

@@ -9,8 +9,8 @@
 import Foundation
 
 protocol TrainableLayerProtocol : LayerProtocol {
-  var weights : Tensor { get set }
-  var bias : Tensor { get set }
+  var weights : Tensor! { get set }
+  var bias : Tensor! { get set }
 
   mutating func initWeights()
   /** Take in the gradient of the weights, and update weights
