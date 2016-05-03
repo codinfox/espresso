@@ -10,6 +10,7 @@ import Foundation
 import Metal
 
 
+/* Creating buffer utilities */
 func createFloatArray(array: [Float], metalDevice: MTLDevice) -> MTLBuffer {
   let length = array.count * sizeof(Float)
   return metalDevice.newBufferWithBytes(array, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
@@ -21,6 +22,29 @@ func createReluParam(param: MetalReluParameter, metalDevice: MTLDevice) -> MTLBu
   return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
 }
 
+func createConvolutionParameter(param: MetalConvolutionParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalConvolutionParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createFullyConnectedParameter(param: MetalFullyConnectedParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalFullyConnectedParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createSoftmaxParameter(param: MetalSoftmaxParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalSoftmaxParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createPoolingParameter(param: MetalPoolingParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalPoolingParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
 
 func createComputePipeline(funcName: String, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice) -> MTLComputePipelineState! {
   let function = metalDefaultLibrary.newFunctionWithName(funcName)
@@ -33,21 +57,31 @@ func createComputePipeline(funcName: String, metalDefaultLibrary: MTLLibrary, me
   return computePipelineState
 }
 
-func submitComputeJob(funcName: String, paramBuffer: MTLBuffer, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice, inputData: Tensor, outputData: Tensor, commandBuffer: MTLCommandBuffer) -> MTLCommandBuffer {
+func setupComputEncoder(funcName: String, commandBuffer: MTLCommandBuffer, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice) -> (MTLComputeCommandEncoder, MTLComputePipelineState){
   /* Setup the kernel function */
   let computeCommandEncoder = commandBuffer.computeCommandEncoder()
   let computePipelineState = createComputePipeline(funcName, metalDefaultLibrary: metalDefaultLibrary, metalDevice: metalDevice)
   computeCommandEncoder.setComputePipelineState(computePipelineState)
+  return (computeCommandEncoder, computePipelineState)
+}
+
+func submitComputeJob(computeCommandEncoder: MTLComputeCommandEncoder, computePipelineState: MTLComputePipelineState, count: Int) {
+  let threadsPerGroup = MTLSize(width: computePipelineState.threadExecutionWidth, height: 1, depth: 1)
+  let numThreads = MTLSize(width: count / computePipelineState.threadExecutionWidth, height: 1, depth: 1)
+  computeCommandEncoder.dispatchThreadgroups(numThreads, threadsPerThreadgroup: threadsPerGroup)
+  computeCommandEncoder.endEncoding()
+}
+
+func submitCommonComputeJob(funcName: String, paramBuffer: MTLBuffer, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice, inputData: Tensor, outputData: Tensor, commandBuffer: MTLCommandBuffer) {
+  /* Setup the kernel function */
+  let (computeCommandEncoder, computePipelineState) = setupComputEncoder(funcName, commandBuffer: commandBuffer, metalDefaultLibrary: metalDefaultLibrary, metalDevice: metalDevice)
 
   /* Copy data to gpu */
   computeCommandEncoder.setBuffer(inputData.mtlStorage, offset: 0, atIndex: 0)
   computeCommandEncoder.setBuffer(outputData.mtlStorage, offset: 0, atIndex: 1)
   computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 2)
-  let threadsPerGroup = MTLSize(width: computePipelineState.threadExecutionWidth, height: 1, depth: 1)
-  let count = inputData.storage.count / sizeof(Float)
-  let numThreads = MTLSize(width: count / computePipelineState.threadExecutionWidth, height: 1, depth: 1)
-  computeCommandEncoder.dispatchThreadgroups(numThreads, threadsPerThreadgroup: threadsPerGroup)
-  computeCommandEncoder.endEncoding()
+
+  submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
   commandBuffer.commit()
-  return commandBuffer
+  commandBuffer.waitUntilCompleted()
 }

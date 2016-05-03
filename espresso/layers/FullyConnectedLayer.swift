@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief Fully connected layer.
  */
@@ -19,10 +20,15 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
     return self.parameters.dependencies
   }
 
-  public var output: Tensor = Tensor()
-  public var gradient: Tensor = Tensor()
-  public var weights: Tensor = Tensor()
-  public var bias: Tensor = Tensor()
+  public var metalDevice: MTLDevice!
+  public var metalCommandQueue: MTLCommandQueue!
+  public var metalDefaultLibrary: MTLLibrary!
+
+
+  public var output: Tensor!
+  public var gradient: Tensor!
+  public var weights: Tensor!
+  public var bias: Tensor!
   var parameters : FullyConnectedParameters
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
@@ -32,14 +38,23 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   }
 
   func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
-                         bottomDimensions: [[Int]]) {
+                         bottomDimensions: [[Int]],
+                         metalDevice: MTLDevice! = nil,
+                         metalDefaultLibrary: MTLLibrary! = nil,
+                         metalCommandQueue: MTLCommandQueue! = nil) {
     switch engine {
     case .CPU:
       self.forwardMethod = forwardCPU
     case .GPU:
       self.forwardMethod = forwardGPU
     }
-
+    self.metalDevice = metalDevice
+    self.metalDefaultLibrary = metalDefaultLibrary
+    self.metalCommandQueue = metalCommandQueue
+    self.output = Tensor(metalDevice: metalDevice)
+    self.gradient = Tensor(metalDevice: metalDevice)
+    self.weights = Tensor(metalDevice: metalDevice)
+    self.bias = Tensor(metalDevice: metalDevice)
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
@@ -86,7 +101,25 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   }
 
   func forwardGPU(bottom: [Tensor]) {
-    forwardCPU(bottom)
+    if (bottom.count > 0) {
+      let bottom = bottom[0]
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
+
+      let numOutput = parameters.numOutput
+      let numElementsPerBatch = bottom.count(fromDimension: 1)
+      // copy the parameters to metal
+      let paramBuffer = createFullyConnectedParameter(MetalFullyConnectedParameter(numOutput: numOutput, numElementsPerBatch: numElementsPerBatch), metalDevice: self.metalDevice)
+      // perform computation
+      let (computeCommandEncoder, computePipelineState) = setupComputEncoder("fullyConnectedForward", commandBuffer: commandBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice)
+      computeCommandEncoder.setBuffer(bottom.mtlStorage, offset: 0, atIndex: 0)
+      computeCommandEncoder.setBuffer(self.output.mtlStorage, offset: 0, atIndex: 1)
+      computeCommandEncoder.setBuffer(self.weights.mtlStorage, offset: 0, atIndex: 2)
+      computeCommandEncoder.setBuffer(self.bias.mtlStorage, offset:0, atIndex: 3)
+      computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 4)
+      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
+      commandBuffer.commit()
+      commandBuffer.waitUntilCompleted()
+    }
   }
 }
 

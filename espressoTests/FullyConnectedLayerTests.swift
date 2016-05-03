@@ -37,7 +37,7 @@ class FullyConnectedLayerTests: XCTestCase {
   func testLayerSetUp() {
     layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
     XCTAssertEqual(layer?.output.dimensions[0], network.batchSize)
-    XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
+    //XCTAssertEqual(layer?.gradient.dimensions[0], network.batchSize)
   }
 
   func testReshape() {
@@ -60,6 +60,9 @@ class FullyConnectedLayerTests: XCTestCase {
     let width = 4
     let bottomDimensions = [[batchSize, chan, height, width]]
     let bottom = Tensor(dimensions: [batchSize, chan, height, width])
+    let network = NetworkProperties(batchSize: 2, engine: .CPU)
+    layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
+
     bottom.storage =
       [ 1, 2, 3, 4, /* batch 0, channel 0 */
         5, 6, 7, 8,
@@ -122,9 +125,6 @@ class FullyConnectedLayerTests: XCTestCase {
       1, -1, 1, -1,
       1, -1, 1, -1]
 
-
-    let network = NetworkProperties(batchSize: 2, engine: .CPU)
-    layer?.layerSetUp(engine: network.engine, bottomDimensions: bottomDimensions)
     layer?.forwardCPU([bottom])
 
     let output = layer?.output

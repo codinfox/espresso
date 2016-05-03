@@ -9,33 +9,6 @@
 import XCTest
 @testable import espresso
 
-class espressoTests: XCTestCase {
-
-  override func setUp() {
-    super.setUp()
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-
-  }
-
-  override func tearDown() {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    super.tearDown()
-  }
-
-  func testExample() {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-  }
-
-  func testPerformanceExample() {
-    // This is an example of a performance test case.
-    self.measureBlock {
-      // Put the code you want to measure the time of here.
-    }
-  }
-
-}
-
 /* TODO: Testing reading images from csv file(MNIST) */
 class ImageDataLayerTest0: XCTestCase {
 
@@ -47,7 +20,6 @@ class ImageDataLayerTest0: XCTestCase {
     var data:String?
     if let dir : NSString = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first {
       let path = dir.stringByAppendingPathComponent(trainFile);
-      print("path:" + path)
       //reading
       do {
         data = try String(contentsOfFile: path, encoding: NSUTF8StringEncoding)
@@ -70,6 +42,7 @@ class ImageDataLayerTest0: XCTestCase {
     let dim = [1, 1, 28, 28]
     let params = ImageDataParameters(name: "Image Layer Test", imgNames: ["small.csv"], dimensions: dim, dependencies: [], readImage: readImage)
     let imgDataLayer = ImageDataLayer(parameters:params)
+    imgDataLayer.layerSetUp(engine: .CPU, bottomDimensions: [dim])
     imgDataLayer.reshapeByBottomDimensions([dim])
     imgDataLayer.forwardCPU([])
   }
@@ -102,7 +75,7 @@ class ImageDataLayerTest1: XCTestCase {
                          1,2,3,4,
                          1,2,3,4,
                          1,2,3,4]
-
+    imgDataLayer.layerSetUp(engine: .CPU, bottomDimensions: [dimension])
     imgDataLayer.reshapeByBottomDimensions([dimension])
     let allZeros = Array(count: bottomOpt.count(), repeatedValue: 0)
     XCTAssert(imgDataLayer.output.storage == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output.storage.debugDescription)

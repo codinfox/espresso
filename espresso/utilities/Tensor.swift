@@ -18,13 +18,11 @@ public class Tensor {
 
   public var storage : [DataType] = []
   public var mtlStorage : MTLBuffer!
+  public var metalDevice: MTLDevice!
 
   public private(set) var dimensions : [Int] = []
   public private(set) var numel : Int = 0
-  public var capacity : Int {
-    // a better way may be storage.capacity, but how to?
-    return self.storage.count
-  }
+  public var capacity : Int = 0
   var indexAuxilary: [Int] = []
 
   /**
@@ -32,8 +30,12 @@ public class Tensor {
    */
   public init() {}
 
+  public init(metalDevice: MTLDevice!) {
+    self.metalDevice = metalDevice
+  }
+
   public init(dimensions: [Int]) {
-    reshape(dimensions)
+    self.reshape(dimensions)
   }
 
   func index(idxs: [Int]) -> Int {
@@ -57,13 +59,37 @@ public class Tensor {
     return self.dimensions[fromDimension...toDimension].reduce(1, combine: {$0 * $1})
   }
 
-  public func reshape(dimensions: [Int]) {
+  public func reshape(dimensions: [Int], engine: NetworkProperties.NetworkEngine = .CPU) {
+    switch engine {
+    case .CPU:
+      reshapeCPU(dimensions)
+    case .GPU:
+      reshapeGPU(dimensions)
+    }
+  }
+
+  public func reshapeGPU(dimensions: [Int]) {
+    if self.dimensions == dimensions {
+      return
+    }
+    let numNewElements = dimensions.count == 0 ? 0 : dimensions.reduce(1, combine: {$0 * $1})
+    if self.capacity < numNewElements {
+      self.mtlStorage = metalDevice.newBufferWithLength(numNewElements, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+      self.capacity = numNewElements
+    }
+    self.dimensions = dimensions
+    self.numel = numNewElements
+    assert(self.numel >= 0)
+  }
+
+  public func reshapeCPU(dimensions: [Int]) {
     if self.dimensions == dimensions {
       return
     }
     let numNewElements = dimensions.count == 0 ? 0 : dimensions.reduce(1, combine: {$0 * $1})
     if self.capacity < numNewElements {
       self.storage = Array(count: numNewElements, repeatedValue: 0)
+      self.capacity = numNewElements
     }
     self.dimensions = dimensions
     self.numel = numNewElements

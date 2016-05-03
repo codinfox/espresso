@@ -13,7 +13,7 @@ typealias ForwardLayerMethodType = ([Tensor])->()
  */
 protocol ForwardLayerProtocol : LayerProtocol {
 
-  var output: Tensor { get set }
+  var output: Tensor! { get set }
   var forwardMethod: ForwardLayerMethodType? { get set }
 
   /** To be called in feedforward pass.
