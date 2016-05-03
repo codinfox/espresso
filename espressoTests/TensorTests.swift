@@ -7,9 +7,11 @@
 //
 
 import XCTest
+import Metal
+
 @testable import espresso
 
-class TensorTests: XCTestCase {
+class TensorTestCPU: XCTestCase {
 
   var tensor : Tensor? = nil
 
@@ -88,3 +90,51 @@ class TensorTests: XCTestCase {
     XCTAssertEqual(tensor?.count(fromDimension: 1, toDimension: 1), 2)
   }
 }
+
+class TensorTestGPU: XCTestCase {
+  var tensor : Tensor?
+
+  override func setUp() {
+    super.setUp()
+    let metalDevice = MTLCreateSystemDefaultDevice()
+    tensor = Tensor(metalDevice: metalDevice)
+  }
+
+  override func tearDown() {
+    tensor = nil
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    super.tearDown()
+  }
+
+  func testReshape() {
+    let dim : [Int] = [3,4,4]
+    tensor = Tensor(metalDevice: MTLCreateSystemDefaultDevice())
+    // Reshape from an empty tensor
+    tensor?.reshape(dim, engine: .GPU)
+
+    XCTAssertEqual((tensor?.dimensions)!, dim)
+    XCTAssertEqual((tensor?.numel)!, 3*4*4)
+    XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
+
+    // Should not do anything
+    tensor?.reshape(dim, engine: .GPU)
+
+    XCTAssertEqual((tensor?.dimensions)!, dim)
+    XCTAssertEqual((tensor?.numel)!, 3*4*4)
+    XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
+
+    // Shape back from [3,7,7]
+    tensor?.reshape(dim, engine: .GPU)
+
+    XCTAssertEqual((tensor?.dimensions)!, dim)
+    XCTAssertEqual((tensor?.numel)!, 3*4*4)
+    XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
+
+    // Reshape to null tensor
+    tensor?.reshape([], engine: .GPU)
+    XCTAssertEqual((tensor?.dimensions)!, [])
+    XCTAssertEqual((tensor?.numel)!, 0)
+  }
+
+}
+
