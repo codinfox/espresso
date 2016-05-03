@@ -30,8 +30,9 @@ public class Tensor {
    */
   public init() {}
 
-  public init(metalDevice: MTLDevice!) {
+  public init(metalDevice: MTLDevice!, dimensions:[Int]=[]) {
     self.metalDevice = metalDevice
+    self.dimensions = dimensions
   }
 
   public init(dimensions: [Int]) {
