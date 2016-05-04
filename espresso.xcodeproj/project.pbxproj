@@ -13,9 +13,7 @@
 		B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775431CBE0B8400A0FA0B /* Solver.swift */; };
 		B52775461CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775451CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift */; };
 		B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775471CC0BE4100A0FA0B /* WeightFiller.swift */; };
-		B52E8E901CC45E9700190FAE /* ConvolutionLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */; };
 		B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E911CC4615B00190FAE /* TensorTests.swift */; };
-		B55794A41CD7C82A00E911B4 /* SqueezeNetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */; };
 		B5706FB01CD552BA00E5B56F /* Network+Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5706FAF1CD552BA00E5B56F /* Network+Import.swift */; };
 		B5706FB21CD558B200E5B56F /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5706FB11CD558B200E5B56F /* NetworkTests.swift */; };
 		B585D55F1CD30FAE008D2776 /* ConcatLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B585D55E1CD30FAE008D2776 /* ConcatLayer.swift */; };
@@ -33,6 +31,11 @@
 		C43E83D01CC0330C004C0175 /* FullyConnectedLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CF1CC0330C004C0175 /* FullyConnectedLayer.swift */; };
 		C43E83D21CC03334004C0175 /* SoftmaxLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D11CC03334004C0175 /* SoftmaxLayer.swift */; };
 		C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D51CC0339D004C0175 /* PoolingLayer.swift */; };
+		C4726C091CDA8FC300D2204E /* ConvolutionLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */; };
+		C4726C0A1CDA8FD400D2204E /* MnistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD664A1CD6BFC50056E652 /* MnistTests.swift */; };
+		C4726C0B1CDA8FD700D2204E /* SqueezeNetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */; };
+		C4726C0C1CDA8FF200D2204E /* ConvolutionLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CB1CC03228004C0175 /* ConvolutionLayer.swift */; };
+		C4726C0D1CDA8FFB00D2204E /* Im2col.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D783F31CD954AD0067692F /* Im2col.swift */; };
 		C4765F3F1CC5A3B000E8C9B0 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */; };
 		C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */; };
 		C4765F421CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */; };
@@ -46,13 +49,12 @@
 		C4BFB4D51CD672A90093D593 /* PoolingLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BFB4D41CD672A90093D593 /* PoolingLayerTests.swift */; };
 		C4CD66471CD67F940056E652 /* FullyConnectedLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD66461CD67F940056E652 /* FullyConnectedLayerTests.swift */; };
 		C4CD66491CD69C320056E652 /* SoftmaxLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD66481CD69C320056E652 /* SoftmaxLayerTests.swift */; };
-		C4CD664B1CD6BFC50056E652 /* MnistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD664A1CD6BFC50056E652 /* MnistTests.swift */; };
+		C4D783F41CD954AD0067692F /* Im2col.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D783F31CD954AD0067692F /* Im2col.swift */; };
 		C4EBC6CA1CC3AF21006E03C7 /* ImageDataLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C51CC02479004C0175 /* ImageDataLayer.swift */; };
 		C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */; };
 		C4EBC6CC1CC3AF35006E03C7 /* ForwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */; };
 		C4EBC6CD1CC3AF38006E03C7 /* BackwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C71CC02537004C0175 /* BackwardLayerProtocol.swift */; };
 		C4EBC6CF1CC3AF3E006E03C7 /* TrainableLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775451CC0BC3D00A0FA0B /* TrainableLayerProtocol.swift */; };
-		C4EBC6D01CC3AF43006E03C7 /* ConvolutionLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CB1CC03228004C0175 /* ConvolutionLayer.swift */; };
 		C4EBC6D11CC3AF47006E03C7 /* ReluLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CD1CC032DD004C0175 /* ReluLayer.swift */; };
 		C4EBC6D21CC3AF4A006E03C7 /* FullyConnectedLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CF1CC0330C004C0175 /* FullyConnectedLayer.swift */; };
 		C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D11CC03334004C0175 /* SoftmaxLayer.swift */; };
@@ -113,6 +115,7 @@
 		C4CD66461CD67F940056E652 /* FullyConnectedLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullyConnectedLayerTests.swift; sourceTree = "<group>"; };
 		C4CD66481CD69C320056E652 /* SoftmaxLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoftmaxLayerTests.swift; sourceTree = "<group>"; };
 		C4CD664A1CD6BFC50056E652 /* MnistTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MnistTests.swift; sourceTree = "<group>"; };
+		C4D783F31CD954AD0067692F /* Im2col.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Im2col.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +173,7 @@
 				C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */,
 				C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */,
 				C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */,
+				C4D783F31CD954AD0067692F /* Im2col.swift */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -350,6 +354,7 @@
 				B52775441CBE0B8400A0FA0B /* Solver.swift in Sources */,
 				C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */,
 				B585D55F1CD30FAE008D2776 /* ConcatLayer.swift in Sources */,
+				C4D783F41CD954AD0067692F /* Im2col.swift in Sources */,
 				B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */,
 				C43E83C21CC01E7D004C0175 /* Network.swift in Sources */,
 				C43E83C81CC02537004C0175 /* BackwardLayerProtocol.swift in Sources */,
@@ -365,7 +370,6 @@
 			files = (
 				C4CD66471CD67F940056E652 /* FullyConnectedLayerTests.swift in Sources */,
 				C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */,
-				C4CD664B1CD6BFC50056E652 /* MnistTests.swift in Sources */,
 				C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */,
 				C4EBC6DB1CC3B0C8006E03C7 /* WeightFiller.swift in Sources */,
 				C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */,
@@ -375,25 +379,27 @@
 				C4CD66491CD69C320056E652 /* SoftmaxLayerTests.swift in Sources */,
 				C4EBC6CF1CC3AF3E006E03C7 /* TrainableLayerProtocol.swift in Sources */,
 				C4EBC6D11CC3AF47006E03C7 /* ReluLayer.swift in Sources */,
-				B55794A41CD7C82A00E911B4 /* SqueezeNetTests.swift in Sources */,
 				B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */,
 				C4765F461CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */,
 				C4EBC6CD1CC3AF38006E03C7 /* BackwardLayerProtocol.swift in Sources */,
+				C4726C0D1CDA8FFB00D2204E /* Im2col.swift in Sources */,
+				C4726C0C1CDA8FF200D2204E /* ConvolutionLayer.swift in Sources */,
 				C4EBC6D21CC3AF4A006E03C7 /* FullyConnectedLayer.swift in Sources */,
 				C4EBC6CA1CC3AF21006E03C7 /* ImageDataLayer.swift in Sources */,
+				C4726C091CDA8FC300D2204E /* ConvolutionLayerTests.swift in Sources */,
 				C4EBC6CC1CC3AF35006E03C7 /* ForwardLayerProtocol.swift in Sources */,
 				C4EBC6D81CC3B0BE006E03C7 /* Network.swift in Sources */,
 				B5FFAE171CD6837600672F70 /* Network+Import.swift in Sources */,
 				C4EBC6DC1CC3B0CC006E03C7 /* SGDSolver.swift in Sources */,
-				C4EBC6D01CC3AF43006E03C7 /* ConvolutionLayer.swift in Sources */,
 				C4EBC6CB1CC3AF31006E03C7 /* LayerProtocol.swift in Sources */,
 				C4EBC6D51CC3AF55006E03C7 /* PoolingLayer.swift in Sources */,
 				C4BFB4D51CD672A90093D593 /* PoolingLayerTests.swift in Sources */,
 				C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */,
 				B585D5601CD30FAE008D2776 /* ConcatLayer.swift in Sources */,
 				B5A6FF631CBC802A00085F1B /* ImageDataLayerTests.swift in Sources */,
+				C4726C0A1CDA8FD400D2204E /* MnistTests.swift in Sources */,
+				C4726C0B1CDA8FD700D2204E /* SqueezeNetTests.swift in Sources */,
 				C4EBC6D91CC3B0C2006E03C7 /* MathFunctions.swift in Sources */,
-				B52E8E901CC45E9700190FAE /* ConvolutionLayerTests.swift in Sources */,
 				C4EBC6DA1CC3B0C5006E03C7 /* Tensor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

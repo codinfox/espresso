@@ -8,6 +8,7 @@
 
 import Foundation
 import Metal
+import Accelerate
 
 /** @brief Convolution layer.
  */
@@ -80,11 +81,9 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   }
 
   func forwardCPU(bottom: [Tensor]) {
-    // Preprocess bottom to fit this layer
     if bottom.count > 0 {
-      let bottom = bottom[0] // in conv layer, bottom is really just a single Tensor
-
-      let batchSize = bottom.dimensions[0]
+      let bottom = bottom[0]
+      //let batchSize = bottom.dimensions[0]
       let bottomChannels = bottom.dimensions[1]
       let bottomHeight = bottom.dimensions[2]
       let bottomWidth = bottom.dimensions[3]
@@ -94,39 +93,74 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       let kernelSize = parameters.kernelSize
       let numOutput = parameters.numOutput
 
-      let paddedHeight = bottomHeight + 2 * padSize
-      let paddedWidth = bottomWidth + 2 * padSize
-      let boundKernelPositionY = (paddedHeight - kernelSize + stride) / stride * stride
-      let boundKernelPositionX = (paddedWidth - kernelSize + stride) / stride * stride
+      let bottomCol = im2colCpu(bottom.storage, inputChannels: bottomChannels, height: bottomHeight, width: bottomWidth, kernelSize: kernelSize, padSize: padSize, stride: stride)
 
-      output.reset(0)
 
-      for currentBatch in 0 ..< batchSize {
-        for currentKernel in 0 ..< numOutput {
-          for currentChannel in 0 ..< bottomChannels {
-            for kernelPositionY in 0.stride(to: boundKernelPositionY, by: stride) {
-              for kernelPositionX in 0.stride(to: boundKernelPositionX, by: stride) {
-                var conved: Tensor.DataType = 0
-                for y in 0 ..< kernelSize {
-                  for x in 0 ..< kernelSize {
-                    let row = kernelPositionY + y
-                    let col = kernelPositionX + x
-                    if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
-                      conved += bottom[currentBatch, currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
-                    }
-                  }
-                }
-                output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
-                if currentChannel == 0 && parameters.isBiasTerm {
-                  output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += bias[currentKernel]
-                }
-              }
-            }
-          }
-        }
-      }
+      let weightCol = self.weights.storage
+
+      var mulRes = [Float](count : numOutput * bottomHeight * bottomWidth, repeatedValue : 0.0)
+
+      vDSP_mmul(weightCol, 1, bottomCol, 1, &mulRes, 1, UInt(numOutput), UInt(bottomHeight * bottomWidth), UInt(bottomChannels * kernelSize * kernelSize))
+
+      let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (bottomHeight * bottomWidth))]})
+
+      var output = [Float](count: mulRes.count, repeatedValue: 0.0)
+      vDSP_vadd(mulRes, 1, biasCol, 1, &output, 1, vDSP_Length(mulRes.count))
+
+      self.output.storage = output
     }
   }
+  
+
+
+//  func forwardCPU(bottom: [Tensor]) {
+//    // Preprocess bottom to fit this layer
+//    if bottom.count > 0 {
+//      let bottom = bottom[0] // in conv layer, bottom is really just a single Tensor
+//
+//      let batchSize = bottom.dimensions[0]
+//      let bottomChannels = bottom.dimensions[1]
+//      let bottomHeight = bottom.dimensions[2]
+//      let bottomWidth = bottom.dimensions[3]
+//
+//      let padSize = parameters.padSize
+//      let stride = parameters.stride
+//      let kernelSize = parameters.kernelSize
+//      let numOutput = parameters.numOutput
+//
+//      let paddedHeight = bottomHeight + 2 * padSize
+//      let paddedWidth = bottomWidth + 2 * padSize
+//      let boundKernelPositionY = (paddedHeight - kernelSize + stride) / stride * stride
+//      let boundKernelPositionX = (paddedWidth - kernelSize + stride) / stride * stride
+//
+//      output.reset(0)
+//
+//      for currentBatch in 0 ..< batchSize {
+//        for currentKernel in 0 ..< numOutput {
+//          for currentChannel in 0 ..< bottomChannels {
+//            for kernelPositionY in 0.stride(to: boundKernelPositionY, by: stride) {
+//              for kernelPositionX in 0.stride(to: boundKernelPositionX, by: stride) {
+//                var conved: Tensor.DataType = 0
+//                for y in 0 ..< kernelSize {
+//                  for x in 0 ..< kernelSize {
+//                    let row = kernelPositionY + y
+//                    let col = kernelPositionX + x
+//                    if row >= padSize && row < paddedHeight - padSize && col >= padSize && col < paddedWidth - padSize {
+//                      conved += bottom[currentBatch, currentChannel, row - padSize, col - padSize] * weights[currentKernel, currentChannel, y, x]
+//                    }
+//                  }
+//                }
+//                output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += conved
+//                if currentChannel == 0 && parameters.isBiasTerm {
+//                  output[currentBatch, currentKernel, kernelPositionY / stride, kernelPositionX / stride] += bias[currentKernel]
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
 
   func forwardGPU(bottom: [Tensor]) {
     if bottom.count > 0 {
