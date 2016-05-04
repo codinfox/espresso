@@ -7,6 +7,8 @@
 //
 
 import XCTest
+import Metal
+
 @testable import espresso
 
 /* TODO: Testing reading images from csv file(MNIST) */
@@ -82,5 +84,59 @@ class ImageDataLayerTest1: XCTestCase {
     imgDataLayer.forwardCPU([])
     XCTAssert(imgDataLayer.output.storage == bottomOpt.storage, "ImageDataLayer: output should be equal to input!" + bottomOpt.storage.debugDescription)
   }
+}
 
+// Test GPU Version
+class ImageDataLayerTest2 {
+  let metalDevice = MTLCreateSystemDefaultDevice()
+  func readImage(name: String) -> ([Float], [Float]) {
+    return ([1,2,3,4,
+      1,2,3,4,
+      1,2,3,4,
+      1,2,3,4,
+      1,2,3,4,
+      1,2,3,4],[1])
+  }
+
+  func testExample() {
+    // This is an example of a functional test case.
+    // Use XCTAssert and related functions to verify your tests produce the correct results.
+    // dimension: batchSize * channel * height * width
+    let dimension = [1, 1, 6, 4]
+    let params = ImageDataParameters(name: "Image Layer Test", imgNames: ["mnist_train.csv"], dimensions: dimension, dependencies: [], readImage: readImage)
+    let imgDataLayer = ImageDataLayer(parameters:params)
+    imgDataLayer.layerSetUp(engine: .GPU, bottomDimensions: [dimension])
+
+    let expected = Tensor(metalDevice: metalDevice, dimensions: dimension)
+    expected.storage = [1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4]
+
+    imgDataLayer.layerSetUp(engine: .GPU, bottomDimensions: [dimension])
+    imgDataLayer.reshapeByBottomDimensions([dimension])
+
+    let output = imgDataLayer.output
+    let length = output.count() * sizeof(Float)
+
+    // get content from metal to swift
+    let mtlContent = NSData(bytesNoCopy: output.mtlStorage.contents(),
+                      length: length, freeWhenDone: false)
+    var initialContentArray = [Float](count: output.count(), repeatedValue: 0)
+    mtlContent.getBytes(&initialContentArray, length:length)
+
+    let allZeros = Array(count: expected.count(), repeatedValue: 0)
+    XCTAssert(initialContentArray == allZeros, "ImageDataLayer: storage should be initialized to allZeros!" + imgDataLayer.output.storage.debugDescription)
+
+    imgDataLayer.forwardCPU([])
+    let finalOutput = NSData(bytesNoCopy: output.mtlStorage.contents(),
+                            length: length, freeWhenDone: false)
+    var finalContentArray = [Float](count: output.count(), repeatedValue: 0)
+    finalOutput.getBytes(&finalContentArray, length:length)
+
+
+    XCTAssert(finalContentArray == expected.storage, "ImageDataLayer: output should be equal to input!" + expected.storage.debugDescription)
+  }
 }
