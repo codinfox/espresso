@@ -87,7 +87,7 @@ class ImageDataLayerTest1: XCTestCase {
 }
 
 // Test GPU Version
-class ImageDataLayerTest2 {
+class ImageDataLayerTest2: XCTestCase {
   let metalDevice = MTLCreateSystemDefaultDevice()
   func readImage(name: String) -> ([Float], [Float]) {
     return ([1,2,3,4,
