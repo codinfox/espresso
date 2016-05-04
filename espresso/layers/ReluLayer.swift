@@ -64,7 +64,7 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
-      for index in bottom.storage.indices {
+      for index in 0 ..< bottom.numel {
         output.storage[index] = max(0, bottom.storage[index]) + self.parameters.negativeSlope * min(0, bottom.storage[index])
       }
     }

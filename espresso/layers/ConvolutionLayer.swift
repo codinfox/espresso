@@ -93,21 +93,21 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       let kernelSize = parameters.kernelSize
       let numOutput = parameters.numOutput
 
+      let outputHeight = (bottomHeight + 2 * padSize - kernelSize) / stride + 1
+      let outputWidth = (bottomWidth + 2 * padSize - kernelSize) / stride + 1
+
       let bottomCol = im2colCpu(bottom.storage, inputChannels: bottomChannels, height: bottomHeight, width: bottomWidth, kernelSize: kernelSize, padSize: padSize, stride: stride)
 
 
       let weightCol = self.weights.storage
 
-      var mulRes = [Float](count : numOutput * bottomHeight * bottomWidth, repeatedValue : 0.0)
+      var mulRes = [Float](count : numOutput * outputHeight * outputWidth, repeatedValue : 0.0)
 
-      vDSP_mmul(weightCol, 1, bottomCol, 1, &mulRes, 1, UInt(numOutput), UInt(bottomHeight * bottomWidth), UInt(bottomChannels * kernelSize * kernelSize))
+      vDSP_mmul(weightCol, 1, bottomCol, 1, &mulRes, 1, UInt(numOutput), UInt(outputHeight * outputWidth), UInt(bottomChannels * kernelSize * kernelSize))
 
-      let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (bottomHeight * bottomWidth))]})
+      let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (outputHeight * outputWidth))]})
 
-      var output = [Float](count: mulRes.count, repeatedValue: 0.0)
-      vDSP_vadd(mulRes, 1, biasCol, 1, &output, 1, vDSP_Length(mulRes.count))
-
-      self.output.storage = output
+      vDSP_vadd(mulRes, 1, biasCol, 1, &self.output.storage, 1, vDSP_Length(mulRes.count))
     }
   }
   

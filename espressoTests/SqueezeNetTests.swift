@@ -55,7 +55,7 @@ class SqueezeNetTests: XCTestCase {
     network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
-      imgNames: [""],
+      imgNames: Array<String>(count: 100, repeatedValue: ""),
       dimensions: [1,3,227,227],
       dependencies: [],
       readImage: { _ in (self.readUIImageToTensor().storage, [0])}
@@ -411,11 +411,12 @@ class SqueezeNetTests: XCTestCase {
     super.tearDown()
   }
 
-  func testExample() {
-    network.importFromFile(filename)
-    network.forward()
+  func testPerformanceExample() {
+    // This is an example of a performance test case.
+    self.network.importFromFile(filename)
+    self.measureBlock {
+      self.network.forward()
+    }
     print((network.layers.last as! ForwardLayerProtocol).output.storage)
-    print("Hello world")
   }
-
 }
