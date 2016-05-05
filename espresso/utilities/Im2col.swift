@@ -16,8 +16,14 @@ import Foundation
  *    The matrix on the right should be on the left, with dimension:
  *      numFilters * (numChannels * kernelSize * kernelSize)
  */
-public func im2colCpu(input: [Tensor.DataType], inputChannels: Int, height: Int, width: Int,
-               kernelSize: Int, padSize: Int, stride: Int) -> [Tensor.DataType] {
+public func im2colCpu(input: [Tensor.DataType],
+                      inputChannels: Int,
+                      height: Int,
+                      width: Int,
+                      kernelSize: Int,
+                      padSize: Int,
+                      stride: Int,
+                      inputOffset: Int = 0) -> [Tensor.DataType] {
   let outputSize = height * width * inputChannels * kernelSize * kernelSize
   var output:[Float] = Array(count: outputSize, repeatedValue: 0)
   //let inputHeight = height + 2 * padSize
@@ -35,7 +41,7 @@ public func im2colCpu(input: [Tensor.DataType], inputChannels: Int, height: Int,
           var inputCol = kernCol - padSize
           for _ in 0..<outputWidth { // outputCol
             if inputRow >= 0 && inputRow < height && inputCol >= 0 && inputCol < width {
-              output[outputIndex] = input[curChan * channelSize + inputRow * width + inputCol]
+              output[outputIndex] = input[inputOffset + curChan * channelSize + inputRow * width + inputCol]
             } else {
               output[outputIndex] = 0
             }
