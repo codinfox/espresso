@@ -8,6 +8,8 @@
 
 import Foundation
 import Metal
+import Accelerate
+import simd
 
 /** @brief ReLU layer.
  */
@@ -63,10 +65,15 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
+      // seems it's not necessary to do simd here
+      //      let oldCount = output.storage.count
+      //      while output.storage.count % 4 != 0 {
+      //        output.storage.append(0)
+      //      }
+      //      let vecArray = 0.stride(to: bottom.storage.count, by: 4)
+      //        .map{(i: Int) -> float4 in float4(bottom.storage[i])}
 
-      for index in 0 ..< bottom.numel {
-        output.storage[index] = max(0, bottom.storage[index]) + self.parameters.negativeSlope * min(0, bottom.storage[index])
-      }
+      output.storage = bottom.storage.map({ max(0, $0) + self.parameters.negativeSlope * min(0, $0)})
     }
   }
 

@@ -8,6 +8,7 @@
 
 import Foundation
 import Metal
+import Accelerate
 
 /** @brief Fully connected layer.
  */
@@ -85,18 +86,13 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       let numElementsPerBatch = bottom.count(fromDimension: 1)
       assert(numElementsPerBatch == self.weights.count() / numOutput, "Num elements not match")
 
-      for currentBatch in 0 ..< batchSize {
-        for currentOutput in 0 ..< numOutput {
-          var tmpResult : Tensor.DataType = 0
-          // FIXME: bad API design
-          for i in 0 ..< numElementsPerBatch {
-            let index = currentOutput * numElementsPerBatch + i
-            // FIXME: Hack
-            tmpResult += self.weights.storage[index] * bottom.storage[currentBatch * numElementsPerBatch + i]
-          }
-          self.output[currentBatch, currentOutput] = tmpResult
-        }
-      }
+      var weightTrans = [Float](count: weights.count(), repeatedValue: 0)
+      // res: (channel * height * width) * numOutput
+      vDSP_mtrans(weights.storage, 1, &weightTrans, 1, vDSP_Length(numElementsPerBatch), vDSP_Length(numOutput))
+
+      // batch * (channel * height * width)
+      // (channel * height * width) * numOutput
+      vDSP_mmul(bottom.storage, 1, weightTrans, 1, &self.output.storage, 1, vDSP_Length(batchSize), vDSP_Length(numOutput), vDSP_Length(numElementsPerBatch))
     }
   }
 

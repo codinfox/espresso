@@ -11,9 +11,9 @@ import Foundation
 /** @brief image to column
  *  dimension
  *    rows: inputChannel * kernelSize * kernelSize
- *    cols: paddedHeight * paddedWidth
+ *    cols: outputHeight * outputWidth
  *    transpose of the matrix in slide: http://15418.courses.cs.cmu.edu/spring2016/lecture/dnneval/slide_031
- *    The matrix on the right should be on the lefe, with dimension: 
+ *    The matrix on the right should be on the left, with dimension:
  *      numFilters * (numChannels * kernelSize * kernelSize)
  */
 public func im2colCpu(input: [Tensor.DataType], inputChannels: Int, height: Int, width: Int,

@@ -8,6 +8,7 @@
 
 import Foundation
 import Metal
+import Accelerate
 
 /** @brief Softmax layer.
  This can also be not backwardable
@@ -74,32 +75,46 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       // totally how many distributions should we get
       let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
 
+      let batchElements = numOutput * mapSizeToPerformOn
       /**
        *  For the typical 4-dimensional case [batchSize, channel, height, width], the typical axis to perform softmax on is 1, which is the channel dimension:
        *      `totalNumberOfDistributions` == batchSize,
-       *      `outDistributionBins` == channels,
+       *      `numOutput` == channels,
        *      `mapSizeToPerformOn` == height * width
        */
       for mapIndex in 0 ..< totalNumberOfDistributions {
-        for gridIndex in 0 ..< mapSizeToPerformOn {
-          var Z : Tensor.DataType = 0
-          var maxPixel : Tensor.DataType = -Tensor.DataType.infinity
+        // The max pixel across all the channels(parameters.axis)
+        var maxPixels = [Float](count: mapSizeToPerformOn, repeatedValue: -Tensor.DataType.infinity)
+        for gridIndex in 0..<mapSizeToPerformOn {
+          for currentBin in 0..<numOutput {
+            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
+            maxPixels[gridIndex] = max(maxPixels[gridIndex], bottom.storage[index])
+          }
+        }
 
-          // get the max for each "pixel" across all the channels(parameters.axis)
-          for currentBin in 0 ..< numOutput {
-            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
-            maxPixel = max(maxPixel, bottom.storage[index])
+        let offset = mapIndex * batchElements
+
+        var mapMatrix = [Float](count: batchElements, repeatedValue: 0)
+        var scalar:Float = -1
+        for currentBin in 0..<numOutput {
+          // minus maxpixel
+          vDSP_vsma(&maxPixels, 1, &scalar, &bottom.storage + (offset + currentBin * mapSizeToPerformOn), 1, &mapMatrix + (currentBin * mapSizeToPerformOn), 1, vDSP_Length(mapSizeToPerformOn))
+        }
+        var expRes = [Float](count: batchElements, repeatedValue: 0)
+        var elements:Int32 = Int32(batchElements)
+        vvexpf(&expRes, &mapMatrix, &elements)
+
+        var zVals = [Float](count: mapSizeToPerformOn, repeatedValue: 0)
+        for gridIndex in 0..<mapSizeToPerformOn {
+          for currentBin in 0..<numOutput {
+            zVals[gridIndex] += expRes[currentBin * mapSizeToPerformOn + gridIndex]
           }
-          for currentBin in 0 ..< numOutput {
-            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
-            // FIXME: Bad API
-            let currentTerm = exp(bottom.storage[index] - maxPixel)
-            output.storage[index] = currentTerm
-            Z += currentTerm
-          }
-          for currentBin in 0 ..< numOutput {
-            let index = mapIndex * numOutput * mapSizeToPerformOn + currentBin * mapSizeToPerformOn + gridIndex
-            output.storage[index] /= Z
+        }
+
+        for currentBin in 0..<numOutput {
+          for gridIndex in 0..<mapSizeToPerformOn {
+            let index = currentBin * mapSizeToPerformOn + gridIndex
+            self.output.storage[index] = expRes[index] / zVals[gridIndex]
           }
         }
       }
