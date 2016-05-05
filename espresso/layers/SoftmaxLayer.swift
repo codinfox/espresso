@@ -76,6 +76,11 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
 
       let batchElements = numOutput * mapSizeToPerformOn
+      let allOnes = [Float](count: mapSizeToPerformOn, repeatedValue: 1)
+
+      for i in 0..<bottom.count() {
+        self.output.storage[i] = bottom.storage[i]
+      }
       /**
        *  For the typical 4-dimensional case [batchSize, channel, height, width], the typical axis to perform softmax on is 1, which is the channel dimension:
        *      `totalNumberOfDistributions` == batchSize,
@@ -92,30 +97,25 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
           }
         }
 
-        let offset = mapIndex * batchElements
+        //var mapMatrix = [Float](count: batchElements, repeatedValue: 0)
+        // subtraction
+        cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, Int32(numOutput), Int32(mapSizeToPerformOn), 1, -1, allOnes, 1, &maxPixels, Int32(mapSizeToPerformOn), 1, &self.output.storage, Int32(mapSizeToPerformOn))
 
-        var mapMatrix = [Float](count: batchElements, repeatedValue: 0)
-        var scalar:Float = -1
-        for currentBin in 0..<numOutput {
-          // minus maxpixel
-          vDSP_vsma(&maxPixels, 1, &scalar, &bottom.storage + (offset + currentBin * mapSizeToPerformOn), 1, &mapMatrix + (currentBin * mapSizeToPerformOn), 1, vDSP_Length(mapSizeToPerformOn))
-        }
         var expRes = [Float](count: batchElements, repeatedValue: 0)
         var elements:Int32 = Int32(batchElements)
-        vvexpf(&expRes, &mapMatrix, &elements)
+        // exp
+        vvexpf(&expRes, &self.output.storage, &elements)
 
-        var zVals = [Float](count: mapSizeToPerformOn, repeatedValue: 0)
-        for gridIndex in 0..<mapSizeToPerformOn {
-          for currentBin in 0..<numOutput {
-            zVals[gridIndex] += expRes[currentBin * mapSizeToPerformOn + gridIndex]
-          }
+        // sum
+        cblas_sgemv(CblasRowMajor, CblasTrans, Int32(numOutput), Int32(mapSizeToPerformOn), 1, &expRes, Int32(mapSizeToPerformOn), allOnes, 1, 0, &maxPixels, 1)
+        var scalar:Float = 1
+
+        for i in 0..<bottom.count() {
+          self.output.storage[i] = expRes[i]
         }
-
+        // debug point
         for currentBin in 0..<numOutput {
-          for gridIndex in 0..<mapSizeToPerformOn {
-            let index = currentBin * mapSizeToPerformOn + gridIndex
-            self.output.storage[index] = expRes[index] / zVals[gridIndex]
-          }
+          vDSP_vsdiv(&expRes + (currentBin * mapSizeToPerformOn), 1, &maxPixels, &self.output.storage + (currentBin * mapSizeToPerformOn), 1, vDSP_Length(mapSizeToPerformOn))
         }
       }
     }
