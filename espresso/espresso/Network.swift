@@ -59,7 +59,7 @@ public class Network {
     layer.layerSetUp(engine: self.parameters.engine, bottomDimensions: bottomDimensions, metalDevice: self.metalDevice, metalDefaultLibrary: self.metalDefaultLibrary, metalCommandQueue: self.metalCommandQueue)
   }
 
-  public func forward() {
+  public func forward() -> Tensor {
     for index in self.layers.indices {
       var layer = self.layers[index] as! ForwardLayerProtocol // may exception, but should not
 
@@ -70,6 +70,8 @@ public class Network {
 
       layer.forward(bottom)
     }
+    // FIXME: temp
+    return (self.layers.last as! ForwardLayerProtocol).output
   }
 
   public func backward() {

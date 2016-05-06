@@ -414,9 +414,12 @@ class SqueezeNetTests: XCTestCase {
   func testPerformanceExample() {
     // This is an example of a performance test case.
     self.network.importFromFile(filename)
-    self.measureBlock {
+//    self.measureBlock {
       self.network.forward()
-    }
-    print((network.layers.last as! ForwardLayerProtocol).output.storage)
+//    }
+    let out = (network.layers.last as! ForwardLayerProtocol).output.storage
+    let prob = out.maxElement()
+    let index = out.indexOf(prob!)
+    XCTAssertEqual(index!, 945)
   }
 }

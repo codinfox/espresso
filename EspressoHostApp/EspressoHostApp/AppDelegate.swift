@@ -17,7 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   func readUIImageToTensor() -> Tensor {
-    let inputCGImage = UIImage(contentsOfFile: "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg")!.CGImage
+    let inputCGImage = globalImage!.CGImage//UIImage(contentsOfFile: NSBundle.mainBundle().pathForResource("example", ofType: "jpg")!)!.CGImage
+    //globalImage.CGImage //UIImage(contentsOfFile: "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg")!.CGImage
     let width = 227 // CGImageGetWidth(inputCGImage)
     let height = 227 // CGImageGetHeight(inputCGImage)
 
@@ -406,8 +407,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       dependencies: ["pool10"]
       )))
 
-//    let networkFile = NSBundle.mainBundle().pathForResource("squeezenet", ofType: "espressomodel")
-//    network.importFromFile(networkFile!)
+    let networkFile = NSBundle.mainBundle().pathForResource("squeezenet", ofType: "espressomodel")
+    network.importFromFile(networkFile!)
 
     return true
   }
