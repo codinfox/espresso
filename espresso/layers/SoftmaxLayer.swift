@@ -76,7 +76,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
 
       let batchElements = numOutput * mapSizeToPerformOn
-      let allOnes = [Float](count: mapSizeToPerformOn, repeatedValue: 1)
+      let allOnes = [Float](count: batchElements, repeatedValue: 1)
 
       for i in 0..<bottom.count() {
         self.output.storage[i] = bottom.storage[i]
@@ -99,7 +99,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
         //var mapMatrix = [Float](count: batchElements, repeatedValue: 0)
         // subtraction
-        cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, Int32(numOutput), Int32(mapSizeToPerformOn), 1, -1, allOnes, 1, &maxPixels, Int32(mapSizeToPerformOn), 1, &self.output.storage, Int32(mapSizeToPerformOn))
+        cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, Int32(numOutput), Int32(mapSizeToPerformOn), 1, -1, allOnes, 1, &maxPixels, Int32(mapSizeToPerformOn), 1, &self.output.storage + mapIndex * batchElements, Int32(mapSizeToPerformOn))
 
         var expRes = [Float](count: batchElements, repeatedValue: 0)
         var elements:Int32 = Int32(batchElements)
@@ -108,14 +108,14 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
 
         // sum
         cblas_sgemv(CblasRowMajor, CblasTrans, Int32(numOutput), Int32(mapSizeToPerformOn), 1, &expRes, Int32(mapSizeToPerformOn), allOnes, 1, 0, &maxPixels, 1)
-        var scalar:Float = 1
+//        var scalar:Float = 1
 
         for i in 0..<bottom.count() {
           self.output.storage[i] = expRes[i]
         }
         // debug point
         for currentBin in 0..<numOutput {
-          vDSP_vsdiv(&expRes + (currentBin * mapSizeToPerformOn), 1, &maxPixels, &self.output.storage + (currentBin * mapSizeToPerformOn), 1, vDSP_Length(mapSizeToPerformOn))
+          vDSP_vdiv(&maxPixels, 1, &expRes + (currentBin * mapSizeToPerformOn), 1, &self.output.storage + (currentBin * mapSizeToPerformOn), 1, vDSP_Length(mapSizeToPerformOn))
         }
       }
     }

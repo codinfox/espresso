@@ -93,7 +93,9 @@ class SoftmaxLayerTests: XCTestCase {
       1/3, 1/3, 1/3, 1/3,
       1/3, 1/3, 1/3, exp(-1)/Z
       ]
-    XCTAssertEqual(output!.storage, expected)
+
+    let error = (Array(0..<48).map{abs(expected[$0] - output!.storage[$0])}).maxElement()
+    XCTAssertTrue(error < 0.00001, "Error greater than 0.00001")
   }
 
 }
