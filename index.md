@@ -98,6 +98,10 @@ The following table is the running time of evaluting 3 networks in our framework
 
 Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
 
+#### Performance(GPU)
+
+Our GPU version is implemented using the Metal API and the naive implementation of the GPU version is a bit faster than the optimized CPU version. We'll post more analysis of GPU results when they are ready.
+
 ### Deliverables 
 
 In this project, we want to developed a Caffe-like deep neural network framework running on iOS/OSX devices, in both CPU and GPU, that provides usable primitives to
