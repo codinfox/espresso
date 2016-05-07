@@ -2,7 +2,10 @@
 layout: default
 ---
 
-<style>sup:before { content: "["; }sup:after { content: "]"; }</style>
+<style>
+sup:before { content: "["; }
+sup:after { content: "]"; }
+</style>
 
 <a href="https://github.com/codinfox/espresso" title="Fork me on Github" class="github-corner"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: fixed; top: 0; border: 0; right: 0;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
@@ -12,37 +15,35 @@ layout: default
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
-<style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }</style>
-<div style="text-align: center;"><a class="nav selected" href="http://codinfox.github.io/espresso/proposal" target="_blank">Final Report</a> <a class="nav" href="http://codinfox.github.io/espresso/proposal" target="_blank">Proposal</a> <a class="nav"  href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a></div>
-
-### TL;DL
-
-We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 20+ layers or as large as AlexNet[^9] with ease.
-
-With above mentioned techniques, we are able to **shrink the peak memory usage to 35% of original network**, and get **~250x speedup over our naive implementation** (also the implementation used by [other implementation of neural network framework](https://github.com/alexsosn/ConvNetSwift.git)). Besides those numbers, our framework is also well designed and easy to use.
-
-<div style="text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/f-yfX_P4DCw" frameborder="0" allowfullscreen></iframe></div>
+<a href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a>
 
 ### Background
 
-According to Morgan Stanley Research, as of the year of 2011, half of the computing devices worldwide are mobile devices [^6]. The intelligent mobile applications are changing people's lives. However after a quite thorough survey, we find no fully functional deep neural network framework on iOS. Therefore, we want to implement our own.
+According to Morgan Stanley Research, as of the year of 2011, half of the computing devices worldwide are mobile devices [^6]. The intelligent mobile applications are changing people's lives. However a quite thorough survey, we find no fully functional deep neural network framework on iOS. Therefore, we want to implement our own.
 
 This framework features ***well designed and easy to use API***, and ***high performance parallel neural network implementation*** based on Metal.
 
-With such framework, software engineers can easily deploy network on their iOS devices. This can potentially lead to many interesting applications. For example, an application that can recognize daily objects ***in almost real time without connection to internet***. We envision a great future market opening for such framework.
+With such framework, software engineers can easily train and test network on their iOS devices. This can potentially lead to many interesting applications. For example, an application that can recognize daily objects ***in real time without connection to internet***. Or photo collection applications that can recognize all your friends based on ***personalized fine-tuning without any threat to privacy***.
 
-However, the task of training and running neural networks on a iOS device is challenging.
+We envision a great future market opening for such framework.
 
-* **Memory Limitation** The latest version of iPhone (iPhone 6S) has only 2 GB RAM. This makes running a network on such device very difficult, not to mention training on it. To compensate this issue, we may take advantage of recent research outgrowth on compression of deep neural networks [^1] [^2] [^3] [^8].
+### The Challenge
+
+The task of training and running neural networks on a iOS device is itself challenging.
+
+* **Memory Limitation** The latest version of iPhone (iPhone 6S) has only 2 GB RAM. This makes running a network on such device very difficult, not to mention training on it. To compensate this issue, we may take advantage of recent research outgrowth on compression of deep neural networks [^1] [^2] [^3] or use low-precision networks [^4] [^5].
 * **High Performance Computing** Parallelizing a neural network implementation on iOS devices is an unprecedented task. We will explore the possibility of Metal API to implement a GPGPU version of the framework.
+* **Learning of a New Language** Both of us are not familiar with Swift 2, the programming language. This would be a challenge for us in the early stage of implementation.
 
-Baring these challenges, in this project, we attempt to solve these issues and make a usable framework.
-
-### Our Approach
-
-#### Addressing Memory Usage
+Bearing so many challenges, this project is still promising. The task of training and testing neural networks is highly parallizable, as the computation inside a layer is independent (we currently don't support intra-layer connections). The locality should be good as weights within the same layer should be stores adjacently. And typically there is not much divergence in the network training and testing - all the weights are updated at the same time within a layer.
 
 
+
+### Resources
+
+We will start the project from scratch. The framework will be mainly running on iOS devices with limited support to OSX devices. We will use the high-level architecture of Caffe [^7] as our reference.
+
+***We are in need of a apple developer account to test the framework on real devices.***
 
 ### Goals and Deliverables
 
@@ -109,7 +110,3 @@ OSX and iOS based on Metal framework.
 [^6]: Huberty, K., Lipacis, C. M., Holt, A., Gelblum, E., Devitt, S., Swinburne, B., ... & Chen, G. (2011). Tablet Demand and Disruption. *Tablet*.
 
 [^7]: Jia, Yangqing, et al. "Caffe: Convolutional architecture for fast feature embedding." *Proceedings of the ACM International Conference on Multimedia. ACM*, 2014.
-
-[^8]: Iandola, Forrest N., et al. "SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and< 1MB model size." *arXiv preprint arXiv:1602.07360* (2016).
-
-[^9]: Krizhevsky, Alex, Ilya Sutskever, and Geoffrey E. Hinton. "Imagenet classification with deep convolutional neural networks." *Advances in neural information processing systems*. 2012.
