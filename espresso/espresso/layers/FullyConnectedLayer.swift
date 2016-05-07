@@ -34,6 +34,8 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
 
+  var compressedInfo: CompressedInfo! = nil
+
   public init(parameters: FullyConnectedParameters) {
     self.parameters = parameters
   }
@@ -78,6 +80,9 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
   func forwardCPU(bottom: [Tensor]) {
     // Preprocess bottom to fit this layer
     if bottom.count > 0 {
+      if self.memoryLimitedMode {
+        restoreWeightsByDecompression()
+      }
       let bottom = bottom[0] // in fc layer, bottom is really just a single Tensor
 
       let batchSize = bottom.dimensions[0]
@@ -93,6 +98,10 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       // batch * (channel * height * width)
       // (channel * height * width) * numOutput
       vDSP_mmul(bottom.storage, 1, weightTrans, 1, &self.output.storage, 1, vDSP_Length(batchSize), vDSP_Length(numOutput), vDSP_Length(numElementsPerBatch))
+
+      if self.memoryLimitedMode {
+        self.weights.purgeStorage()
+      }
     }
   }
 

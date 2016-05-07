@@ -33,6 +33,8 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   var forwardMethod: ForwardLayerMethodType? = nil
   var backwardMethod: BackwardLayerMethodType? = nil
 
+  var compressedInfo: CompressedInfo! = nil
+
   public init(parameters: ConvolutionParameters) {
     self.parameters = parameters
   }
@@ -82,6 +84,9 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
   func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
+      if self.memoryLimitedMode {
+        restoreWeightsByDecompression()
+      }
       let bottom = bottom[0]
       let batchSize = bottom.dimensions[0]
       let bottomChannels = bottom.dimensions[1]
@@ -101,8 +106,9 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       // FIXME: Only support batch size 1
       var mulRes = [Float](count : numOutput * outputHeight * outputWidth, repeatedValue : 0.0)
 
-      if false {
+      if self.memoryLimitedMode {
         // if memory limited
+        // FIXME: No impact on memory usage
         var weightTrans = [Float](count: self.weights.storage.count, repeatedValue: 0.0)
         vDSP_mtrans(self.weights.storage, 1, &weightTrans, 1, UInt(bottomChannels * kernelSize * kernelSize), UInt(numOutput))
         var tmpMulRes = [Float](count : numOutput * outputHeight * outputWidth, repeatedValue : 0.0)
@@ -134,6 +140,10 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
       let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (outputHeight * outputWidth))]})
       vDSP_vadd(mulRes, 1, biasCol, 1, &self.output.storage, 1, vDSP_Length(mulRes.count))
+
+      if self.memoryLimitedMode {
+        self.weights.purgeStorage()
+      }
     }
   }
 

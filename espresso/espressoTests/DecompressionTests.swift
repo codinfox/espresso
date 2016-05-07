@@ -1,18 +1,18 @@
 //
-//  SqueezeNetTests.swift
+//  DecompressionTests.swift
 //  espresso
 //
-//  Created by Zhihao Li on 5/2/16.
+//  Created by Zhihao Li on 5/6/16.
 //  Copyright © 2016 CMU. All rights reserved.
 //
 
 import XCTest
 @testable import espresso
 
-class SqueezeNetTests: XCTestCase {
+class DecompressionTests: XCTestCase {
 
   var network : Network!
-  let filename = "/Users/Ben/Projects/espresso/models/squeezenet.espressomodel"
+  let filename = "/Users/Ben/Projects/espresso/models/SqueezeNet_compressed.net"
 
   func readUIImageToTensor() -> Tensor {
     let inputCGImage = UIImage(contentsOfFile: "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg")!.CGImage
@@ -413,7 +413,7 @@ class SqueezeNetTests: XCTestCase {
 
   func testPerformanceExample() {
     // This is an example of a performance test case.
-    self.network.importFromFile(filename)
+    self.network.importCompressedNetworkFromFile(filename)
     self.measureBlock {
       self.network.forward()
     }
