@@ -93,7 +93,7 @@ The following table is the running time of evaluting 3 networks in our framework
 |   Network   | Naive | Optimized |
 |:---------:|:-------------------:|:-----:|
 | `SqueezeNet`(31M) |~1800s| 7.8s |
-| `AlexNet` (200M) | / |  6.9s |
+| `AlexNet` (233M) | / |  6.9s |
 |`MNIST`(11M)| / |0.024s |
 
 Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
@@ -165,11 +165,8 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
     self.network.importFromFile(filename)
 
     /* Evaluating the network */
-    self.network.forward()
+    let out = self.network.forward().storage
 
-    /* Get the output */
-    let out = (network.layers.last as! ForwardLayerProtocol)
-                .output.storage
     let prob = out.maxElement()
     /* The index of the label with largest probability */
     let index = out.indexOf(prob!)
