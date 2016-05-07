@@ -59,9 +59,9 @@ Most networks contain millions of weights, making them super large and infeasibl
 
 ![Image to Column from 15-418/618 course website](images/im2col.png "Image to Column from 15-418/618 course website")
 
-1. **`Image to Column`(im2col) in Convolution Layer**: In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. However, it turns out that the performance suffers a lot without `im2col`. The original implementation takes about 30 minutes to evaluate a `SqueezedNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yields a ~250x speedup. Our implementation of `im2col` also fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small(3 is a common choice). However, if we look at the column of the result matrix, the ajacent pixels in result matrix are the pixels with the same index in the kernel window for ajacent convolution operations, which are almost consequtive in the original image matrix, or ajacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
-2. **Multi-stage Image to Column** `im2col` introduces memory overhead since the original image is inflated by a factor of (numInputChannels * kernelSize ^ 2). We don't want this optimization to negatively affect the memory efficiency, which is what enables us to run networks that can not be run in mobile devices before. According to the algorithm, the result of `im2col` only depend on the original image and the kernel size, and there is no dependency between different input channels. A even more promising observation is that the pixel values in different channels are exactly the same. This means we can maintain one copy of the `im2col` result for one channel, perform the matrix multiplication with the kernel weights in one channel and move on to the next until all the input channels are exhausted. The intermediate result can be consumed immediately by summed into the output matrix. Therefore, we can reduce the memory usage by a factor of (numInputChannels) in memory constraint situations.
-
+1. **`Image to Column`(im2col) in Convolution Layer**: In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. However, it turns out that the performance suffers a lot without `im2col`. The original implementation takes about 30 minutes to evaluate a `SqueezeNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yielding a ~250x speedup. Our implementation of `im2col` also fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small(3 is a common choice). However, if we look at the column of the result matrix, the ajacent pixels in result matrix are the pixels with the same index in the kernel window for ajacent convolution operations, which are almost consequtive in the original image matrix, or ajacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
+2. **Multi-stage Image to Column** `im2col` introduces memory overhead since the original image is inflated by a factor of (numInputChannels * kernelSize ^ 2). We don't want this optimization to negatively affect the memory efficiency, since memory efficiency is what enables us to run networks that can not be run in mobile devices before. According to the algorithm, the result of `im2col` only depend on the original image and the kernel size, and there is no dependency between different input channels. A even more interesting observation is that the pixel values in different channels are exactly the same. This means we can maintain one copy of the `im2col` result for all the channels, perform the matrix multiplication with the kernel weights in one channel and reuse the result in the next channel until all the input channels are exhausted. The intermediate result can be consumed immediately by summing into the output matrix. Therefore, we can reduce the memory usage by a factor of (numInputChannels) in memory constraint situations.
+3. **Other optimizations using Accelerate Framework** The accelerate framework is our interface to access the SIMD feature provided in Swift, to fully utilize the feature, we also apply the APIs in accelerate framework when appropriate(specifically, use matrix multiplications instead of for loops).
 
 ### Current Result
 
@@ -86,7 +86,7 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 
 #### Performance
 
-250x speedup
+250x speedup with respect to the navie implementation.
 
 ### Deliverables 
 
@@ -106,21 +106,67 @@ To achieve this, we implemented
 * `Softmax` layer: as output layer, no BP needed
 * `Pooling` layer: max pooling, average pooling, global pooling
 * `Concat` layer
-* `LRN` layer
 
 #### Code Example
 
+An example of using our framework to define, import and evaluate the `SqueezeNet` is shown below.
+
 ```swift
-network ... examples
+    // A new network with batchSize 1 and CPU implementation
+    // Our network support Directed Acyclic Graph (DAG) structured neural networks
+    network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
+    // The image data layer, user need to define a readImage function which given a string
+    // returns a tuple of float arrays ([Float], [Float]), where the first is the training data,
+    // the second is the label
+    network.add(ImageDataLayer(parameters: ImageDataParameters(
+      name: "data",
+      imgNames: Array<String>(count: 100, repeatedValue: ""),
+      dimensions: [1,3,227,227],
+      dependencies: [],
+      readImage: { _ in (self.readUIImageToTensor().storage, [0])}
+      )))
+    // Add a convolution layer with parameters and dependencies on the last layer
+    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+      name: "conv1",
+      dependencies: ["data"],
+      numOutput: 96,
+      kernelSize: 7,
+      stride: 2
+      )))
+    ...
+    // Add a max pooling layer with dependency on the last layer
+    network.add(PoolingLayer(parameters: PoolingParameters(
+      name: "pool1",
+      dependencies: ["relu_conv1"],
+      kernelSize: 3,
+      stride: 2,
+      method: .MAX
+      )))
+    ...
+    // Softmax layer
+    network.add(SoftmaxLayer(parameters: SoftmaxParameters(
+      name: "prob",
+      dependencies: ["pool10"]
+      )))
+
+    // import model
+    self.network.importFromFile(filename)
+
+    // evaluating the network
+    self.network.forward()
+
+    // Get the output
+    let out = (network.layers.last as! ForwardLayerProtocol).output.storage
+    let prob = out.maxElement()
+    let index = out.indexOf(prob!)
 ```
 
 #### Demo
-We will be demonstrating an application developed based on our framework. It could be a application to recognize things. Also, we will be comparing the CPU implementation and GPU implementation in terms of speedup and energy consumption.
+Shown in the **Summary** section.
 
 ### Acknowledgement
 
 We would like to thank Prof. Kayvon for providing iOS developer certificate.
-
 
 ##### References:
 
