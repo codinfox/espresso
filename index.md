@@ -112,13 +112,12 @@ To achieve this, we implemented
 An example of using our framework to define, import and evaluate the `SqueezeNet` is shown below.
 
 ```swift
-    /* A new network with batchSize 1 and CPU implementation
-     * Our network support Directed Acyclic Graph (DAG) 
-     * structured neural networks */
-    network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
-    /* The image data layer, user need to define a readImage function
-     * which given a string returns a tuple of float arrays ([Float], [Float]),
-     * where the first is the training data, the second is the label */
+     /* Our network support neural networks in
+      * Directed Acyclic Graph (DAG) structure */
+    network = Network(parameters: 
+                NetworkProperties(batchSize: 1, engine: .CPU))
+    /* The image data layer, 
+     * user need to define a readImage function */
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
       imgNames: Array<String>(count: 100, repeatedValue: ""),
