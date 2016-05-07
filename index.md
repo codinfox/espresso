@@ -84,9 +84,18 @@ We also did a run time recording on the AlexNet.
 
 We can see the peak memory usage is 327.3M, which is significantly lower than 1.3G (when running without any memory optimization). The plateau is when it goes through the fully connected layer, which contains most of the weights of the network.
 
-#### Performance
+#### Performance(CPU)
 
 250x speedup with respect to the navie implementation.
+
+Foll
+|   Network    | Naive | Optimized |
+|:---------:|:-------------------:|:-----:|
+| `SqueezeNet`  | ~1800s| 7.8s |
+| `AlexNet`  | / |  6.9s |
+|`MNIST`| / | 0.024s |
+
+Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between the ajacent layers(The layers are topologically sorted according to dependency in construction time).
 
 ### Deliverables 
 
@@ -106,6 +115,7 @@ To achieve this, we implemented
 * `Softmax` layer: as output layer, no BP needed
 * `Pooling` layer: max pooling, average pooling, global pooling
 * `Concat` layer
+* `LRN` layer
 
 #### Code Example
 
@@ -116,7 +126,7 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       * Directed Acyclic Graph (DAG) structure */
     network = Network(parameters: 
                 NetworkProperties(batchSize: 1, engine: .CPU))
-    /* The image data layer, 
+    /* The image data layer
      * user need to define a readImage function */
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
@@ -135,7 +145,7 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       stride: 2
       )))
     ...
-    // Add a max pooling layer with dependency on the last layer
+    /* Add a max pooling layer with dependency on the last layer */
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool1",
       dependencies: ["relu_conv1"],
@@ -144,27 +154,33 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       method: .MAX
       )))
     ...
-    // Softmax layer
+    /* Softmax layer */
     network.add(SoftmaxLayer(parameters: SoftmaxParameters(
       name: "prob",
       dependencies: ["pool10"]
       )))
 
-    // import model
+    /* import model */
     self.network.importFromFile(filename)
 
-    // evaluating the network
+    /* evaluating the network */
     self.network.forward()
 
-    // Get the output
+    /* Get the output */
     let out = (network.layers.last as! ForwardLayerProtocol)
                 .output.storage
     let prob = out.maxElement()
+    /* The index of the label with largest probability */
     let index = out.indexOf(prob!)
 ```
 
 #### Demo
 Shown in the **Overview** section.
+
+### Future Work
+
+In the next few days, we'll still be working on the project. The things we plan to do are:
+* Optimize GPU version
 
 ### Acknowledgement
 
