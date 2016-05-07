@@ -40,7 +40,7 @@ Baring these challenges, in this project, we attempt to solve these issues and m
 
 ### Our Approach
 
-#### Addressing Memory Usage
+#### Addressing Memory Constraint
 
 Most networks contain millions of weights, making them super large and infeasible to be run on mobile devices. To address this issue, we applied three methods:
 
