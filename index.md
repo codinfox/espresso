@@ -96,7 +96,7 @@ The following table is the running time of evaluting 3 networks in our framework
 | `AlexNet` (200M) | / |  6.9s |
 |`MNIST`(11M)| / |0.024s |
 
-Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time).
+Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
 
 ### Deliverables 
 
@@ -161,10 +161,10 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       dependencies: ["pool10"]
       )))
 
-    /* import model */
+    /* Import model */
     self.network.importFromFile(filename)
 
-    /* evaluating the network */
+    /* Evaluating the network */
     self.network.forward()
 
     /* Get the output */
