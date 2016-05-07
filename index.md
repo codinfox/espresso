@@ -17,7 +17,7 @@ layout: default
 
 ### Overview
 
-We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 20+ layers or as large as AlexNet[^9] with ease.
+We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 60+ layers or as large as AlexNet[^9] with ease.
 
 With above mentioned techniques, we are able to **shrink the peak memory usage to 35% of original network**, and get **~250x speedup over our naive implementation** (also the implementation used by [other implementation of neural network framework](https://github.com/alexsosn/ConvNetSwift.git)). Besides those numbers, our framework is also well designed and easy to use.
 
