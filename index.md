@@ -12,7 +12,7 @@ layout: default
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
-<style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }</style>
+<style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }small{color: #5e5e5e; display:block;text-align:center;margin-bottom: 1em;}</style>
 <div style="text-align: center;"><a class="nav selected" href="http://codinfox.github.io/espresso/proposal" target="_blank">Final Report</a> <a class="nav" href="http://codinfox.github.io/espresso/proposal" target="_blank">Proposal</a> <a class="nav"  href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a></div>
 
 ### TL;DL
@@ -21,7 +21,7 @@ We developed a parallel neural network framework running well on iOS devices reg
 
 With above mentioned techniques, we are able to **shrink the peak memory usage to 35% of original network**, and get **~250x speedup over our naive implementation** (also the implementation used by [other implementation of neural network framework](https://github.com/alexsosn/ConvNetSwift.git)). Besides those numbers, our framework is also well designed and easy to use.
 
-<div style="text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/f-yfX_P4DCw" frameborder="0" allowfullscreen></iframe></div>
+<div style="text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/uBqwVKA_SZQ" frameborder="0" allowfullscreen></iframe></div>
 
 ### Background
 
@@ -42,56 +42,79 @@ Baring these challenges, in this project, we attempt to solve these issues and m
 
 #### Addressing Memory Usage
 
+Most networks contain millions of weights, making them super large and infeasible to be run on mobile devices. To address this issue, we applied three methods:
+
+![Representing the matrix sparsity with relative index](images/deep_comp1.png "Representing the matrix sparsity with relative index")
+<small>Representing the matrix sparsity with relative index</small>
+
+![Weight sharing by scalar quntization and centroids fine-tuning](images/deep_comp2.png "Weight sharing by scalar quntization and centroids fine-tuning")
+<small>Weight sharing by scalar quntization and centroids fine-tuning</small>
+
+1. **Deep Compression**: besides normal full-sized networks, our framework also supports networks compressed with deep compression algorithm [^2]. By using pruning, trained quntization, deep compression algorithm can compress AlexNet from 200M+ to only 8M. This significantly reduces the amount of data we need read into memory. The method is shown in the above 2 figures.
+2. **On-the-fly Decompression**: if we decompress the whole compressed network, then the problem degrade back to the big network problem - the weights still cannot fit into memory. Therefore, we decompress the weights on the fly: when the memory is sufficient for containing the whole network, then all the weights are stored in the network; if the memory is limited, then the weights are decompress on the fly only when it is needed. With this strategy, we manage to fit the whole AlexNet (200M+ weights, 1GB+ runtime memory usage without compression)
+3. **On-demand Outputs**: not all the outputs are needed all the time. Therefore, we only keep outputs when they are needed in the network architecture. Otherwise, we purge the memory of the outputs. In case of training (which we don't currently support yet), we can save the outputs to flash disk. This is a performance-memory usage trade off.
+4. **Multistage Image to Column**: this will be covered in the next section.
+
+#### Parallel Evaluation
 
 
-### Goals and Deliverables
+### Current Result
 
-#### PLAN TO ACHIEVE
-In this project, we want to develop a Caffe-like deep neural network framework running on iOS/OSX devices, in both CPU and GPU, that provides usable primitives to
+#### Memory Usage
+
+![Memory usage with different techniques](images/mem_use.png "Memory usage with different techniques")
+<small>Memory usage with different techniques. The experiment is done with SqueezeNet [^8]. The band shows the maximum and minimum memory usage and the solid line shows the average memory usage. The runtime memory usage of original network is 172M, while after applying all the techniques, we manage to shrink it to 66M</small>
+
+We performed analysis on the SqueezeNet. The result comes from 10 repeated trails. We can see that after applying OFD, OO and MIC, we manage to shrink the runtime memory usage to 66M.
+
+A trade-off needs to be made is the performance. Since we spend some time on optimizing for memory usage, the performance suffers a little.
+
+![Time usage with different techniques](images/time_use.png "Time usage with different techniques")
+<small>Memory usage with different techniques. The experiment is done with SqueezeNet [^8]. The band shows the maximum and minimum time usage and the solid line shows the average time usage. It shows the time taken for one forward through the whole network. Result is got from 10 repeated trails.</small>
+
+We also did a run time recording on the AlexNet.
+
+![Runtime memory analysis on AlexNet](images/alexnet.png "Runtime memory analysis on AlexNet")
+<small>Runtime memory analysis on AlexNet</small>
+
+We can see the peak memory usage is 327.3M, which is significantly lower than 1.3G (when running without any memory optimization). The plateau is when it goes through the fully connected layer, which contains most of the weights of the network.
+
+#### Performance
+
+250x speedup
+
+### Deliverables 
+
+In this project, we want to developed a Caffe-like deep neural network framework running on iOS/OSX devices, in both CPU and GPU, that provides usable primitives to
 
 * Define a neural netowrk
-* Train a small neural network
+* Read in a network
 * Run compressed models
+* Run normal models
 
-To achieve this, we will implement
+To achieve this, we implemented
 
-* **Layers**
-	* `ImageData` layer
-	* `Convolution` layer
-	* `ReLU` layer
-	* `FullyConnected` layer
-	* `Softmax` layer: as output layer, no BP needed
-	* `SoftmaxWithLoss` layer
-	* `Pooling` layer: max pooling and average pooling
-	* `Dropout` layer
-	* `LRN` layer
-* **Optimizer**
-	* `SGDOptimizer`
+* `ImageData` layer
+* `Convolution` layer
+* `ReLU` layer
+* `FullyConnected` layer
+* `Softmax` layer: as output layer, no BP needed
+* `Pooling` layer: max pooling, average pooling, global pooling
+* `Concat` layer
+* `LRN` layer
 
-We want our system to be usable in mobile devices, therefore, the performance goal would be to have a user acceptable memory, energy, computation cost and response time to train on a reasonably sized dataset, and to run a compressed model.
+#### Code Example
 
-#### HOPE TO ACHIEVE
-
-If we are ahead of schedule, we plan to port some other layers and optimizers from Caffe to our framework.
+```swift
+network ... examples
+```
 
 #### Demo
 We will be demonstrating an application developed based on our framework. It could be a application to recognize things. Also, we will be comparing the CPU implementation and GPU implementation in terms of speedup and energy consumption.
 
-### Platform Choice
+### Acknowledgement
 
-OSX and iOS based on Metal framework.
-
-### Schedule
-
-|   Time    | What we plan to do | Status |
-|:---------:|:-------------------|:-----:|
-| April 1 ~ April 7  | Revise proposal, study the design and architecture of Caffe, learn Swift language and Metal API, implement a simple App for testing, design interfaces for espresso | DONE |
-| April 8 ~ April 14  | Develop and test the CPU version | Finished development, need more thorough testing   |
-| April 15 ~ April 21 | Develop and test the GPU version | Finished development, need testing    |
-| April 22 ~ April 28 | Run MNIST network(and test our implementations) |  |
-| April 29 ~ May 5   | Run a compressed model trained by Caffe or other common frameworks |   |
-| May 6 ~ Parallel Competition Day | Write final report and prepare for presentation     |    |
-
+We would like to thank Prof. Kayvon for providing iOS developer certificate.
 
 
 ##### References:
