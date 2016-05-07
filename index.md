@@ -15,7 +15,7 @@ layout: default
 <style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }small{color: #5e5e5e; display:block;text-align:center;margin-bottom: 1em;}</style>
 <div style="text-align: center;"><a class="nav selected" href="http://codinfox.github.io/espresso/proposal" target="_blank">Final Report</a> <a class="nav" href="http://codinfox.github.io/espresso/proposal" target="_blank">Proposal</a> <a class="nav"  href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a></div>
 
-### TL;DL
+### Overview
 
 We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 20+ layers or as large as AlexNet[^9] with ease.
 
@@ -34,7 +34,7 @@ With such framework, software engineers can easily deploy network on their iOS d
 However, the task of training and running neural networks on a iOS device is challenging.
 
 * **Memory Limitation** The latest version of iPhone (iPhone 6S) has only 2 GB RAM. This makes running a network on such device very difficult, not to mention training on it. To compensate this issue, we may take advantage of recent research outgrowth on compression of deep neural networks [^1] [^2] [^3] [^8].
-* **High Performance Computing** Parallelizing a neural network implementation on iOS devices is an unprecedented task. We will explore the possibility of Metal API to implement a GPGPU version of the framework.
+* **High Performance Computing** Parallelizing a neural network implementation on iOS devices is an unprecedented task. We will explore the possibility of Metal API to implement a GPGPU version of the framework and Accelerate framework for CPU version.
 
 Baring these challenges, in this project, we attempt to solve these issues and make a usable framework.
 
@@ -51,11 +51,16 @@ Most networks contain millions of weights, making them super large and infeasibl
 <small>Weight sharing by scalar quntization and centroids fine-tuning</small>
 
 1. **Deep Compression**: besides normal full-sized networks, our framework also supports networks compressed with deep compression algorithm [^2]. By using pruning, trained quntization, deep compression algorithm can compress AlexNet from 200M+ to only 8M. This significantly reduces the amount of data we need read into memory. The method is shown in the above 2 figures.
-2. **On-the-fly Decompression**: if we decompress the whole compressed network, then the problem degrade back to the big network problem - the weights still cannot fit into memory. Therefore, we decompress the weights on the fly: when the memory is sufficient for containing the whole network, then all the weights are stored in the network; if the memory is limited, then the weights are decompress on the fly only when it is needed. With this strategy, we manage to fit the whole AlexNet (200M+ weights, 1GB+ runtime memory usage without compression)
+2. **On-the-fly Decompression**: if we decompress the whole compressed network, then the problem degrade back to the big network problem - the weights still cannot fit into memory. Therefore, we decompress the weights on the fly: when the memory is sufficient for containing the whole network, then all the weights are stored in the network; if the memory is limited, then the weights are decompressed on the fly only when it is needed. With this strategy, we manage to fit the whole AlexNet (200M+ weights, 1GB+ runtime memory usage without compression)
 3. **On-demand Outputs**: not all the outputs are needed all the time. Therefore, we only keep outputs when they are needed in the network architecture. Otherwise, we purge the memory of the outputs. In case of training (which we don't currently support yet), we can save the outputs to flash disk. This is a performance-memory usage trade off.
 4. **Multistage Image to Column**: this will be covered in the next section.
 
-#### Parallel Evaluation
+#### Performance Optimizations
+
+![Image to Column from 15-418/618 course website](images/im2col.png "Image to Column from 15-418/618 course website")
+1. ** `Image to Column`(im2col) in Convolution Layer **: In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. However, it turns out that the performance suffers a lot without `im2col`. The original implementation takes about 30 minutes to evaluate a `SqueezedNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yields a ~250x speedup. Our implementation of `im2col` also fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small(3 is a common choice). However, if we look at the column of the result matrix, the ajacent pixels in result matrix are the pixels with the same index in the kernel window for ajacent convolution operations, which are almost consequtive in the original image matrix, or ajacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
+
+2. ** Multi-stage Image to Column ** `im2col` introduces memory overhead since the original image is inflated by a factor of (numInputChannels * kernelSize ^ 2). We don't want this optimization to negatively affect the memory efficiency, which is what enables us to run networks that can not be run in mobile devices before. According to the algorithm, the result of `im2col` only depend on the original image and the kernel size, and there is no dependency between different input channels. A even more promising observation is that the pixel values in different channels are exactly the same. This means we can maintain one copy of the `im2col` result for one channel, perform the matrix multiplication with the kernel weights in one channel and move on to the next until all the input channels are exhausted. The intermediate result can be consumed immediately by summed into the output matrix. Therefore, we can reduce the memory usage by a factor of (numInputChannels) in memory constraint situations.
 
 
 ### Current Result
