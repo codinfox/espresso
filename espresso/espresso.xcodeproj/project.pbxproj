@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B50AA3F01CDD60DF0085E5BF /* DecompressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50AA3EF1CDD60DF0085E5BF /* DecompressionTests.swift */; };
+		B521D49D1CDDBECA001553D4 /* AlexNetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B521D49C1CDDBECA001553D4 /* AlexNetTests.swift */; };
 		B52481641CC23DD60015A403 /* SGDSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52481631CC23DD60015A403 /* SGDSolver.swift */; };
 		B52775401CBDEE7C00A0FA0B /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527753F1CBDEE7C00A0FA0B /* Tensor.swift */; };
 		B52775421CBE0B7600A0FA0B /* LayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */; };
@@ -80,6 +81,7 @@
 
 /* Begin PBXFileReference section */
 		B50AA3EF1CDD60DF0085E5BF /* DecompressionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecompressionTests.swift; sourceTree = "<group>"; };
+		B521D49C1CDDBECA001553D4 /* AlexNetTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlexNetTests.swift; sourceTree = "<group>"; };
 		B52481631CC23DD60015A403 /* SGDSolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SGDSolver.swift; sourceTree = "<group>"; };
 		B527753F1CBDEE7C00A0FA0B /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
 		B52775411CBE0B7600A0FA0B /* LayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerProtocol.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				C4CD66481CD69C320056E652 /* SoftmaxLayerTests.swift */,
 				C4CD664A1CD6BFC50056E652 /* MnistTests.swift */,
 				B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */,
+				B521D49C1CDDBECA001553D4 /* AlexNetTests.swift */,
 				B50AA3EF1CDD60DF0085E5BF /* DecompressionTests.swift */,
 			);
 			path = espressoTests;
@@ -375,6 +378,7 @@
 				C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */,
 				C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */,
 				C4EBC6DB1CC3B0C8006E03C7 /* WeightFiller.swift in Sources */,
+				B521D49D1CDDBECA001553D4 /* AlexNetTests.swift in Sources */,
 				C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */,
 				C4BFB4CF1CD551C00093D593 /* ReluLayerTests.swift in Sources */,
 				C4EBC6DD1CC3B0CF006E03C7 /* Solver.swift in Sources */,
