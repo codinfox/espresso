@@ -112,12 +112,13 @@ To achieve this, we implemented
 An example of using our framework to define, import and evaluate the `SqueezeNet` is shown below.
 
 ```swift
-    // A new network with batchSize 1 and CPU implementation
-    // Our network support Directed Acyclic Graph (DAG) structured neural networks
+    /* A new network with batchSize 1 and CPU implementation
+     * Our network support Directed Acyclic Graph (DAG) 
+     * structured neural networks */
     network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
-    // The image data layer, user need to define a readImage function which given a string
-    // returns a tuple of float arrays ([Float], [Float]), where the first is the training data,
-    // the second is the label
+    /* The image data layer, user need to define a readImage function
+     * which given a string returns a tuple of float arrays ([Float], [Float]),
+     * where the first is the training data, the second is the label */
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
       imgNames: Array<String>(count: 100, repeatedValue: ""),
@@ -125,7 +126,8 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       dependencies: [],
       readImage: { _ in (self.readUIImageToTensor().storage, [0])}
       )))
-    // Add a convolution layer with parameters and dependencies on the last layer
+    /* Add a convolution layer with parameters and dependencies 
+     * on the last layer */
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
       name: "conv1",
       dependencies: ["data"],
@@ -156,13 +158,14 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
     self.network.forward()
 
     // Get the output
-    let out = (network.layers.last as! ForwardLayerProtocol).output.storage
+    let out = (network.layers.last as! ForwardLayerProtocol)
+                .output.storage
     let prob = out.maxElement()
     let index = out.indexOf(prob!)
 ```
 
 #### Demo
-Shown in the **Summary** section.
+Shown in the **Overview** section.
 
 ### Acknowledgement
 
