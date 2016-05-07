@@ -90,13 +90,13 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 
 The following table is the running time of evaluting 3 networks in our framework.
 
-|   Network    | Naive | Optimized |
+|   Network    | Model File Size(Uncompressed) | Naive | Optimized |
 |:---------:|:-------------------:|:-----:|
-| `SqueezeNet`  | ~1800s| 7.8s |
-| `AlexNet`  | / |  6.9s |
-|`MNIST`| / | 0.024s |
+| `SqueezeNet`  | 31M |~1800s| 7.8s |
+| `AlexNet`  | 200 M|/ |  6.9s |
+|`MNIST`| / | 11M |0.024s |
 
-Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between the ajacent layers(The layers are topologically sorted according to dependency in construction time).
+Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time).
 
 ### Deliverables 
 
@@ -124,11 +124,11 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
 
 ```swift
      /* Our network support neural networks in
-      * Directed Acyclic Graph (DAG) structure */
+       Directed Acyclic Graph (DAG) structure */
     network = Network(parameters: 
                 NetworkProperties(batchSize: 1, engine: .CPU))
     /* The image data layer
-     * user need to define a readImage function */
+      user need to define a readImage function */
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
       imgNames: Array<String>(count: 100, repeatedValue: ""),
@@ -137,7 +137,7 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
       readImage: { _ in (self.readUIImageToTensor().storage, [0])}
       )))
     /* Add a convolution layer with parameters and dependencies 
-     * on the last layer */
+       on the last layer */
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
       name: "conv1",
       dependencies: ["data"],
@@ -178,10 +178,9 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
 #### Demo
 Shown in the **Overview** section.
 
-### Future Work
+### Future Direction
 
-In the next few days, we'll still be working on the project. The things we plan to do are:
-* Optimize GPU version
+In the next few days, we'll still be working on the project. We are working to optimize our framework so that we can run `AlexNet` in realtime.
 
 ### Acknowledgement
 
