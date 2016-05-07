@@ -27,7 +27,7 @@ With above mentioned techniques, we are able to **shrink the peak memory usage t
 
 According to Morgan Stanley Research, as of the year of 2011, half of the computing devices worldwide are mobile devices [^6]. The intelligent mobile applications are changing people's lives. However after a quite thorough survey, we find no fully functional deep neural network framework on iOS. Therefore, we want to implement our own.
 
-This framework features ***well designed and easy to use API***, and ***high performance parallel neural network implementation*** based on Metal.
+This framework features ***well designed and easy to use API***, and ***high performance parallel neural network implementation*** based on Accelerate framework and Metal.
 
 With such framework, software engineers can easily deploy network on their iOS devices. This can potentially lead to many interesting applications. For example, an application that can recognize daily objects ***in almost real time without connection to internet***. We envision a great future market opening for such framework.
 
