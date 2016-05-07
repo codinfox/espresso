@@ -88,7 +88,8 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 
 250x speedup with respect to the navie implementation.
 
-Foll
+The following table is the running time of evaluting 3 networks in our framework.
+
 |   Network    | Naive | Optimized |
 |:---------:|:-------------------:|:-----:|
 | `SqueezeNet`  | ~1800s| 7.8s |
