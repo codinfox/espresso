@@ -62,7 +62,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     return [output.dimensions]
   }
 
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     let oneBottomDimensionsSample = bottomDimensions[0]
     // subject to change, currently just 4 dimensions
     let batchSize = oneBottomDimensionsSample[0]
@@ -80,7 +80,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     self.gradient.reshape([batchSize, channels, height, width])
   }
 
-  func forwardCPU(bottom: [Tensor]) {
+  public func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
       let batchSize = bottom.dimensions[0]
@@ -137,25 +137,40 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     }
   }
 
-  func forwardGPU(bottom: [Tensor]) {
+  //for debugging
+  public func forwardGPU2(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
-      let commandBuffer = self.metalCommandQueue.commandBuffer()
+      bottom.getFromMetal()
+      self.output.storage = [Float](count: self.output.count(), repeatedValue: 0)
+      self.forwardCPU([bottom])
+      self.output.putToMetal()
+    }
+  }
 
-      let padSize = parameters.padSize
-      let kernelSize = parameters.kernelSize
-      let stride = parameters.stride
+  public func forwardGPU(bottom: [Tensor]) {
+    if bottom.count > 0 {
+      let bottom = bottom[0]
 
-      let inputChannel = bottom.dimensions[1]
-      let inputHeight = bottom.dimensions[2]
-      let inputWidth = bottom.dimensions[3]
+      let padSize = Int32(parameters.padSize)
+      let kernelSize = Int32(parameters.kernelSize)
+      let stride = Int32(parameters.stride)
 
-      let outputChannel = parameters.numOutput
-      let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride
-      let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride
+      let batchSize = Int32(bottom.dimensions[0])
+      let inputChannel = Int32(bottom.dimensions[1])
+      let inputHeight = Int32(bottom.dimensions[2])
+      let inputWidth = Int32(bottom.dimensions[3])
+
+      let outputChannel = Int32(parameters.numOutput)
+      let outputHeight = Int32((inputHeight + 2 * padSize - kernelSize) / stride + 1)
+      let outputWidth = Int32((inputWidth + 2 * padSize - kernelSize) / stride + 1)
+
+      let count = Int32(batchSize * outputChannel * outputHeight * outputWidth)
 
       // copy the parameters to metal
-      let paramBuffer = createConvolutionParameter(MetalConvolutionParameter(padSize: padSize, kernelSize: kernelSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
+      let paramBuffer = createConvolutionParameter(MetalConvolutionParameter(count: count, padSize: padSize, kernelSize: kernelSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
+
+      let commandBuffer = self.metalCommandQueue.commandBuffer()
       // perform computation
       let (computeCommandEncoder, computePipelineState) = setupComputEncoder("convolutionForward", commandBuffer: commandBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice)
       computeCommandEncoder.setBuffer(bottom.mtlStorage, offset: 0, atIndex: 0)
@@ -163,7 +178,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       computeCommandEncoder.setBuffer(self.weights.mtlStorage, offset: 0, atIndex: 2)
       computeCommandEncoder.setBuffer(self.bias.mtlStorage, offset: 0, atIndex: 3)
       computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 4)
-      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
+      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: Int(count))
       commandBuffer.commit()
       commandBuffer.waitUntilCompleted()
     }

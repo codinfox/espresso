@@ -35,7 +35,7 @@ public class ImageDataLayer : ForwardLayerProtocol {
 
   var forwardMethod: ForwardLayerMethodType? = nil
 
-  func forwardCPU(bottom: [Tensor]) {
+  public func forwardCPU(bottom: [Tensor]) {
     let imgSize = parameters.dimensions[1] * parameters.dimensions[2] * parameters.dimensions[3]
     let batchSize = parameters.dimensions[0]
     let start = batchNo * batchSize
@@ -51,13 +51,14 @@ public class ImageDataLayer : ForwardLayerProtocol {
     batchNo += 1
   }
   
-  func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     let imgSize = parameters.dimensions[1] * parameters.dimensions[2] * parameters.dimensions[3]
     let batchSize = parameters.dimensions[0]
     let start = batchNo * batchSize
     if start > parameters.imgNames.count {
       print("error: not enough images")
     }
+    output.storage = [Float](count: output.count(), repeatedValue: 0)
     for curBatch in 0..<batchSize {
       let data = parameters.readImage(parameters.imgNames[start + curBatch])
       let trainData:[Float] = data.0
@@ -73,12 +74,12 @@ public class ImageDataLayer : ForwardLayerProtocol {
     return [output.dimensions]
   }
   
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     let dimensions = parameters.dimensions
     self.output.reshape(dimensions)
    }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
                                 metalDevice: MTLDevice! = nil,
                                 metalDefaultLibrary: MTLLibrary! = nil,

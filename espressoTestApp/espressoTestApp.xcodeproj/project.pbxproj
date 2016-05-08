@@ -1,0 +1,536 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C45B54981CDD9C9000F217B1 /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C3E0F11CDD428900BBC88D /* espresso.framework */; };
+		C45B54991CDD9C9000F217B1 /* espresso.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4C3E0F11CDD428900BBC88D /* espresso.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C4C3E0C41CDD3E0C00BBC88D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C3E0C31CDD3E0C00BBC88D /* AppDelegate.swift */; };
+		C4C3E0C61CDD3E0C00BBC88D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C3E0C51CDD3E0C00BBC88D /* ViewController.swift */; };
+		C4C3E0C91CDD3E0C00BBC88D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4C3E0C71CDD3E0C00BBC88D /* Main.storyboard */; };
+		C4C3E0CB1CDD3E0C00BBC88D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4C3E0CA1CDD3E0C00BBC88D /* Assets.xcassets */; };
+		C4C3E0CE1CDD3E0C00BBC88D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4C3E0CC1CDD3E0C00BBC88D /* LaunchScreen.storyboard */; };
+		C4C3E0D91CDD3E0C00BBC88D /* espressoTestAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C3E0D81CDD3E0C00BBC88D /* espressoTestAppTests.swift */; };
+		C4C3E0E41CDD3E0C00BBC88D /* espressoTestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C3E0E31CDD3E0C00BBC88D /* espressoTestAppUITests.swift */; };
+		C4C3E0F61CDD4F8C00BBC88D /* Default.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4C3E0F51CDD4F8C00BBC88D /* Default.metal */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C4C3E0D51CDD3E0C00BBC88D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C4C3E0B81CDD3E0C00BBC88D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C4C3E0BF1CDD3E0C00BBC88D;
+			remoteInfo = espressoTestApp;
+		};
+		C4C3E0E01CDD3E0C00BBC88D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C4C3E0B81CDD3E0C00BBC88D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C4C3E0BF1CDD3E0C00BBC88D;
+			remoteInfo = espressoTestApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C45B549A1CDD9C9100F217B1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C45B54991CDD9C9000F217B1 /* espresso.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C4C3E0C01CDD3E0C00BBC88D /* espressoTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = espressoTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4C3E0C31CDD3E0C00BBC88D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C4C3E0C51CDD3E0C00BBC88D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C4C3E0C81CDD3E0C00BBC88D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C4C3E0CA1CDD3E0C00BBC88D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C4C3E0CD1CDD3E0C00BBC88D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C4C3E0CF1CDD3E0C00BBC88D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4C3E0D41CDD3E0C00BBC88D /* espressoTestAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = espressoTestAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4C3E0D81CDD3E0C00BBC88D /* espressoTestAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = espressoTestAppTests.swift; sourceTree = "<group>"; };
+		C4C3E0DA1CDD3E0C00BBC88D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4C3E0DF1CDD3E0C00BBC88D /* espressoTestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = espressoTestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4C3E0E31CDD3E0C00BBC88D /* espressoTestAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = espressoTestAppUITests.swift; sourceTree = "<group>"; };
+		C4C3E0E51CDD3E0C00BBC88D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4C3E0F11CDD428900BBC88D /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = espresso.framework; path = "/Users/jerry/Library/Developer/Xcode/DerivedData/espresso-csoodbyvxoatyffodqbunhwdfsst/Build/Products/Debug-iphoneos/espresso.framework"; sourceTree = "<absolute>"; };
+		C4C3E0F51CDD4F8C00BBC88D /* Default.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Default.metal; sourceTree = "<group>"; };
+		C4C3E0F71CDD502100BBC88D /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C4C3E0BD1CDD3E0C00BBC88D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C45B54981CDD9C9000F217B1 /* espresso.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0D11CDD3E0C00BBC88D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0DC1CDD3E0C00BBC88D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C4C3E0B71CDD3E0C00BBC88D = {
+			isa = PBXGroup;
+			children = (
+				C4C3E0F71CDD502100BBC88D /* Metal.framework */,
+				C4C3E0F11CDD428900BBC88D /* espresso.framework */,
+				C4C3E0C21CDD3E0C00BBC88D /* espressoTestApp */,
+				C4C3E0D71CDD3E0C00BBC88D /* espressoTestAppTests */,
+				C4C3E0E21CDD3E0C00BBC88D /* espressoTestAppUITests */,
+				C4C3E0C11CDD3E0C00BBC88D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C4C3E0C11CDD3E0C00BBC88D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C4C3E0C01CDD3E0C00BBC88D /* espressoTestApp.app */,
+				C4C3E0D41CDD3E0C00BBC88D /* espressoTestAppTests.xctest */,
+				C4C3E0DF1CDD3E0C00BBC88D /* espressoTestAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C4C3E0C21CDD3E0C00BBC88D /* espressoTestApp */ = {
+			isa = PBXGroup;
+			children = (
+				C4C3E0C31CDD3E0C00BBC88D /* AppDelegate.swift */,
+				C4C3E0C51CDD3E0C00BBC88D /* ViewController.swift */,
+				C4C3E0C71CDD3E0C00BBC88D /* Main.storyboard */,
+				C4C3E0CA1CDD3E0C00BBC88D /* Assets.xcassets */,
+				C4C3E0CC1CDD3E0C00BBC88D /* LaunchScreen.storyboard */,
+				C4C3E0CF1CDD3E0C00BBC88D /* Info.plist */,
+				C4C3E0F51CDD4F8C00BBC88D /* Default.metal */,
+			);
+			path = espressoTestApp;
+			sourceTree = "<group>";
+		};
+		C4C3E0D71CDD3E0C00BBC88D /* espressoTestAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				C4C3E0D81CDD3E0C00BBC88D /* espressoTestAppTests.swift */,
+				C4C3E0DA1CDD3E0C00BBC88D /* Info.plist */,
+			);
+			path = espressoTestAppTests;
+			sourceTree = "<group>";
+		};
+		C4C3E0E21CDD3E0C00BBC88D /* espressoTestAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C4C3E0E31CDD3E0C00BBC88D /* espressoTestAppUITests.swift */,
+				C4C3E0E51CDD3E0C00BBC88D /* Info.plist */,
+			);
+			path = espressoTestAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C4C3E0BF1CDD3E0C00BBC88D /* espressoTestApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4C3E0E81CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestApp" */;
+			buildPhases = (
+				C4C3E0BC1CDD3E0C00BBC88D /* Sources */,
+				C4C3E0BD1CDD3E0C00BBC88D /* Frameworks */,
+				C4C3E0BE1CDD3E0C00BBC88D /* Resources */,
+				C45B549A1CDD9C9100F217B1 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = espressoTestApp;
+			productName = espressoTestApp;
+			productReference = C4C3E0C01CDD3E0C00BBC88D /* espressoTestApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C4C3E0D31CDD3E0C00BBC88D /* espressoTestAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4C3E0EB1CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestAppTests" */;
+			buildPhases = (
+				C4C3E0D01CDD3E0C00BBC88D /* Sources */,
+				C4C3E0D11CDD3E0C00BBC88D /* Frameworks */,
+				C4C3E0D21CDD3E0C00BBC88D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C4C3E0D61CDD3E0C00BBC88D /* PBXTargetDependency */,
+			);
+			name = espressoTestAppTests;
+			productName = espressoTestAppTests;
+			productReference = C4C3E0D41CDD3E0C00BBC88D /* espressoTestAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C4C3E0DE1CDD3E0C00BBC88D /* espressoTestAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4C3E0EE1CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestAppUITests" */;
+			buildPhases = (
+				C4C3E0DB1CDD3E0C00BBC88D /* Sources */,
+				C4C3E0DC1CDD3E0C00BBC88D /* Frameworks */,
+				C4C3E0DD1CDD3E0C00BBC88D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C4C3E0E11CDD3E0C00BBC88D /* PBXTargetDependency */,
+			);
+			name = espressoTestAppUITests;
+			productName = espressoTestAppUITests;
+			productReference = C4C3E0DF1CDD3E0C00BBC88D /* espressoTestAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C4C3E0B81CDD3E0C00BBC88D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Jerry Zhang";
+				TargetAttributes = {
+					C4C3E0BF1CDD3E0C00BBC88D = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					C4C3E0D31CDD3E0C00BBC88D = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = C4C3E0BF1CDD3E0C00BBC88D;
+					};
+					C4C3E0DE1CDD3E0C00BBC88D = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = C4C3E0BF1CDD3E0C00BBC88D;
+					};
+				};
+			};
+			buildConfigurationList = C4C3E0BB1CDD3E0C00BBC88D /* Build configuration list for PBXProject "espressoTestApp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C4C3E0B71CDD3E0C00BBC88D;
+			productRefGroup = C4C3E0C11CDD3E0C00BBC88D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C4C3E0BF1CDD3E0C00BBC88D /* espressoTestApp */,
+				C4C3E0D31CDD3E0C00BBC88D /* espressoTestAppTests */,
+				C4C3E0DE1CDD3E0C00BBC88D /* espressoTestAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C4C3E0BE1CDD3E0C00BBC88D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4C3E0CE1CDD3E0C00BBC88D /* LaunchScreen.storyboard in Resources */,
+				C4C3E0CB1CDD3E0C00BBC88D /* Assets.xcassets in Resources */,
+				C4C3E0C91CDD3E0C00BBC88D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0D21CDD3E0C00BBC88D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0DD1CDD3E0C00BBC88D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C4C3E0BC1CDD3E0C00BBC88D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4C3E0C61CDD3E0C00BBC88D /* ViewController.swift in Sources */,
+				C4C3E0F61CDD4F8C00BBC88D /* Default.metal in Sources */,
+				C4C3E0C41CDD3E0C00BBC88D /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0D01CDD3E0C00BBC88D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4C3E0D91CDD3E0C00BBC88D /* espressoTestAppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4C3E0DB1CDD3E0C00BBC88D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4C3E0E41CDD3E0C00BBC88D /* espressoTestAppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C4C3E0D61CDD3E0C00BBC88D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C4C3E0BF1CDD3E0C00BBC88D /* espressoTestApp */;
+			targetProxy = C4C3E0D51CDD3E0C00BBC88D /* PBXContainerItemProxy */;
+		};
+		C4C3E0E11CDD3E0C00BBC88D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C4C3E0BF1CDD3E0C00BBC88D /* espressoTestApp */;
+			targetProxy = C4C3E0E01CDD3E0C00BBC88D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C4C3E0C71CDD3E0C00BBC88D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4C3E0C81CDD3E0C00BBC88D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C4C3E0CC1CDD3E0C00BBC88D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C4C3E0CD1CDD3E0C00BBC88D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C4C3E0E61CDD3E0C00BBC88D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C4C3E0E71CDD3E0C00BBC88D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C4C3E0E91CDD3E0C00BBC88D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = espressoTestApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C4C3E0EA1CDD3E0C00BBC88D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = espressoTestApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		C4C3E0EC1CDD3E0C00BBC88D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = espressoTestAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/espressoTestApp.app/espressoTestApp";
+			};
+			name = Debug;
+		};
+		C4C3E0ED1CDD3E0C00BBC88D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = espressoTestAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/espressoTestApp.app/espressoTestApp";
+			};
+			name = Release;
+		};
+		C4C3E0EF1CDD3E0C00BBC88D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = espressoTestAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = espressoTestApp;
+			};
+			name = Debug;
+		};
+		C4C3E0F01CDD3E0C00BBC88D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = espressoTestAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.espressoTestAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = espressoTestApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C4C3E0BB1CDD3E0C00BBC88D /* Build configuration list for PBXProject "espressoTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4C3E0E61CDD3E0C00BBC88D /* Debug */,
+				C4C3E0E71CDD3E0C00BBC88D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4C3E0E81CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4C3E0E91CDD3E0C00BBC88D /* Debug */,
+				C4C3E0EA1CDD3E0C00BBC88D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4C3E0EB1CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4C3E0EC1CDD3E0C00BBC88D /* Debug */,
+				C4C3E0ED1CDD3E0C00BBC88D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4C3E0EE1CDD3E0C00BBC88D /* Build configuration list for PBXNativeTarget "espressoTestAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4C3E0EF1CDD3E0C00BBC88D /* Debug */,
+				C4C3E0F01CDD3E0C00BBC88D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C4C3E0B81CDD3E0C00BBC88D /* Project object */;
+}

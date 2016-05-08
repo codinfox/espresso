@@ -14,14 +14,13 @@ import Metal
  */
 public class Network {
   var layers : [LayerProtocol]
-  var parameters : NetworkProperties
+  public var parameters : NetworkProperties
   var layerDependencyMapping : [Int : [Int]]
   var layerNameIndexMapping : [String : Int]
   // Metal
-  var metalDevice: MTLDevice!
-  var metalDefaultLibrary: MTLLibrary!
-  var metalCommandQueue: MTLCommandQueue!
-
+  public var metalDevice: MTLDevice!
+  public var metalDefaultLibrary: MTLLibrary!
+  public var metalCommandQueue: MTLCommandQueue!
 
   public init(parameters: NetworkProperties) {
     self.layers = []
@@ -65,9 +64,13 @@ public class Network {
 
       var bottom : [Tensor] = []
       for dep in layerDependencyMapping[index]! {
-        bottom.append((layers[dep] as! ForwardLayerProtocol).output)
+        //bottom.append((layers[dep] as! ForwardLayerProtocol).output)
+        let tmp = (layers[dep] as! ForwardLayerProtocol).output
+        if (metalDevice != nil) {
+          tmp.getFromMetal()
+        }
+        bottom.append(tmp)
       }
-
       layer.forward(bottom)
     }
     // FIXME: temp

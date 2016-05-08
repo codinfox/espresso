@@ -10,42 +10,47 @@ import Foundation
 
 
 public struct MetalConvolutionParameter {
-  var padSize: Int
-  var kernelSize: Int
-  var stride: Int
-  var inputChannel: Int
-  var inputHeight: Int
-  var inputWidth: Int
-  var outputChannel: Int
-  var outputHeight: Int
-  var outputWidth: Int
+  var count: Int32
+  var padSize: Int32
+  var kernelSize: Int32
+  var stride: Int32
+  var inputChannel: Int32
+  var inputHeight: Int32
+  var inputWidth: Int32
+  var outputChannel: Int32
+  var outputHeight: Int32
+  var outputWidth: Int32
 }
 
 
 public struct MetalReluParameter {
+  var count: Int32
   var negativeSlope: Float
 }
 
 public struct MetalPoolingParameter {
-  var padSize: Int
-  var stride: Int
-  var inputChannel: Int
-  var inputHeight: Int
-  var inputWidth: Int
-  var outputChannel: Int
-  var outputHeight: Int
-  var outputWidth: Int
+  var count: Int32
+  var padSize: Int32
+  var kernelSize: Int32
+  var stride: Int32
+  var inputChannel: Int32
+  var inputHeight: Int32
+  var inputWidth: Int32
+  var outputChannel: Int32
+  var outputHeight: Int32
+  var outputWidth: Int32
 }
 
 public struct MetalFullyConnectedParameter {
-  var numOutput: Int
-  var numElementsPerBatch: Int
+  var count: Int32
+  var numOutput: Int32
+  var numElementsPerBatch: Int32
 }
 
 public struct MetalSoftmaxParameter {
-  var numOutput: Int
-  var totalNumberOfDistributions: Int
-  var mapSizeToPerformOn: Int
+  var count: Int32
+  var numOutput: Int32
+  var mapSizeToPerformOn: Int32
 }
 
 public struct MetalSoftmaxWithLossParameter {

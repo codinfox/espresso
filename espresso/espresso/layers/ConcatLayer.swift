@@ -51,7 +51,7 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     var dimensions = bottomDimensions[0]
 
     for index in 1 ..< bottomDimensions.count {
@@ -87,7 +87,7 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let commandBuffer = self.metalCommandQueue.commandBuffer()
       let mtlBlitCommandEncoder = commandBuffer.blitCommandEncoder()
@@ -95,7 +95,7 @@ public class ConcatLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       var cursor = 0
       for curBatch in 0..<batchSize {
         for i in 0..<bottom.count {
-          let elementsPerBatch = bottom[i].count(fromDimension: self.parameters.axis)
+          let elementsPerBatch = bottom[i].count(fromDimension: self.parameters.axis) * sizeof(Float)
           mtlBlitCommandEncoder.copyFromBuffer(bottom[i].mtlStorage, sourceOffset: curBatch * elementsPerBatch, toBuffer: self.output.mtlStorage, destinationOffset: cursor, size: elementsPerBatch)
           cursor += elementsPerBatch
         }

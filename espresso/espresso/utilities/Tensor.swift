@@ -16,6 +16,15 @@ import Metal
 public class Tensor {
   public typealias DataType = Float
 
+  public var engine: NetworkProperties.NetworkEngine {
+    get {
+      if self.metalDevice == nil {
+        return .CPU
+      } else {
+        return .GPU
+      }
+    }
+  }
   public var storage : [DataType] = []
   public var mtlStorage : MTLBuffer!
   public var metalDevice: MTLDevice!
@@ -28,8 +37,6 @@ public class Tensor {
   /**
    * Initialize the Tensor with dimensionalities
    */
-  public init() {}
-
   public init(metalDevice: MTLDevice!, dimensions:[Int]=[]) {
     self.metalDevice = metalDevice
     self.dimensions = dimensions
@@ -60,7 +67,23 @@ public class Tensor {
     return self.dimensions[fromDimension...toDimension].reduce(1, combine: {$0 * $1})
   }
 
-  public func reshape(dimensions: [Int], engine: NetworkProperties.NetworkEngine = .CPU) {
+  /* Put content in storage to mtl */
+  public func putToMetal() {
+    self.mtlStorage = createFloatArray(self.storage, metalDevice: self.metalDevice)
+  }
+
+  /* Get the result in mtl */
+  public func getFromMetal() {
+    if (mtlStorage != nil) {
+      let length = count() * sizeof(Float)
+      self.storage = [Float](count: count(), repeatedValue: 0)
+      let mtlContent = NSData(bytesNoCopy: self.mtlStorage.contents(),
+                              length: length, freeWhenDone: false)
+      mtlContent.getBytes(&self.storage, length:length)
+    }
+  }
+
+  public func reshape(dimensions: [Int]) {
     switch engine {
     case .CPU:
       reshapeCPU(dimensions)
@@ -75,12 +98,25 @@ public class Tensor {
     }
     let numNewElements = dimensions.count == 0 ? 0 : dimensions.reduce(1, combine: {$0 * $1})
     if self.capacity < numNewElements {
-      self.mtlStorage = metalDevice.newBufferWithLength(numNewElements, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+      self.mtlStorage = metalDevice.newBufferWithLength(numNewElements * sizeof(DataType), options: MTLResourceOptions.CPUCacheModeDefaultCache)
       self.capacity = numNewElements
     }
     self.dimensions = dimensions
     self.numel = numNewElements
     assert(self.numel >= 0)
+    // delete later after debug
+    if self.numel != 0 {
+      self.indexAuxilary = [1]
+      for d in dimensions.reverse() {
+        indexAuxilary.append(d * indexAuxilary.last!)
+      }
+      assert(indexAuxilary.last! == self.numel, "number of elements in Tensor doesn't match")
+      indexAuxilary.removeLast()
+      indexAuxilary = indexAuxilary.reverse()
+    } else {
+      // FIXME: bad hack?
+      self.indexAuxilary = []
+    }
   }
 
   public func reshapeCPU(dimensions: [Int]) {

@@ -55,31 +55,31 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     let oneBottomDimensionsSample = bottomDimensions[0]
 
     self.output.reshape(oneBottomDimensionsSample)
     self.gradient.reshape(oneBottomDimensionsSample)
   }
 
-  func forwardCPU(bottom: [Tensor]) {
+  public func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
       for index in 0 ..< bottom.numel {
         output.storage[index] = max(0, bottom.storage[index]) + self.parameters.negativeSlope * min(0, bottom.storage[index])
       }
-//      output.storage = bottom.storage.map({ max(0, $0) + self.parameters.negativeSlope * min(0, $0)})
     }
   }
 
-  func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
+      let count = Int32(self.output.count())
       let commandBuffer = self.metalCommandQueue.commandBuffer()
       // copy the parameters to metal
-      let paramBuffer = createReluParam(MetalReluParameter(negativeSlope: self.parameters.negativeSlope), metalDevice: metalDevice)
+      let paramBuffer = createReluParam(MetalReluParameter(count: count, negativeSlope: self.parameters.negativeSlope), metalDevice: metalDevice)
       // perform computation
-      submitCommonComputeJob("reluForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      submitCommonComputeJob("reluForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: self.output.count())
     }
   }
 }

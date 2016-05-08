@@ -34,7 +34,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.parameters = parameters
   }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                          bottomDimensions: [[Int]],
                          metalDevice: MTLDevice! = nil,
                          metalDefaultLibrary: MTLLibrary! = nil,
@@ -60,7 +60,7 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     let oneBottomDimensionsSample = bottomDimensions[0]
     // subject to change, currently just 4 dimensions
     let batchSize = oneBottomDimensionsSample[0]
@@ -73,10 +73,10 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     let width = (bottomWidth + self.parameters.padSize * 2 - self.parameters.kernelSize) / self.parameters.stride + 1
 
     self.output.reshape([batchSize, channels, height, width])
-    self.gradient.reshape([batchSize, channels, height, width])
+    //self.gradient.reshape([batchSize, channels, height, width])
   }
 
-  func forwardCPU(bottom: [Tensor]) {
+  public func forwardCPU(bottom: [Tensor]) {
     // Preprocess bottom to fit this layer
     if bottom.count > 0 {
       let bottom = bottom[0] // in conv layer, bottom is really just a single Tensor
@@ -138,25 +138,28 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     if (bottom.count > 0) {
       let bottom = bottom[0]
       let commandBuffer = self.metalCommandQueue.commandBuffer()
 
-      let padSize = parameters.padSize
-      let kernelSize = parameters.kernelSize
-      let stride = parameters.stride
+      let padSize = Int32(parameters.padSize)
+      let kernelSize = Int32(parameters.kernelSize)
+      let stride = Int32(parameters.stride)
 
-      let inputChannel = bottom.dimensions[1]
-      let inputHeight = bottom.dimensions[2]
-      let inputWidth = bottom.dimensions[3]
+      let batchSize = Int32(bottom.dimensions[0])
+      let inputChannel = Int32(bottom.dimensions[1])
+      let inputHeight = Int32(bottom.dimensions[2])
+      let inputWidth = Int32(bottom.dimensions[3])
 
       let outputChannel = inputChannel
-      let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride
-      let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride
+      let outputHeight = Int32((inputHeight + 2 * padSize - kernelSize) / stride + 1)
+      let outputWidth = Int32((inputWidth + 2 * padSize - kernelSize) / stride + 1)
+
+      let count = batchSize * outputChannel * outputHeight * outputWidth
 
       // copy the parameters to metal
-      let paramBuffer = createPoolingParameter(MetalPoolingParameter(padSize: padSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
+      let paramBuffer = createPoolingParameter(MetalPoolingParameter(count: count, padSize: padSize, kernelSize: kernelSize, stride: stride, inputChannel: inputChannel, inputHeight: inputHeight, inputWidth: inputWidth, outputChannel: outputChannel, outputHeight: outputHeight, outputWidth: outputWidth), metalDevice: self.metalDevice)
       // perform computation
       var funcName = ""
       if (parameters.method == .MAX) {
@@ -164,7 +167,8 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       } else {
         funcName = "poolingAvgForward"
       }
-      submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: Int(count))
+      self.output.getFromMetal()
     }
   }
 }

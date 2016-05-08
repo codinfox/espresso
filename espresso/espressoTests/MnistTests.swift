@@ -10,7 +10,7 @@ import XCTest
 
 class MnistTests: XCTestCase {
 
-  var network : Network? = nil
+  var network : Network!
   let mnistTrainPath = "/Users/jerry/Projects/15-618/mnist_train_toy.csv"
   let mnistTestPath = "/Users/jerry/Projects/15-618/mnist_test_toy.csv"
   let modelFileName = "/Users/jerry/Projects/15-618/espresso/models/lenet.espressomodel"
@@ -113,10 +113,12 @@ class MnistTests: XCTestCase {
     if let network = network {
       initImages(mnistTrainPath)
       network.importFromFile(modelFileName)
-      for _ in 0..<imageNum {
-        network.forward()
-      }
+      measureBlock({
+        //for _ in 0..<self.imageNum {
+          network.forward()
+        //}
+      })
     }
   }
-
+  
 }

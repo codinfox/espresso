@@ -9,7 +9,7 @@
 import Foundation
 
 extension Network {
-  public func importFromFile(filename: String) {
+  public func importFromFile(filename: String, engine: NetworkProperties.NetworkEngine = .CPU) {
     let data = NSData(contentsOfFile: filename)
     let params = NSKeyedUnarchiver.unarchiveObjectWithData(data!) as! NSDictionary as Dictionary
     for (layerName, param) in params {
@@ -21,6 +21,11 @@ extension Network {
       layer.weights.storage = param[0] as! [Tensor.DataType]
       assert(layer.bias.numel == param[1].count)
       layer.bias.storage = param[1] as! [Tensor.DataType]
+      if (engine == .GPU) {
+        layer.weights.putToMetal()
+        layer.bias.putToMetal()
+      }
     }
   }
+
 }
