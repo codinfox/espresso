@@ -81,6 +81,12 @@ public class Network {
       layer.restoreOutput()
       layer.forward(bottom)
 
+      // For debugging GPU version
+      //      if (self.parameters.engine == .GPU) {
+      //        layer.output.getFromMetal()
+      //      }
+
+      // Comment out if debugging GPU
       for var dep in toBePurgedLayers {
         dep.purgeOutput()
       }
