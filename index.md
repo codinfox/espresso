@@ -12,16 +12,18 @@ layout: default
 
 **[Zhihao Li](http://codinfox.github.io/)** (zhihaol) and **[Zhenrui Zhang](http://jerryzh168.github.io/)** (zhenruiz)
 
-<style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }small{color: #5e5e5e; display:block;text-align:center;margin-bottom: 1em;}</style>
+<style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: .5em .5em; display:inline-block; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }small{color: #5e5e5e; display:block;text-align:center;margin-bottom: 1em;}</style>
 <div style="text-align: center;"><a class="nav selected" href="http://codinfox.github.io/espresso/proposal" target="_blank">Final Report</a> <a class="nav" href="http://codinfox.github.io/espresso/proposal" target="_blank">Proposal</a> <a class="nav"  href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a></div>
 
-<blockquote style="margin-top:1.5em;"><p><date style="display:block;"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> 2016.05.07</date> Our GPU version achieved 1.56x speedup over the optimized CPU version. Evalutating 60+ layers SqueezeNet now takes only 5s. </p></blockquote>
+<blockquote style="margin-top:2em;">
+<p><date style="display:block;font-weight:bold;"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Updated 2016.05.07 23:10 EST</date> Our GPU version achieved 1.56x speedup over the optimized CPU version. Evalutating 60+ layers SqueezeNet now takes only 5s. AlexNet takes even less.</p>
+</blockquote>
 
 ### Overview
 
 We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 60+ layers or as large as AlexNet[^9] with ease.
 
-With above mentioned techniques, we are able to **shrink the peak memory usage to 35% of original network**, and get **~250x speedup over our naive implementation** (also the implementation used by [other implementation of neural network framework](https://github.com/alexsosn/ConvNetSwift.git)). Besides those numbers, our framework is also well designed and easy to use.
+With above mentioned techniques, we are able to **shrink the peak memory usage to 35% of original network**, and get **>250x speedup over our naive implementation** (also the implementation used by [other neural network framework](https://github.com/alexsosn/ConvNetSwift.git)). Besides those numbers, our framework is also well designed and easy to use.
 
 <div style="text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/uBqwVKA_SZQ" frameborder="0" allowfullscreen></iframe></div>
 
