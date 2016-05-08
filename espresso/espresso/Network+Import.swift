@@ -25,8 +25,48 @@ extension Network {
         layer.weights.putToMetal()
         layer.bias.putToMetal()
       }
+
+      layer.bias.readyToUse = true
+      layer.weights.readyToUse = true
+    }
+  }
+
+  public func importCompressedNetworkFromFile(filename: String) {
+    let data = NSData(contentsOfFile: filename)!
+    var dataPointer : Int = 0
+    var trainableLayers : [TrainableLayerProtocol] = []
+    for layer in self.layers {
+      if layer is TrainableLayerProtocol {
+        trainableLayers.append(layer as! TrainableLayerProtocol)
+      }
+    }
+    var numNonZeroElements = [UInt32](count: trainableLayers.count, repeatedValue: 0)
+    data.getBytes(&numNonZeroElements, range: NSRange(location: dataPointer, length: numNonZeroElements.count * sizeof(UInt32)))
+    dataPointer += numNonZeroElements.count * sizeof(UInt32)
+
+    for idx in trainableLayers.indices {
+      var layer = trainableLayers[idx]
+      var byteCount = 0
+      var bits = 0
+      if layer is ConvolutionLayer {
+        bits = 8
+      } else if layer is FullyConnectedLayer {
+        bits = 4
+      }
+
+      byteCount += (1 << bits) * sizeof(Float32) // codebook size
+      byteCount += layer.bias.numel * sizeof(Float32) // bias size
+      byteCount += (Int(numNonZeroElements[idx]) - 1)/(8/bits)+1 // spm_stream
+      byteCount += (Int(numNonZeroElements[idx]) - 1)/2+1 // ind_stream
+
+      let rawdata : NSData = data.subdataWithRange(NSRange(location: dataPointer, length: byteCount))
+      dataPointer += byteCount
+      
+      layer.compressedInfo = CompressedInfo(compressedStorage: rawdata, nonZeroElements: Int(numNonZeroElements[idx]), codeBits: bits)
+
+      layer.bias.purgeStorage()
+      layer.weights.purgeStorage()
     }
 
   }
-
 }

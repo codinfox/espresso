@@ -74,7 +74,7 @@ struct im2colGpuParameter {
   int padSize;
   int stride;
   int inputOffset;
-}
+};
 
 /* Functions */
 kernel void convolutionForward(const device float *input [[ buffer(0) ]],

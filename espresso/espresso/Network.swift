@@ -70,13 +70,15 @@ public class Network {
 
       var bottom : [Tensor] = []
       for dep in layerDependencyMapping[index]! {
-        //bottom.append((layers[dep] as! ForwardLayerProtocol).output)
-        let tmp = (layers[dep] as! ForwardLayerProtocol).output
-        if (metalDevice != nil) {
-          tmp.getFromMetal()
+        var depLayer = layers[dep] as! ForwardLayerProtocol
+        bottom.append(depLayer.output)
+        unfulfilledDependencies[dep] -= 1
+        if unfulfilledDependencies[dep] <= 0 {
+          toBePurgedLayers.append(depLayer)
         }
-        bottom.append(tmp)
       }
+
+      layer.restoreOutput()
       layer.forward(bottom)
 
       for var dep in toBePurgedLayers {

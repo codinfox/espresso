@@ -66,7 +66,7 @@ struct MetalLrnParameter {
 struct im2colGpuParameter {
   int inputChannel;
   
-}
+};
 
 /* Functions */
 kernel void convolutionForward(const device float *input [[ buffer(0) ]],
