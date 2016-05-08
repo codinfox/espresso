@@ -168,7 +168,6 @@ public class PoolingLayer: ForwardLayerProtocol, BackwardLayerProtocol {
         funcName = "poolingAvgForward"
       }
       submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: Int(count))
-      self.output.getFromMetal()
     }
   }
 }

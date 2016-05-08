@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 /** @brief image to column
  *  dimension
@@ -24,12 +25,13 @@ public func im2colCpu(input: [Tensor.DataType],
                       padSize: Int,
                       stride: Int,
                       inputOffset: Int = 0) -> [Tensor.DataType] {
-  let outputSize = height * width * inputChannels * kernelSize * kernelSize
-  var output:[Float] = Array(count: outputSize, repeatedValue: 0)
-  //let inputHeight = height + 2 * padSize
-  //let inputWidth = width + 2 * padSize
+    // change input/output to Tensor?
   let outputHeight = (height + 2 * padSize - kernelSize) / stride + 1
   let outputWidth = (width + 2 * padSize - kernelSize) / stride + 1
+
+  let outputSize = outputHeight * outputWidth * inputChannels * kernelSize * kernelSize
+  var output:[Float] = Array(count: outputSize, repeatedValue: 0)
+
   let channelSize = height * width
   var outputIndex = 0
   for curChan in 0..<inputChannels {
@@ -54,4 +56,26 @@ public func im2colCpu(input: [Tensor.DataType],
     }
   }
   return output
+}
+
+
+public func im2colGpu(input: Tensor,
+                      output: Tensor,
+                      inputChannels: Int,
+                      height: Int,
+                      width: Int,
+                      kernelSize: Int,
+                      padSize: Int,
+                      stride: Int,
+                      metalDevice: MTLDevice,
+                      metalCommandQueue: MTLCommandQueue,
+                      metalDefaultLibrary: MTLLibrary,
+                      inputOffset: Int = 0) {
+  let outputHeight = (height + 2 * padSize - kernelSize) / stride + 1
+  let outputWidth = (width + 2 * padSize - kernelSize) / stride + 1
+  let count = outputHeight * outputWidth * inputChannels * kernelSize * kernelSize
+  let paramBuffer = createIm2colParameter(MetalIm2colParameter(count: Int32(count), inputOffset: Int32(inputOffset), kernelSize: Int32(kernelSize), padSize: Int32(padSize), stride: Int32(stride), inputChannels: Int32(inputChannels), inputHeight: Int32(height), inputWidth: Int32(width), outputHeight: Int32(outputHeight), outputWidth: Int32(outputWidth)), metalDevice: metalDevice)
+
+  let commandBuffer = metalCommandQueue.commandBuffer()
+  submitCommonComputeJob("im2colGpu", paramBuffer: paramBuffer, metalDefaultLibrary: metalDefaultLibrary, metalDevice: metalDevice, inputData: input, outputData: output, commandBuffer: commandBuffer, threadCount: Int(count))
 }

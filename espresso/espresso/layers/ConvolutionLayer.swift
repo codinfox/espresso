@@ -162,6 +162,28 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     if bottom.count > 0 {
       let bottom = bottom[0]
 
+      let padSize = parameters.padSize
+      let kernelSize = parameters.kernelSize
+      let stride = parameters.stride
+
+      let batchSize = bottom.dimensions[0]
+      let inputChannel = bottom.dimensions[1]
+      let inputHeight = bottom.dimensions[2]
+      let inputWidth = bottom.dimensions[3]
+
+      let outputChannel = parameters.numOutput
+      let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride + 1
+      let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride + 1
+
+      let count = batchSize * outputChannel * outputHeight * outputWidth
+      let bottomCol = Tensor(metalDevice: metalDevice, dimensions: [1, 1, inputChannel * kernelSize * kernelSize, outputHeight * outputWidth])
+      im2colGpu(bottom, output: self.output, inputChannels: inputChannel, height: inputHeight, width: inputWidth, kernelSize: kernelSize, padSize: padSize, stride: stride, metalDevice: metalDevice, metalCommandQueue: metalCommandQueue, metalDefaultLibrary: metalDefaultLibrary)
+    }
+  }
+  public func forwardGPUNaive(bottom: [Tensor]) {
+    if bottom.count > 0 {
+      let bottom = bottom[0]
+
       let padSize = Int32(parameters.padSize)
       let kernelSize = Int32(parameters.kernelSize)
       let stride = Int32(parameters.stride)
