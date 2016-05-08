@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-    let engine: NetworkProperties.NetworkEngine = .CPU
+    let engine: NetworkProperties.NetworkEngine = .GPU
     // Override point for customization after application launch.
     network = Network(parameters: NetworkProperties(batchSize: 1, engine: engine))
     network.add(ImageDataLayer(parameters: ImageDataParameters(
