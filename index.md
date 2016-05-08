@@ -15,6 +15,8 @@ layout: default
 <style>a.nav { color: #585858; border-radius: 5px; background: #E6E6E6; padding: .2em .7em; text-decoration: none; margin: 0 .5em; }a.nav:hover { background: #D8D8D8; color: black;}a.nav.selected { background: #D8D8D8; font-weight: bold; }small{color: #5e5e5e; display:block;text-align:center;margin-bottom: 1em;}</style>
 <div style="text-align: center;"><a class="nav selected" href="http://codinfox.github.io/espresso/proposal" target="_blank">Final Report</a> <a class="nav" href="http://codinfox.github.io/espresso/proposal" target="_blank">Proposal</a> <a class="nav"  href="http://codinfox.github.io/espresso/checkpoint" target="_blank">Checkpoint Report</a></div>
 
+<blockquote style="margin-top:1.5em;"><p><date style="display:block;"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> 2016.05.07</date> Our GPU version achieved 1.56x speedup over the optimized CPU version. Evalutating 60+ layers SqueezeNet now takes only 5s. </p></blockquote>
+
 ### Overview
 
 We developed a parallel neural network framework running well on iOS devices regardless of the limited memory and computing resources. Our framework features low memory footprint and high parallelism. By extensively using **CPU SIMD operations**, **GPU acceleration**, **on-demand output**, **on-the-fly network decompression** and many other techniques, one can evaluate networks as deep as 60+ layers or as large as AlexNet[^9] with ease.
@@ -90,11 +92,11 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 
 The following table is the running time of evaluting 3 networks in our framework.
 
-|   Network   | Naive | Optimized |
-|:---------:|:-------------------:|:-----:|
-| `SqueezeNet`(31M) |~1800s| 7.8s |
-| `AlexNet` (233M) | / |  6.9s |
-|`MNIST`(11M)| / |0.024s |
+|   Network   | Naive | Optimized | GPU Optimized |
+|:---------:|:-------------------:|:-----:|:-------:|
+| `SqueezeNet`(31M) |~1800s| 7.8s |~5s|
+| `AlexNet` (233M) | / |  6.9s | / |
+|`MNIST`(11M)| / |0.024s | / |
 
 Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
 
