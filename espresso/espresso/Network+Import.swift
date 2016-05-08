@@ -26,6 +26,7 @@ extension Network {
         layer.bias.putToMetal()
       }
     }
+
   }
 
 }

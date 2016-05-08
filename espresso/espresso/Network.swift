@@ -17,6 +17,7 @@ public class Network {
   public var parameters : NetworkProperties
   var layerDependencyMapping : [Int : [Int]]
   var layerNameIndexMapping : [String : Int]
+  var dependenciesOfLayer : [Int]
   // Metal
   public var metalDevice: MTLDevice!
   public var metalDefaultLibrary: MTLLibrary!
@@ -27,6 +28,7 @@ public class Network {
     self.parameters = parameters
     self.layerDependencyMapping = [:]
     self.layerNameIndexMapping = [:]
+    self.dependenciesOfLayer = []
     if parameters.engine == .GPU {
       // Initialize gpu
       metalDevice = MTLCreateSystemDefaultDevice()
@@ -45,11 +47,13 @@ public class Network {
     let currentLayerIndex = layers.count
     let currentLayerName = layer.name
     let currentLayerDependencies = layer.dependencies
+    self.dependenciesOfLayer.append(0)
 
     layerNameIndexMapping[currentLayerName] = currentLayerIndex
     layerDependencyMapping[currentLayerIndex] = []
     for depName in currentLayerDependencies {
       let depIndex = layerNameIndexMapping[depName]!
+      self.dependenciesOfLayer[depIndex] += 1
       layerDependencyMapping[currentLayerIndex]?.append(depIndex)
       bottomDimensions.appendContentsOf(((layers[depIndex] as! ForwardLayerProtocol).outputDimensions()))
     }
@@ -59,7 +63,9 @@ public class Network {
   }
 
   public func forward() -> Tensor {
+    var unfulfilledDependencies = self.dependenciesOfLayer
     for index in self.layers.indices {
+      var toBePurgedLayers : [ForwardLayerProtocol] = []
       var layer = self.layers[index] as! ForwardLayerProtocol // may exception, but should not
 
       var bottom : [Tensor] = []
@@ -72,6 +78,10 @@ public class Network {
         bottom.append(tmp)
       }
       layer.forward(bottom)
+
+      for var dep in toBePurgedLayers {
+        dep.purgeOutput()
+      }
     }
     // FIXME: temp
     return (self.layers.last as! ForwardLayerProtocol).output

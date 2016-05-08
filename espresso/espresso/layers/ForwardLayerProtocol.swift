@@ -45,9 +45,26 @@ protocol ForwardLayerProtocol : LayerProtocol {
    - parameter bottomDimensions: The dimension of the bottom layer
    */
   mutating func reshapeByBottomDimensions(bottomDimensions: [[Int]])
+
+  mutating func purgeOutput()
+  func restoreOutput()
 }
 
 extension ForwardLayerProtocol {
+
+  mutating func purgeOutput() {
+    self.output.purgeStorage()
+  }
+
+  func restoreOutput() {
+    if self.output.readyToUse {
+      return
+    }
+    self.output.storage = [Float32](count: self.output.numel, repeatedValue: 0)
+    self.output.capacity = self.output.numel
+    self.output.readyToUse = true
+  }
+
   mutating func forward(bottom: [Tensor]) {
     self.forwardMethod!(bottom)
   }

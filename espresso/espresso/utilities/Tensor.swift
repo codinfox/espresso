@@ -33,6 +33,7 @@ public class Tensor {
   public private(set) var numel : Int = 0
   public var capacity : Int = 0
   var indexAuxilary: [Int] = []
+  var readyToUse : Bool = false
 
   /**
    * Initialize the Tensor with dimensionalities
@@ -44,6 +45,7 @@ public class Tensor {
 
   public init(dimensions: [Int]) {
     self.reshape(dimensions)
+    self.readyToUse = true
   }
 
   func index(idxs: [Int]) -> Int {
@@ -162,5 +164,14 @@ public class Tensor {
       self.storage[index(idxs)] = newValue
     }
   }
-  
+
+  // MARK: Decompression
+
+  /**
+   When memory limited, storage may be purged to save space
+   */
+  public func purgeStorage() {
+    self.storage = []
+    readyToUse = false
+  }
 }
