@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B501DD0D1CDC3C68002675F0 /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B501DD0C1CDC3C68002675F0 /* espresso.framework */; };
-		B501DD0E1CDC3C68002675F0 /* espresso.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B501DD0C1CDC3C68002675F0 /* espresso.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B501DD111CDC448D002675F0 /* example.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B501DD101CDC448D002675F0 /* example.jpg */; };
 		B51B30D51CDC309800B73AAB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B30D41CDC309800B73AAB /* AppDelegate.swift */; };
 		B51B30D71CDC309800B73AAB /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51B30D61CDC309800B73AAB /* FirstViewController.swift */; };
@@ -17,6 +15,9 @@
 		B51B30DE1CDC309800B73AAB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B51B30DD1CDC309800B73AAB /* Assets.xcassets */; };
 		B51B30E11CDC309800B73AAB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B51B30DF1CDC309800B73AAB /* LaunchScreen.storyboard */; };
 		B51B30E91CDC31BB00B73AAB /* squeezenet.espressomodel in Resources */ = {isa = PBXBuildFile; fileRef = B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */; };
+		C4A578111CDDBB8F0084B1E9 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4A578101CDDBB8F0084B1E9 /* Shaders.metal */; };
+		C4C3E0B51CDD3B0F00BBC88D /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C3E0B41CDD3B0F00BBC88D /* espresso.framework */; };
+		C4C3E0B61CDD3B0F00BBC88D /* espresso.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4C3E0B41CDD3B0F00BBC88D /* espresso.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +27,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B501DD0E1CDC3C68002675F0 /* espresso.framework in Embed Frameworks */,
+				C4C3E0B61CDD3B0F00BBC88D /* espresso.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -34,7 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B501DD0C1CDC3C68002675F0 /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = espresso.framework; path = "/Users/Ben/Library/Developer/Xcode/DerivedData/espresso-caiqphvadhjuswggvkegrpqvecsj/Build/Products/Debug-iphoneos/espresso.framework"; sourceTree = "<absolute>"; };
 		B501DD101CDC448D002675F0 /* example.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = example.jpg; sourceTree = "<group>"; };
 		B51B30D11CDC309800B73AAB /* EspressoHostApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EspressoHostApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51B30D41CDC309800B73AAB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,6 +45,8 @@
 		B51B30E01CDC309800B73AAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B51B30E21CDC309800B73AAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = squeezenet.espressomodel; sourceTree = "<group>"; };
+		C4A578101CDDBB8F0084B1E9 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		C4C3E0B41CDD3B0F00BBC88D /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = espresso.framework; path = "/Users/jerry/Library/Developer/Xcode/DerivedData/espresso-csoodbyvxoatyffodqbunhwdfsst/Build/Products/Debug-iphoneos/espresso.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B501DD0D1CDC3C68002675F0 /* espresso.framework in Frameworks */,
+				C4C3E0B51CDD3B0F00BBC88D /* espresso.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +64,7 @@
 		B51B30C81CDC309800B73AAB = {
 			isa = PBXGroup;
 			children = (
-				B501DD0C1CDC3C68002675F0 /* espresso.framework */,
+				C4C3E0B41CDD3B0F00BBC88D /* espresso.framework */,
 				B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */,
 				B501DD101CDC448D002675F0 /* example.jpg */,
 				B51B30D31CDC309800B73AAB /* EspressoHostApp */,
@@ -88,6 +90,7 @@
 				B51B30DD1CDC309800B73AAB /* Assets.xcassets */,
 				B51B30DF1CDC309800B73AAB /* LaunchScreen.storyboard */,
 				B51B30E21CDC309800B73AAB /* Info.plist */,
+				C4A578101CDDBB8F0084B1E9 /* Shaders.metal */,
 			);
 			path = EspressoHostApp;
 			sourceTree = "<group>";
@@ -125,7 +128,7 @@
 				TargetAttributes = {
 					B51B30D01CDC309800B73AAB = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = R43NWPCL38;
+						DevelopmentTeam = BWSJHG5EZE;
 					};
 				};
 			};
@@ -167,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4A578111CDDBB8F0084B1E9 /* Shaders.metal in Sources */,
 				B51B30D91CDC309800B73AAB /* SecondViewController.swift in Sources */,
 				B51B30D51CDC309800B73AAB /* AppDelegate.swift in Sources */,
 				B51B30D71CDC309800B73AAB /* FirstViewController.swift in Sources */,

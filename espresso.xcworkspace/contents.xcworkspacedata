@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:espressoTestApp/espressoTestApp.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:EspressoHostApp/EspressoHostApp.xcodeproj">
    </FileRef>
    <FileRef

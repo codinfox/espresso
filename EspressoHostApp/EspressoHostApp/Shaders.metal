@@ -38,18 +38,15 @@ struct MetalPoolingParameter {
 };
 
 struct MetalReluParameter {
-  int count;
   float negativeSlope;
 };
 
 struct MetalFullyConnectedParameter {
-  int count;
   int numOutput;
   int numElementsPerBatch;
 };
 
 struct MetalSoftmaxParameter {
-  int count;
   int numOutput;
   int mapSizeToPerformOn;
 };
@@ -68,12 +65,7 @@ struct MetalLrnParameter {
 
 struct im2colGpuParameter {
   int inputChannel;
-  int height;
-  int width;
-  int kernelSize;
-  int padSize;
-  int stride;
-  int inputOffset;
+  
 };
 
 /* Functions */
@@ -237,9 +229,6 @@ kernel void fullyConnectedForward(const device float *input [[ buffer(0) ]],
                                   const device float *bias [[ buffer(3) ]],
                                   const device MetalFullyConnectedParameter *fcParams [[ buffer(4) ]],
                                   uint id [[ thread_position_in_grid ]]) {
-  if (id >= (uint)fcParams[0].count) {
-    return;
-  }
   int numOutput = fcParams[0].numOutput;
   int numElementsPerBatch = fcParams[0].numElementsPerBatch;
   int curBatch = id / numOutput;
@@ -255,9 +244,6 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
                            const device MetalSoftmaxParameter *softmaxParam [[ buffer(2) ]],
                            uint id [[ thread_position_in_grid ]]) {
   // count = batchSize * height * width
-  if (id >= (uint)softmaxParam[0].count) {
-    return;
-  }
   int numOutput = softmaxParam[0].numOutput;
   int mapSizeToPerformOn = softmaxParam[0].mapSizeToPerformOn;
 

@@ -110,10 +110,12 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       let bottom = bottom[0]
       let commandBuffer = self.metalCommandQueue.commandBuffer()
 
-      let numOutput = parameters.numOutput
-      let numElementsPerBatch = bottom.count(fromDimension: 1)
+      let batchSize = Int32(bottom.dimensions[0])
+      let numOutput = Int32(parameters.numOutput)
+      let numElementsPerBatch = Int32(bottom.count(fromDimension: 1))
+      let count = numOutput * batchSize
       // copy the parameters to metal
-      let paramBuffer = createFullyConnectedParameter(MetalFullyConnectedParameter(numOutput: numOutput, numElementsPerBatch: numElementsPerBatch), metalDevice: self.metalDevice)
+      let paramBuffer = createFullyConnectedParameter(MetalFullyConnectedParameter(count: count, numOutput: numOutput, numElementsPerBatch: numElementsPerBatch), metalDevice: self.metalDevice)
       // perform computation
       let (computeCommandEncoder, computePipelineState) = setupComputEncoder("fullyConnectedForward", commandBuffer: commandBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice)
       computeCommandEncoder.setBuffer(bottom.mtlStorage, offset: 0, atIndex: 0)
@@ -121,7 +123,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       computeCommandEncoder.setBuffer(self.weights.mtlStorage, offset: 0, atIndex: 2)
       computeCommandEncoder.setBuffer(self.bias.mtlStorage, offset:0, atIndex: 3)
       computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 4)
-      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
+      submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: Int(count))
       commandBuffer.commit()
       commandBuffer.waitUntilCompleted()
     }

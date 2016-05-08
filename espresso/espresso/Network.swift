@@ -14,15 +14,14 @@ import Metal
  */
 public class Network {
   var layers : [LayerProtocol]
-  var parameters : NetworkProperties
+  public var parameters : NetworkProperties
   var layerDependencyMapping : [Int : [Int]]
   var layerNameIndexMapping : [String : Int]
   var dependenciesOfLayer : [Int]
   // Metal
-  var metalDevice: MTLDevice!
-  var metalDefaultLibrary: MTLLibrary!
-  var metalCommandQueue: MTLCommandQueue!
-
+  public var metalDevice: MTLDevice!
+  public var metalDefaultLibrary: MTLLibrary!
+  public var metalCommandQueue: MTLCommandQueue!
 
   public init(parameters: NetworkProperties) {
     self.layers = []

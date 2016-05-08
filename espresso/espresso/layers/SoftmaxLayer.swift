@@ -38,7 +38,7 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.parameters = parameters
   }
 
-  func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
+  public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                          bottomDimensions: [[Int]],
                          metalDevice: MTLDevice! = nil,
                          metalDefaultLibrary: MTLLibrary! = nil,
@@ -57,14 +57,14 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     self.reshapeByBottomDimensions(bottomDimensions) // may exception (should not)
   }
 
-  func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
+  public func reshapeByBottomDimensions(bottomDimensions: [[Int]]) {
     let oneBottomDimensionsSample = bottomDimensions[0]
 
     self.output.reshape(oneBottomDimensionsSample)
     //    self.gradient.reshape(oneBottomDimensionsSample)
   }
 
-  func forwardCPU(bottom: [Tensor]) {
+  public func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0] // in softmax layer, bottom is really just a single Tensor
 
@@ -121,21 +121,22 @@ public class SoftmaxLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     }
   }
 
-  func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     if (bottom.count > 0) {
       let bottom = bottom[0]
       let commandBuffer = self.metalCommandQueue.commandBuffer()
       // how many bins does an output distribution has
-      let numOutput = bottom.dimensions[self.parameters.axis]
+      let numOutput = Int32(bottom.dimensions[self.parameters.axis])
       // for conv feature maps, this is just height * width
-      let mapSizeToPerformOn = bottom.count(fromDimension: self.parameters.axis + 1)
+      let mapSizeToPerformOn = Int32(bottom.count(fromDimension: self.parameters.axis + 1))
       // totally how many distributions should we get
-      let totalNumberOfDistributions = bottom.count(toDimension: self.parameters.axis - 1)
+      let totalNumberOfDistributions = Int32(bottom.count(toDimension: self.parameters.axis - 1))
 
+      let count = totalNumberOfDistributions * mapSizeToPerformOn;
       // copy the parameters to metal
-      let paramBuffer = createSoftmaxParameter(MetalSoftmaxParameter(numOutput: numOutput, totalNumberOfDistributions: totalNumberOfDistributions, mapSizeToPerformOn: mapSizeToPerformOn), metalDevice: metalDevice)
+      let paramBuffer = createSoftmaxParameter(MetalSoftmaxParameter(count: count, numOutput: numOutput, mapSizeToPerformOn: mapSizeToPerformOn), metalDevice: metalDevice)
       // perform computation
-      submitCommonComputeJob("softmaxForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer)
+      submitCommonComputeJob("softmaxForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: Int(count))
     }
   }
 }

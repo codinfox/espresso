@@ -26,7 +26,11 @@ class FirstViewController: UIViewController, UIImagePickerControllerDelegate, UI
   @IBAction func recognize(sender: AnyObject) {
     let displayLabel = [label1, label2, label3, label4, label5]
 
-    let out = network.forward().storage
+    let outMtl = network.forward()
+    if network.parameters.engine == .GPU {
+      outMtl.getFromMetal()
+    }
+    let out = outMtl.storage
     var top5 = [Float]()
     var top5min : Int = 0
 

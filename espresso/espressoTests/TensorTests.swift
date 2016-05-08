@@ -27,8 +27,8 @@ class TensorTestCPU: XCTestCase {
   }
 
   func testReshape() {
-    tensor = Tensor()
     let dim : [Int] = [3,4,4]
+    tensor = Tensor(dimensions: dim)
 
     // Reshape from an empty tensor
     tensor?.reshape(dim)
@@ -80,7 +80,7 @@ class TensorTestCPU: XCTestCase {
   }
 
   func testCount() {
-    tensor = Tensor()
+    tensor = Tensor(dimensions: [])
     XCTAssertEqual(tensor?.count(), 1)
     XCTAssertEqual(tensor?.count(fromDimension: 1,toDimension: 2), 1)
     tensor = Tensor(dimensions: [2,2,3])
@@ -110,28 +110,28 @@ class TensorTestGPU: XCTestCase {
     let dim : [Int] = [3,4,4]
     tensor = Tensor(metalDevice: MTLCreateSystemDefaultDevice())
     // Reshape from an empty tensor
-    tensor?.reshape(dim, engine: .GPU)
+    tensor?.reshape(dim)
 
     XCTAssertEqual((tensor?.dimensions)!, dim)
     XCTAssertEqual((tensor?.numel)!, 3*4*4)
     XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
 
     // Should not do anything
-    tensor?.reshape(dim, engine: .GPU)
+    tensor?.reshape(dim)
 
     XCTAssertEqual((tensor?.dimensions)!, dim)
     XCTAssertEqual((tensor?.numel)!, 3*4*4)
     XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
 
     // Shape back from [3,7,7]
-    tensor?.reshape(dim, engine: .GPU)
+    tensor?.reshape(dim)
 
     XCTAssertEqual((tensor?.dimensions)!, dim)
     XCTAssertEqual((tensor?.numel)!, 3*4*4)
     XCTAssertEqual((tensor?.indexAuxilary)!, [4*4, 4, 1])
 
     // Reshape to null tensor
-    tensor?.reshape([], engine: .GPU)
+    tensor?.reshape([])
     XCTAssertEqual((tensor?.dimensions)!, [])
     XCTAssertEqual((tensor?.numel)!, 0)
   }

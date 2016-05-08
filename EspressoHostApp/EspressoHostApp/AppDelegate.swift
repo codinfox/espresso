@@ -53,8 +53,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    let engine: NetworkProperties.NetworkEngine = .CPU
     // Override point for customization after application launch.
-    network = Network(parameters: NetworkProperties(batchSize: 1, engine: .CPU))
+    network = Network(parameters: NetworkProperties(batchSize: 1, engine: engine))
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
       imgNames: Array<String>(count: 100, repeatedValue: ""),
@@ -408,7 +409,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       )))
 
     let networkFile = NSBundle.mainBundle().pathForResource("squeezenet", ofType: "espressomodel")
-    network.importFromFile(networkFile!)
+    network.importFromFile(networkFile!, engine: engine)
 
     return true
   }

@@ -66,13 +66,13 @@ func setupComputEncoder(funcName: String, commandBuffer: MTLCommandBuffer, metal
 }
 
 func submitComputeJob(computeCommandEncoder: MTLComputeCommandEncoder, computePipelineState: MTLComputePipelineState, count: Int) {
-  let threadsPerGroup = MTLSize(width: computePipelineState.threadExecutionWidth, height: 1, depth: 1)
-  let numThreads = MTLSize(width: count / computePipelineState.threadExecutionWidth, height: 1, depth: 1)
-  computeCommandEncoder.dispatchThreadgroups(numThreads, threadsPerThreadgroup: threadsPerGroup)
+  let threadsPerGroup = MTLSize(width: min(count, computePipelineState.threadExecutionWidth), height: 1, depth: 1)
+  let numGroups = MTLSize(width: count / computePipelineState.threadExecutionWidth + 1, height: 1, depth: 1)
+  computeCommandEncoder.dispatchThreadgroups(numGroups, threadsPerThreadgroup: threadsPerGroup)
   computeCommandEncoder.endEncoding()
 }
 
-func submitCommonComputeJob(funcName: String, paramBuffer: MTLBuffer, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice, inputData: Tensor, outputData: Tensor, commandBuffer: MTLCommandBuffer) {
+func submitCommonComputeJob(funcName: String, paramBuffer: MTLBuffer, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice, inputData: Tensor, outputData: Tensor, commandBuffer: MTLCommandBuffer, threadCount: Int) {
   /* Setup the kernel function */
   let (computeCommandEncoder, computePipelineState) = setupComputEncoder(funcName, commandBuffer: commandBuffer, metalDefaultLibrary: metalDefaultLibrary, metalDevice: metalDevice)
 
@@ -81,7 +81,7 @@ func submitCommonComputeJob(funcName: String, paramBuffer: MTLBuffer, metalDefau
   computeCommandEncoder.setBuffer(outputData.mtlStorage, offset: 0, atIndex: 1)
   computeCommandEncoder.setBuffer(paramBuffer, offset: 0, atIndex: 2)
 
-  submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: 0)
+  submitComputeJob(computeCommandEncoder, computePipelineState: computePipelineState, count: threadCount)
   commandBuffer.commit()
   commandBuffer.waitUntilCompleted()
 }
