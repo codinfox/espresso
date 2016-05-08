@@ -281,3 +281,33 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
     output[fixedOffset + curChan * mapSizeToPerformOn + gridIndex] /= Z;
   }
 }
+
+#pragma mark Math Functions
+
+/** 
+ A: m rows by k columns
+ B: k rows by n columns
+ C: m rows by n columns
+
+ If trans is specified, then m,n,k represents A,B dimensions after transpose (that is, really used in multiplication)
+ */
+kernel void espresso_sgemm(bool transA, bool transB,
+                           uint m, uint n, uint k, float alpha,
+                           const device float * A,
+                           const device float * B,
+                           float beta, device float * C,
+                           uint id [[ thread_position_in_grid ]]) {
+  uint aStep = transA ? m : 1;
+  uint bStep = transB ? 1 : n;
+
+  uint cRow = id / n, cCol = id % n;
+
+  const float * startA = A + (transA ? (cRow) : (k * cRow));
+  const float * startB = B + (transB ? (k * cCol) : (cCol));
+
+  float result = 0;
+  for (int i = 0; i < k; i ++) {
+    result += A[startA + i * aStep] * B[startB + i * bStep];
+  }
+  C[i] = alpha * result + beta * C[id];
+}

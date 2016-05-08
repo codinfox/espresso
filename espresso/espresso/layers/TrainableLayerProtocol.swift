@@ -105,8 +105,10 @@ extension TrainableLayerProtocol {
     if slots == 2 {
       // Can be SIMD
       for i in 0.stride(to: nonZeroElements, by: 2) {
-        spm[i] = spmStream[i] % 16 // (1 << 4)
-        spm[i+1] = spmStream[i] / 16 // (1 << 4)
+        spm[i] = spmStream[i/2] % 16 // (1 << 4)
+        if i + 1 < nonZeroElements {
+          spm[i+1] = spmStream[i/2] / 16 // (1 << 4)
+        }
       }
     } else { // slots == 1
       spm = spmStream
