@@ -91,7 +91,7 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 The following table is the running time of evaluting 3 networks in our framework.
 
 |   Network   | Naive | Optimized | GPU Optimized |
-|:---------:|:-------------------:|:-----:|:-------:\
+|:---------:|:-------------------:|:-----:|:-------:|
 | `SqueezeNet`(31M) |~1800s| 7.8s |~5s|
 | `AlexNet` (233M) | / |  6.9s |/|
 |`MNIST`(11M)| / |0.024s |/|
