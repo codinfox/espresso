@@ -90,11 +90,11 @@ We can see the peak memory usage is 327.3M, which is significantly lower than 1.
 
 The following table is the running time of evaluting 3 networks in our framework.
 
-|   Network   | Naive | Optimized |
-|:---------:|:-------------------:|:-----:|
-| `SqueezeNet`(31M) |~1800s| 7.8s |
-| `AlexNet` (233M) | / |  6.9s |
-|`MNIST`(11M)| / |0.024s |
+|   Network   | Naive | Optimized | GPU Optimized |
+|:---------:|:-------------------:|:-----:|:-------:|
+| `SqueezeNet`(31M) |~1800s| 7.8s |~5s|
+| `AlexNet` (233M) | / |  6.9s | / |
+|`MNIST`(11M)| / |0.024s | / |
 
 Although `AlexNet` has much more parameters(200M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
 
