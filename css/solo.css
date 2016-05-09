@@ -96,9 +96,14 @@ h3 {
   }
 }
 
-h4, h5, h6 {
+h4 {
   margin: 1.5rem -1rem 1.5rem -1rem;
   font-size: 1.5rem;
+}
+
+h5, h6 {
+  margin: 1.5rem -1rem 1.5rem -1rem;
+  font-size: 1.0rem;
 }
 
 p, ul, ol, dl, table, pre, blockquote {
