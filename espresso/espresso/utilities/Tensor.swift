@@ -96,6 +96,9 @@ public class Tensor {
 
   public func reshapeGPU(dimensions: [Int]) {
     if self.dimensions == dimensions {
+      if (self.mtlStorage == nil) {
+        self.mtlStorage = metalDevice.newBufferWithLength(self.capacity * sizeof(DataType), options: MTLResourceOptions.CPUCacheModeDefaultCache)
+      }
       return
     }
     let numNewElements = dimensions.count == 0 ? 0 : dimensions.reduce(1, combine: {$0 * $1})

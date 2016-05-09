@@ -78,3 +78,19 @@ public struct MetalIm2colParameter {
     var outputHeight: Int32
     var outputWidth: Int32
 }
+
+public struct MetalSgemmParameter {
+    var count: UInt32
+    var transA: Bool
+    var transB: Bool
+    var m: UInt32
+    var n: UInt32
+    var k: UInt32
+    var alpha: Float
+    var beta: Float
+}
+
+public struct MetalMatrixDim
+{
+  var m, k, n, pbytes, qbytes: UInt16
+}

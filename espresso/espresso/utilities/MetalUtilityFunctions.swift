@@ -52,6 +52,18 @@ func createIm2colParameter(param: MetalIm2colParameter, metalDevice: MTLDevice) 
     return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
 }
 
+func createSgemmParameter(param: MetalSgemmParameter, metalDevice: MTLDevice) -> MTLBuffer {
+    var param = param
+    let length = sizeof(MetalSgemmParameter)
+    return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
+func createAppleMMParameter(param: MetalMatrixDim, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalMatrixDim)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
 func createComputePipeline(funcName: String, metalDefaultLibrary: MTLLibrary, metalDevice: MTLDevice) -> MTLComputePipelineState! {
   let function = metalDefaultLibrary.newFunctionWithName(funcName)
   var computePipelineState: MTLComputePipelineState?

@@ -33,6 +33,7 @@
 		C43E83D01CC0330C004C0175 /* FullyConnectedLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83CF1CC0330C004C0175 /* FullyConnectedLayer.swift */; };
 		C43E83D21CC03334004C0175 /* SoftmaxLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D11CC03334004C0175 /* SoftmaxLayer.swift */; };
 		C43E83D61CC0339D004C0175 /* PoolingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83D51CC0339D004C0175 /* PoolingLayer.swift */; };
+		C4466C5F1CDFDF670027AB9C /* EspressoBlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = C486E5E91CDFD506001D42C9 /* EspressoBlas.swift */; };
 		C4726C091CDA8FC300D2204E /* ConvolutionLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */; };
 		C4726C0A1CDA8FD400D2204E /* MnistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD664A1CD6BFC50056E652 /* MnistTests.swift */; };
 		C4726C0B1CDA8FD700D2204E /* SqueezeNetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */; };
@@ -44,6 +45,7 @@
 		C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */; };
 		C4765F451CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */; };
 		C4765F461CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */; };
+		C486E5EA1CDFD506001D42C9 /* EspressoBlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = C486E5E91CDFD506001D42C9 /* EspressoBlas.swift */; };
 		C49DC4C41CC2809F009E2076 /* MathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49DC4C31CC2809F009E2076 /* MathFunctions.swift */; };
 		C4AAF3091CC3E0ED00C5EC8A /* CSwiftV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */; };
 		C4BFB4CF1CD551C00093D593 /* ReluLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BFB4CD1CD551C00093D593 /* ReluLayerTests.swift */; };
@@ -112,6 +114,7 @@
 		C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalParameters.swift; sourceTree = "<group>"; };
 		C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalUtilityFunctions.swift; sourceTree = "<group>"; };
+		C486E5E91CDFD506001D42C9 /* EspressoBlas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EspressoBlas.swift; sourceTree = "<group>"; };
 		C49DC4C31CC2809F009E2076 /* MathFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathFunctions.swift; sourceTree = "<group>"; };
 		C4AAF3081CC3E0ED00C5EC8A /* CSwiftV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSwiftV.swift; sourceTree = "<group>"; };
 		C4BFB4CD1CD551C00093D593 /* ReluLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReluLayerTests.swift; sourceTree = "<group>"; };
@@ -178,6 +181,7 @@
 				C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */,
 				C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */,
 				C4D783F31CD954AD0067692F /* Im2col.swift */,
+				C486E5E91CDFD506001D42C9 /* EspressoBlas.swift */,
 			);
 			path = utilities;
 			sourceTree = "<group>";
@@ -363,6 +367,7 @@
 				C4D783F41CD954AD0067692F /* Im2col.swift in Sources */,
 				B52775481CC0BE4100A0FA0B /* WeightFiller.swift in Sources */,
 				C43E83C21CC01E7D004C0175 /* Network.swift in Sources */,
+				C486E5EA1CDFD506001D42C9 /* EspressoBlas.swift in Sources */,
 				C43E83C81CC02537004C0175 /* BackwardLayerProtocol.swift in Sources */,
 				C4765F451CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */,
 				C4BFB4D21CD55BA50093D593 /* CSwiftV.swift in Sources */,
@@ -381,6 +386,7 @@
 				B521D49D1CDDBECA001553D4 /* AlexNetTests.swift in Sources */,
 				C4765F431CC5A3D800E8C9B0 /* MetalParameters.swift in Sources */,
 				C4BFB4CF1CD551C00093D593 /* ReluLayerTests.swift in Sources */,
+				C4466C5F1CDFDF670027AB9C /* EspressoBlas.swift in Sources */,
 				C4EBC6DD1CC3B0CF006E03C7 /* Solver.swift in Sources */,
 				B5706FB21CD558B200E5B56F /* NetworkTests.swift in Sources */,
 				C4CD66491CD69C320056E652 /* SoftmaxLayerTests.swift in Sources */,

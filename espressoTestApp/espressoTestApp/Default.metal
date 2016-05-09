@@ -25,6 +25,7 @@ struct MetalConvolutionParameter {
 };
 
 struct MetalPoolingParameter {
+  int count;
   int padSize;
   int kernelSize;
   int stride;
@@ -37,17 +38,19 @@ struct MetalPoolingParameter {
 };
 
 struct MetalReluParameter {
+  int count;
   float negativeSlope;
 };
 
 struct MetalFullyConnectedParameter {
+  int count;
   int numOutput;
   int numElementsPerBatch;
 };
 
 struct MetalSoftmaxParameter {
+  int count;
   int numOutput;
-  int totalNumberOfDistributions;
   int mapSizeToPerformOn;
 };
 
@@ -63,17 +66,42 @@ struct MetalLrnParameter {
 
 };
 
+struct MetalIm2colParameter {
+  int count;
+  int inputOffset;
+  int kernelSize;
+  int padSize;
+  int stride;
+  int inputChannels;
+  int inputHeight;
+  int inputWidth;
+  int outputHeight;
+  int outputWidth;
+};
+
+struct MetalSgemmParameter {
+  uint count;
+  bool transA;
+  bool transB;
+  uint m;
+  uint n;
+  uint k;
+  float alpha;
+  float beta;
+};
+
+
 /* Functions */
 kernel void convolutionForward(const device float *input [[ buffer(0) ]],
                                device float *output [[ buffer(1) ]],
-                               const device MetalConvolutionParameter *convolvParams [[ buffer(2) ]],
-                               const device float *weights [[ buffer(3) ]],
-                               const device float *bias [[ buffer(4) ]],
+                               const device float *weights [[ buffer(2) ]],
+                               const device float *bias [[ buffer(3) ]],
+                               const device MetalConvolutionParameter *convolvParams [[ buffer(4) ]],
                                uint id [[ thread_position_in_grid ]]) {
   //count = batchSize * outputChannel * outputHeight * outputWidth
-//  if (id >= (uint)convolvParams[0].count) {
-//    return;
-//  }
+  if (id >= (uint)convolvParams[0].count) {
+    return;
+  }
   int padSize = convolvParams[0].padSize;
   int kernelSize = convolvParams[0].kernelSize;
   int stride = convolvParams[0].stride;
@@ -86,59 +114,43 @@ kernel void convolutionForward(const device float *input [[ buffer(0) ]],
   int outputHeight = convolvParams[0].outputHeight;
   int outputWidth = convolvParams[0].outputWidth;
 
-//  int oneBatchElements = outputChannel * outputHeight * outputWidth;
-//  int oneChannelElements = outputHeight * outputWidth;
-//  int batchNo = id / oneBatchElements;
-//  int channelNo = (id % oneBatchElements) / oneChannelElements;
-//  int startHeight = (id % oneChannelElements) / outputWidth;
-//  int startWidth = (id % oneChannelElements) % outputWidth;
-//
-//  int inputStartHeight = startHeight * stride;
-//  int inputStartWidth = startWidth * stride;
-//  int inputOffset = batchNo * inputChannel * inputHeight * inputWidth;
-//
-//  thread float convolv = 0;
-//  for (int inputChanNo = 0; inputChanNo < inputChannel; inputChanNo++) {
-//    for (int i = 0; i < kernelSize; i++) {
-//      for (int j = 0; j < kernelSize; j++) {
-//        int row = inputStartHeight + i;
-//        int col = inputStartWidth + j;
-//        if (row >= padSize && row < inputHeight + padSize &&
-//            col >= padSize && col < inputWidth + padSize) {
-//          convolv += input[inputOffset + inputChanNo * inputHeight * inputWidth + (row - padSize) * inputWidth + (col - padSize)]
-//          * weights[inputChanNo * kernelSize * kernelSize + i * kernelSize + j];
-//        }
-//      }
-//    }
-//  }
-//  output[id] = bias[channelNo] + convolv;
+  int oneBatchElements = outputChannel * outputHeight * outputWidth;
+  int oneChannelElements = outputHeight * outputWidth;
+  int batchNo = id / oneBatchElements;
+  int channelNo = (id % oneBatchElements) / oneChannelElements;
+  int startHeight = ((id % oneBatchElements) % oneChannelElements) / outputWidth;
+  int startWidth = ((id % oneBatchElements) % oneChannelElements) % outputWidth;
 
-  int i = (id / outputHeight) % outputWidth;
-  int j = id % outputHeight;
-  int n = id / (inputChannel * outputWidth * outputHeight);
-  int c = (id / (outputHeight * outputWidth)) % outputChannel;
-  int wstart = i * stride - padSize;
-  int hstart = j * stride - padSize;
-  int wend = fmin(wstart + kernelSize, inputWidth + padSize);
-  int hend = fmin(hstart + kernelSize, inputHeight + padSize);
-  wstart = fmax(0, wstart);
-  hstart = fmax(0, hstart);
+  int inputStartHeight = startHeight * stride;
+  int inputStartWidth = startWidth * stride;
+  int inputOffset = batchNo * inputChannel * inputHeight;// * inputWidth(multiply in use)
+  int weightsOffset = channelNo * inputChannel ;//* kernelSize * kernelSize (multiply in use)
+
   thread float convolv = 0;
-  for (int chanNo = 0; chanNo < inputChannel; chanNo++) {
-    for (int ii = wstart; ii < wend; ii++) {
-      for (int jj = hstart; jj < hend; jj++) {
-        convolv += input[(n * inputChannel * inputHeight + chanNo * inputHeight + ii) * inputWidth + jj];
+  for (int inputChanNo = 0; inputChanNo < inputChannel; inputChanNo++) {
+    for (int i = 0; i < kernelSize; i++) {
+      for (int j = 0; j < kernelSize; j++) {
+        int row = inputStartHeight + i;
+        int col = inputStartWidth + j;
+        if (row >= padSize && (row < (inputHeight + padSize)) &&
+            col >= padSize && (col < (inputWidth + padSize))) {
+          convolv += input[(inputOffset + inputChanNo * inputHeight + (row - padSize)) * inputWidth + (col - padSize)]
+          * weights[((weightsOffset + inputChanNo) * kernelSize + i) * kernelSize + j];
+        }
       }
     }
   }
-  //output[id] = convolv + bias[c];
-  output[id] = id;
+
+  output[id] = convolv + bias[channelNo];
 }
 
 kernel void poolingMaxForward(const device float *input [[ buffer(0) ]],
                               device float *output [[ buffer(1) ]],
                               const device MetalPoolingParameter *poolingParams [[ buffer(2) ]],
                               uint id [[ thread_position_in_grid ]]) {
+  if (id >= (uint)poolingParams[0].count) {
+    return;
+  }
   int padSize = poolingParams[0].padSize;
   int kernelSize = poolingParams[0].kernelSize;
   int stride = poolingParams[0].stride;
@@ -155,32 +167,36 @@ kernel void poolingMaxForward(const device float *input [[ buffer(0) ]],
   int oneChannelElements = outputHeight * outputWidth;
   int batchNo = id / oneBatchElements;
   int channelNo = (id % oneBatchElements) / oneChannelElements;
-  int startHeight = (id % oneChannelElements) / outputWidth;
-  int startWidth = (id % oneChannelElements) % outputWidth;
+  int startHeight = ((id % oneBatchElements) % oneChannelElements) / outputWidth;
+  int startWidth = ((id % oneBatchElements) % oneChannelElements) % outputWidth;
 
   int inputStartHeight = startHeight * stride;
   int inputStartWidth = startWidth * stride;
 
-  int inputOffset = batchNo * inputChannel * inputHeight * inputWidth + channelNo * inputHeight * inputWidth;
-  output[id] = -FLT_MAX;
+  int inputOffset = (batchNo * inputChannel + channelNo) * inputHeight * inputWidth;
+  thread float pooled = -1000000000;//-FLT_MAX;
   for (int i = 0; i < kernelSize; i++) {
     for (int j = 0; j < kernelSize; j++) {
       int row = inputStartHeight + i;
       int col = inputStartWidth + j;
-      if (row >= padSize && row < inputHeight + padSize &&
-          col >= padSize && col < inputWidth + padSize) {
-        output[id] = max(output[id], input[inputOffset + (row - padSize) * inputWidth + (col - padSize)]);
+      if (row >= padSize && (row < (inputHeight + padSize)) &&
+          col >= padSize && (col < (inputWidth + padSize))) {
+        pooled = max(pooled, input[inputOffset + (row - padSize) * inputWidth + (col - padSize)]);
       } else {
-        output[id] = max(output[id], 0.0);
+        pooled = max(pooled, 0.0);
       }
     }
   }
+  output[id] = pooled;
 }
 
 kernel void poolingAvgForward(const device float *input [[ buffer(0) ]],
                               device float *output [[ buffer(1) ]],
                               const device MetalPoolingParameter *poolingParams [[ buffer(2) ]],
                               uint id [[ thread_position_in_grid ]]) {
+  if (id >= (uint)poolingParams[0].count) {
+    return;
+  }
   // count = batchSize * outputChannel * outputHeight * outputWidth
   int padSize = poolingParams[0].padSize;
   int kernelSize = poolingParams[0].kernelSize;
@@ -198,32 +214,26 @@ kernel void poolingAvgForward(const device float *input [[ buffer(0) ]],
   int oneChannelElements = outputHeight * outputWidth;
   int batchNo = id / oneBatchElements;
   int channelNo = (id % oneBatchElements) / oneChannelElements;
-  int startHeight = (id % oneChannelElements) / outputWidth;
-  int startWidth = (id % oneChannelElements) % outputWidth;
+  int startHeight = ((id % oneBatchElements) % oneChannelElements) / outputWidth;
+  int startWidth = ((id % oneBatchElements) % oneChannelElements) % outputWidth;
 
   int inputStartHeight = startHeight * stride;
   int inputStartWidth = startWidth * stride;
 
-  int count = 0;
-  int inputOffset = batchNo * inputChannel * inputHeight * inputWidth + channelNo * inputHeight * inputWidth;
+  int inputOffset = (batchNo * inputChannel + channelNo) * inputHeight * inputWidth;
 
-  output[id] = 0;
+  thread float pooled = 0;
   for (int i = 0; i < kernelSize; i++) {
     for (int j = 0; j < kernelSize; j++) {
       int row = inputStartHeight + i;
       int col = inputStartWidth + j;
-      if (row >= padSize && row < inputHeight + padSize &&
-          col >= padSize && col < inputWidth + padSize) {
-        output[id] += input[inputOffset + (row - padSize) * inputWidth + (col - padSize)];
-        count++;
+      if (row >= padSize && (row < (inputHeight + padSize)) &&
+          col >= padSize && (col < (inputWidth + padSize))) {
+        pooled += input[inputOffset + (row - padSize) * inputWidth + (col - padSize)];
       }
     }
   }
-  if (count == 0) {
-    output[id] = 0;
-  } else {
-    output[id] /= count;
-  }
+  output[id] = (pooled / (float)(kernelSize * kernelSize));
 }
 
 kernel void reluForward(const device float *input [[ buffer(0) ]],
@@ -242,6 +252,9 @@ kernel void fullyConnectedForward(const device float *input [[ buffer(0) ]],
                                   const device float *bias [[ buffer(3) ]],
                                   const device MetalFullyConnectedParameter *fcParams [[ buffer(4) ]],
                                   uint id [[ thread_position_in_grid ]]) {
+  if (id >= (uint)fcParams[0].count) {
+    return;
+  }
   int numOutput = fcParams[0].numOutput;
   int numElementsPerBatch = fcParams[0].numElementsPerBatch;
   int curBatch = id / numOutput;
@@ -257,8 +270,10 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
                            const device MetalSoftmaxParameter *softmaxParam [[ buffer(2) ]],
                            uint id [[ thread_position_in_grid ]]) {
   // count = batchSize * height * width
+  if (id >= (uint)softmaxParam[0].count) {
+    return;
+  }
   int numOutput = softmaxParam[0].numOutput;
-  int totalNumberOfDistributions = softmaxParam[0].totalNumberOfDistributions;
   int mapSizeToPerformOn = softmaxParam[0].mapSizeToPerformOn;
 
   int curBatch = id / mapSizeToPerformOn;
@@ -282,32 +297,85 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
   }
 }
 
+kernel void im2colGpu(const device float *input [[ buffer(0) ]],
+                      device float *output [[ buffer(1) ]],
+                      const device MetalIm2colParameter* im2colParam [[ buffer(2) ]],
+                      uint id [[ thread_position_in_grid ]]) {
+  if (id >= (uint)im2colParam[0].count) {
+    return;
+  }
+  int inputChannels = im2colParam[0].inputChannels;
+  int inputHeight = im2colParam[0].inputHeight;
+  int inputWidth = im2colParam[0].inputWidth;
+
+  int kernelSize = im2colParam[0].kernelSize;
+  int padSize = im2colParam[0].padSize;
+  int stride = im2colParam[0].stride;
+  int inputOffset = im2colParam[0].inputOffset;
+
+  int outputHeight = im2colParam[0].outputHeight;
+  int outputWidth = im2colParam[0].outputWidth;
+
+  // not considering batch for now
+  int numElementsPerChan = outputHeight * outputWidth * kernelSize * kernelSize;
+  int curChan = id / numElementsPerChan;
+  int kernId = (id % numElementsPerChan) / (outputHeight * outputWidth);
+  int kernRow = kernId / kernelSize;
+  int kernCol = kernId % kernelSize;
+
+  int colLength = outputHeight * outputWidth;
+
+  int inputRowOff = ((id % numElementsPerChan) % colLength) / outputWidth;
+  int inputColOff = ((id % numElementsPerChan) % colLength) % outputWidth;
+
+  int inputRow = kernRow - padSize + inputRowOff * stride;
+  int inputCol = kernCol - padSize + inputColOff * stride;
+
+  int inputChannelSize = inputHeight * inputWidth;
+
+  if (inputRow >= 0 && inputRow < inputHeight && inputCol >= 0 && inputCol < inputWidth) {
+    output[id] = input[inputOffset + curChan * inputChannelSize + inputRow * inputWidth + inputCol];
+  } else {
+    output[id] = 0;
+  }
+}
+
 #pragma mark Math Functions
 
-/** 
+/**
  A: m rows by k columns
  B: k rows by n columns
  C: m rows by n columns
 
  If trans is specified, then m,n,k represents A,B dimensions after transpose (that is, really used in multiplication)
  */
-kernel void espresso_sgemm(bool transA, bool transB,
-                           uint m, uint n, uint k, float alpha,
-                           const device float * A,
-                           const device float * B,
-                           float beta, device float * C,
-                           uint id [[ thread_position_in_grid ]]) {
+kernel void espressoSgemm(const device float * A [[ buffer(0) ]],
+                          const device float * B [[ buffer(1) ]],
+                          device float * C [[ buffer(2) ]],
+                          const device MetalSgemmParameter* sgemmParam [[ buffer(3) ]],
+                          uint id [[ thread_position_in_grid ]]) {
+  if (id >= sgemmParam[0].count) {
+    return;
+  }
+  bool transA = sgemmParam[0].transA;
+  bool transB = sgemmParam[0].transB;
+  uint m = sgemmParam[0].m;
+  uint n = sgemmParam[0].n;
+  uint k = sgemmParam[0].k;
+  float alpha = sgemmParam[0].alpha;
+  float beta = sgemmParam[0].beta;
+
   uint aStep = transA ? m : 1;
   uint bStep = transB ? 1 : n;
 
   uint cRow = id / n, cCol = id % n;
 
-  const float * startA = A + (transA ? (cRow) : (k * cRow));
-  const float * startB = B + (transB ? (k * cCol) : (cCol));
+  uint aOffset = transA ? (cRow) : (k * cRow);
+  uint bOffset = transB ? (k * cCol) : (cCol);
 
-  float result = 0;
-  for (int i = 0; i < k; i ++) {
-    result += A[startA + i * aStep] * B[startB + i * bStep];
+  thread float result = 0;
+  for (uint i = 0; i < k; i ++) {
+    result += A[aOffset + i * aStep] * B[bOffset + i * bStep];
   }
-  C[i] = alpha * result + beta * C[id];
+  C[id] = alpha * result + beta * C[id];
 }

@@ -138,6 +138,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
         vDSP_mmul(weightCol, 1, bottomCol, 1, &mulRes, 1, UInt(numOutput), UInt(outputHeight * outputWidth), UInt(bottomChannels * kernelSize * kernelSize))
       }
 
+
       let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (outputHeight * outputWidth))]})
       vDSP_vadd(mulRes, 1, biasCol, 1, &self.output.storage, 1, vDSP_Length(mulRes.count))
 
@@ -148,7 +149,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
   }
 
   //for debugging
-  public func forwardGPU2(bottom: [Tensor]) {
+  public func forwardGPUDebug(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
       bottom.getFromMetal()
@@ -158,7 +159,7 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
     }
   }
 
-  public func forwardGPU(bottom: [Tensor]) {
+  public func forwardGPUOptAttempt(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
 
@@ -175,12 +176,21 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
       let outputHeight = (inputHeight + 2 * padSize - kernelSize) / stride + 1
       let outputWidth = (inputWidth + 2 * padSize - kernelSize) / stride + 1
 
+      // set output to bias
+      self.output.storage = (0..<self.output.count()).map({self.bias.storage[Int($0 / (outputHeight * outputWidth))]})
+      self.output.putToMetal()
+
+      let colDimension = [1, 1, inputChannel * kernelSize * kernelSize, outputHeight * outputWidth];
       let count = batchSize * outputChannel * outputHeight * outputWidth
-      let bottomCol = Tensor(metalDevice: metalDevice, dimensions: [1, 1, inputChannel * kernelSize * kernelSize, outputHeight * outputWidth])
-      im2colGpu(bottom, output: self.output, inputChannels: inputChannel, height: inputHeight, width: inputWidth, kernelSize: kernelSize, padSize: padSize, stride: stride, metalDevice: metalDevice, metalCommandQueue: metalCommandQueue, metalDefaultLibrary: metalDefaultLibrary)
+      let bottomCol = Tensor(metalDevice: metalDevice)
+      bottomCol.reshape(colDimension)
+      im2colGpu(bottom, output: bottomCol, inputChannels: inputChannel, height: inputHeight, width: inputWidth, kernelSize: kernelSize, padSize: padSize, stride: stride, metalDevice: metalDevice, metalCommandQueue: metalCommandQueue, metalDefaultLibrary: metalDefaultLibrary)
+      // batchSize
+      espressoSgemm(false, transB: false, m: UInt32(outputChannel), n: UInt32(outputHeight * outputWidth), k: UInt32(inputChannel * kernelSize * kernelSize), alpha: 1, A: self.weights, B: bottomCol, beta: 1, C: self.output, metalDevice: self.metalDevice, metalDefaultLibrary: self.metalDefaultLibrary, metalCommandQueue: self.metalCommandQueue)
+      //appleMM(UInt16(outputChannel), n: UInt16(inputChannel * kernelSize * kernelSize), k: UInt16(outputHeight * outputWidth), A: self.weights, B: bottomCol, C: self.output, metalDevice: self.metalDevice, metalDefaultLibrary: self.metalDefaultLibrary, metalCommandQueue: self.metalCommandQueue)
     }
   }
-  public func forwardGPUNaive(bottom: [Tensor]) {
+  public func forwardGPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
 
