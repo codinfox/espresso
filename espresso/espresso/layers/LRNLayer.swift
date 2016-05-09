@@ -127,8 +127,15 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       let commandBuffer = self.metalCommandQueue.commandBuffer()
       // copy the parameters to metal
       let paramBuffer = createLrnParameter(MetalLrnParameter(count: count, localSize: Int32(parameters.localSize), bottomChannels: bottomChannels, bottomHeight: bottomHeight, bottomWidth: bottomWidth, alpha: parameters.alpha, beta: parameters.beta), metalDevice: self.metalDevice)
+      var funcName = ""
+      if (parameters.region == .ACROSS_CHANNELS) {
+        funcName = "lrnCrossForward"
+      } else {
+        funcName = "lrnWithinForward"
+      }
+
       // perform computation
-      submitCommonComputeJob("lrnForward", paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: self.output.count())
+      submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: self.output.count())
     }
   }
 
