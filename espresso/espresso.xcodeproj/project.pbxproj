@@ -37,6 +37,7 @@
 		C4466C5F1CDFDF670027AB9C /* EspressoBlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = C486E5E91CDFD506001D42C9 /* EspressoBlas.swift */; };
 		C4466C661CE045730027AB9C /* LRNLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4466C651CE045730027AB9C /* LRNLayer.swift */; };
 		C4466C671CE058C90027AB9C /* LRNLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4466C651CE045730027AB9C /* LRNLayer.swift */; };
+		C4466C6B1CE065980027AB9C /* LrnLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4466C6A1CE065980027AB9C /* LrnLayerTests.swift */; };
 		C4726C091CDA8FC300D2204E /* ConvolutionLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E8E8F1CC45E9700190FAE /* ConvolutionLayerTests.swift */; };
 		C4726C0A1CDA8FD400D2204E /* MnistTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CD664A1CD6BFC50056E652 /* MnistTests.swift */; };
 		C4726C0B1CDA8FD700D2204E /* SqueezeNetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */; };
@@ -116,6 +117,7 @@
 		C43E83D11CC03334004C0175 /* SoftmaxLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoftmaxLayer.swift; sourceTree = "<group>"; };
 		C43E83D51CC0339D004C0175 /* PoolingLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoolingLayer.swift; sourceTree = "<group>"; };
 		C4466C651CE045730027AB9C /* LRNLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRNLayer.swift; sourceTree = "<group>"; };
+		C4466C6A1CE065980027AB9C /* LrnLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LrnLayerTests.swift; sourceTree = "<group>"; };
 		C4765F3E1CC5A3B000E8C9B0 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		C4765F411CC5A3D800E8C9B0 /* MetalParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalParameters.swift; sourceTree = "<group>"; };
 		C4765F441CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalUtilityFunctions.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				B521D49C1CDDBECA001553D4 /* AlexNetTests.swift */,
 				B50AA3EF1CDD60DF0085E5BF /* DecompressionTests.swift */,
 				B5B9FE8F1CDFEF3100A4B60C /* CPUMathTests.swift */,
+				C4466C6A1CE065980027AB9C /* LrnLayerTests.swift */,
 			);
 			path = espressoTests;
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 			files = (
 				C4CD66471CD67F940056E652 /* FullyConnectedLayerTests.swift in Sources */,
 				C4EBC6D31CC3AF4D006E03C7 /* SoftmaxLayer.swift in Sources */,
+				C4466C6B1CE065980027AB9C /* LrnLayerTests.swift in Sources */,
 				C4765F401CC5A3B000E8C9B0 /* Shaders.metal in Sources */,
 				C4EBC6DB1CC3B0C8006E03C7 /* WeightFiller.swift in Sources */,
 				B521D49D1CDDBECA001553D4 /* AlexNetTests.swift in Sources */,
