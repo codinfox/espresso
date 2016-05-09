@@ -84,9 +84,6 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
   public func forwardCPU(bottom: [Tensor]) {
     if bottom.count > 0 {
-      if self.memoryLimitedMode {
-        restoreWeightsByDecompression()
-      }
       let bottom = bottom[0]
       let batchSize = bottom.dimensions[0]
       let bottomChannels = bottom.dimensions[1]
@@ -105,33 +102,13 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
       // FIXME: Only support batch size 1
       var mulRes = [Float](count : numOutput * outputHeight * outputWidth, repeatedValue : 0.0)
+      let bottomCol = im2colCpu(bottom.storage, inputChannels: bottomChannels, height: bottomHeight, width: bottomWidth, kernelSize: kernelSize, padSize: padSize, stride: stride)
 
       if self.memoryLimitedMode {
         // if memory limited
-        // FIXME: No impact on memory usage
-        var weightTrans = [Float](count: self.weights.storage.count, repeatedValue: 0.0)
-        vDSP_mtrans(self.weights.storage, 1, &weightTrans, 1, UInt(bottomChannels * kernelSize * kernelSize), UInt(numOutput))
-        var tmpMulRes = [Float](count : numOutput * outputHeight * outputWidth, repeatedValue : 0.0)
-
-        for currentBatch in 0 ..< batchSize {
-          for currentChannel in 0 ..< bottomChannels {
-            let inputOffset = currentBatch * bottomChannels * bottomHeight * bottomWidth + currentChannel * bottomHeight * bottomWidth 
-
-            let bottomCol = im2colCpu(bottom.storage, inputChannels: 1, height: bottomHeight, width: bottomWidth, kernelSize: kernelSize, padSize: padSize, stride: stride, inputOffset: inputOffset)
-            var bottomColTrans = [Float](count: bottomCol.count, repeatedValue: 0.0)
-            vDSP_mtrans(bottomCol, 1, &bottomColTrans, 1, UInt(outputHeight * outputWidth), UInt(kernelSize * kernelSize))
-
-            let weightSlice : [Float] = Array(weightTrans[weightElementsOneChannelAllOutputs * currentChannel ..< weightElementsOneChannelAllOutputs * (currentChannel + 1)])
-
-            vDSP_mmul(bottomColTrans, 1, weightSlice, 1, &tmpMulRes, 1, UInt(outputHeight * outputWidth), UInt(numOutput), UInt(kernelSize * kernelSize))
-            vDSP_vadd(mulRes, 1, tmpMulRes, 1, &mulRes, 1, vDSP_Length(mulRes.count))
-          }
-        }
-        vDSP_mtrans(mulRes, 1, &mulRes, 1, UInt(numOutput), UInt(outputWidth * outputHeight))
-
+        mulRes = sparseDenseMatrixMultiplication(self.compressedInfo, dense: bottomCol, M: (numOutput), N: (outputHeight * outputWidth), P: (bottomChannels * kernelSize * kernelSize))
       } else {
         // if memory is not an issue
-        let bottomCol = im2colCpu(bottom.storage, inputChannels: bottomChannels, height: bottomHeight, width: bottomWidth, kernelSize: kernelSize, padSize: padSize, stride: stride)
 
         let weightCol = self.weights.storage
 
@@ -141,10 +118,6 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
       let biasCol:[Float] = (0..<mulRes.count).map({self.bias.storage[Int($0 / (outputHeight * outputWidth))]})
       vDSP_vadd(mulRes, 1, biasCol, 1, &self.output.storage, 1, vDSP_Length(mulRes.count))
-
-      if self.memoryLimitedMode {
-        self.weights.purgeStorage()
-      }
     }
   }
 
