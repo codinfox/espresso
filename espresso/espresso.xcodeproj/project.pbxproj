@@ -23,6 +23,7 @@
 		B5A6FF571CBC802A00085F1B /* espresso.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A6FF561CBC802A00085F1B /* espresso.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B5A6FF5E1CBC802A00085F1B /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6FF531CBC802A00085F1B /* espresso.framework */; };
 		B5A6FF631CBC802A00085F1B /* ImageDataLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A6FF621CBC802A00085F1B /* ImageDataLayerTests.swift */; };
+		B5B9FE901CDFEF3100A4B60C /* CPUMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B9FE8F1CDFEF3100A4B60C /* CPUMathTests.swift */; };
 		B5FFAE171CD6837600672F70 /* Network+Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5706FAF1CD552BA00E5B56F /* Network+Import.swift */; };
 		C43E83C21CC01E7D004C0175 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C11CC01E7D004C0175 /* Network.swift */; };
 		C43E83C41CC01F6A004C0175 /* ForwardLayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */; };
@@ -100,6 +101,7 @@
 		B5A6FF5D1CBC802A00085F1B /* espressoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = espressoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6FF621CBC802A00085F1B /* ImageDataLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDataLayerTests.swift; sourceTree = "<group>"; };
 		B5A6FF641CBC802A00085F1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5B9FE8F1CDFEF3100A4B60C /* CPUMathTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CPUMathTests.swift; sourceTree = "<group>"; };
 		C43E83C11CC01E7D004C0175 /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		C43E83C31CC01F6A004C0175 /* ForwardLayerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardLayerProtocol.swift; sourceTree = "<group>"; };
 		C43E83C51CC02479004C0175 /* ImageDataLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageDataLayer.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 				B55794A31CD7C82A00E911B4 /* SqueezeNetTests.swift */,
 				B521D49C1CDDBECA001553D4 /* AlexNetTests.swift */,
 				B50AA3EF1CDD60DF0085E5BF /* DecompressionTests.swift */,
+				B5B9FE8F1CDFEF3100A4B60C /* CPUMathTests.swift */,
 			);
 			path = espressoTests;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				C4EBC6D11CC3AF47006E03C7 /* ReluLayer.swift in Sources */,
 				B52E8E921CC4615B00190FAE /* TensorTests.swift in Sources */,
 				C4765F461CC5A3FA00E8C9B0 /* MetalUtilityFunctions.swift in Sources */,
+				B5B9FE901CDFEF3100A4B60C /* CPUMathTests.swift in Sources */,
 				C4EBC6CD1CC3AF38006E03C7 /* BackwardLayerProtocol.swift in Sources */,
 				C4726C0D1CDA8FFB00D2204E /* Im2col.swift in Sources */,
 				C4726C0C1CDA8FF200D2204E /* ConvolutionLayer.swift in Sources */,

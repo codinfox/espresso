@@ -418,6 +418,7 @@ class DecompressionTests: XCTestCase {
       self.network.forward()
     }
     let out = (network.layers.last as! ForwardLayerProtocol).output.storage
+    print(out)
     let prob = out.maxElement()
     let index = out.indexOf(prob!)
     XCTAssertEqual(index!, 945)

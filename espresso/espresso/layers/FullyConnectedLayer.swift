@@ -81,7 +81,7 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
     // Preprocess bottom to fit this layer
     if bottom.count > 0 {
       if self.memoryLimitedMode {
-        restoreWeightsByDecompression()
+//        restoreWeightsByDecompression()
       }
       let bottom = bottom[0] // in fc layer, bottom is really just a single Tensor
 
