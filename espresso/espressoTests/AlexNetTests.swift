@@ -74,10 +74,13 @@ class AlexNetTests: XCTestCase {
       )))
 
     // LRN layer here
+    network.add(LRNLayer(parameters: LRNParameters(
+      name: "norm1",
+      dependencies: ["conv1"])
 
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool1",
-      dependencies: ["relu_conv1"],
+      dependencies: ["norm1"],
       kernelSize: 3,
       stride: 2,
       method: .MAX
@@ -96,6 +99,9 @@ class AlexNetTests: XCTestCase {
       )))
 
     // LRN layer here
+    network.add(LRNLayer(parameters: LRNParameters(
+      name: "norm2",
+      dependencies: ["conv2"])
 
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool2",

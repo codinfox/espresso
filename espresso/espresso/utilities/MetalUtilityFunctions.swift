@@ -46,6 +46,12 @@ func createPoolingParameter(param: MetalPoolingParameter, metalDevice: MTLDevice
   return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
 }
 
+func createLrnParameter(param: MetalLrnParameter, metalDevice: MTLDevice) -> MTLBuffer {
+  var param = param
+  let length = sizeof(MetalLrnParameter)
+  return metalDevice.newBufferWithBytes(&param, length: length, options: MTLResourceOptions.CPUCacheModeDefaultCache)
+}
+
 func createIm2colParameter(param: MetalIm2colParameter, metalDevice: MTLDevice) -> MTLBuffer {
     var param = param
     let length = sizeof(MetalIm2colParameter)

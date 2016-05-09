@@ -62,7 +62,13 @@ public struct MetalDropoutParameter {
 }
 
 public struct MetalLrnParameter {
-
+  var count: UInt32
+  var localSize: Int32
+  var bottomChannels: Int32
+  var bottomHeight: Int32
+  var bottomWidth: Int32
+  var alpha: Float
+  var beta: Float
 }
 
 

@@ -74,15 +74,12 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       self.bias.reshape([channels])
     }
     self.output.reshape([batchSize, channels])
-//    self.gradient.reshape([batchSize, channels])
+    //    self.gradient.reshape([batchSize, channels])
   }
 
   func forwardCPU(bottom: [Tensor]) {
     // Preprocess bottom to fit this layer
     if bottom.count > 0 {
-      if self.memoryLimitedMode {
-//        restoreWeightsByDecompression()
-      }
       let bottom = bottom[0] // in fc layer, bottom is really just a single Tensor
 
       let batchSize = bottom.dimensions[0]
@@ -91,16 +88,20 @@ public class FullyConnectedLayer: ForwardLayerProtocol, BackwardLayerProtocol, T
       let numElementsPerBatch = bottom.count(fromDimension: 1)
       assert(numElementsPerBatch == self.weights.count() / numOutput, "Num elements not match")
 
-      var weightTrans = [Float](count: weights.count(), repeatedValue: 0)
-      // res: (channel * height * width) * numOutput
-      vDSP_mtrans(weights.storage, 1, &weightTrans, 1, vDSP_Length(numElementsPerBatch), vDSP_Length(numOutput))
-
-      // batch * (channel * height * width)
-      // (channel * height * width) * numOutput
-      vDSP_mmul(bottom.storage, 1, weightTrans, 1, &self.output.storage, 1, vDSP_Length(batchSize), vDSP_Length(numOutput), vDSP_Length(numElementsPerBatch))
-
       if self.memoryLimitedMode {
+        // assuming batchSize == 1, change to loop later
+        self.output.storage = sparseDenseMatrixMultiplication(self.compressedInfo, dense: bottom.storage, M: numOutput, N: batchSize, P: numElementsPerBatch)
+        //  restoreWeightsByDecompression()
         self.weights.purgeStorage()
+      } else {
+
+        var weightTrans = [Float](count: weights.count(), repeatedValue: 0)
+        // res: (channel * height * width) * numOutput
+        vDSP_mtrans(weights.storage, 1, &weightTrans, 1, vDSP_Length(numElementsPerBatch), vDSP_Length(numOutput))
+
+        // batch * (channel * height * width)
+        // (channel * height * width) * numOutput
+        vDSP_mmul(bottom.storage, 1, weightTrans, 1, &self.output.storage, 1, vDSP_Length(batchSize), vDSP_Length(numOutput), vDSP_Length(numElementsPerBatch))
       }
     }
   }

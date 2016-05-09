@@ -59,7 +59,7 @@ public class ReluLayer: ForwardLayerProtocol, BackwardLayerProtocol {
     let oneBottomDimensionsSample = bottomDimensions[0]
 
     self.output.reshape(oneBottomDimensionsSample)
-    self.gradient.reshape(oneBottomDimensionsSample)
+    // self.gradient.reshape(oneBottomDimensionsSample)
   }
 
   public func forwardCPU(bottom: [Tensor]) {
