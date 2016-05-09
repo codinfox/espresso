@@ -64,3 +64,17 @@ public struct MetalDropoutParameter {
 public struct MetalLrnParameter {
 
 }
+
+
+public struct MetalIm2colParameter {
+    var count: Int32
+    var inputOffset: Int32
+    var kernelSize: Int32
+    var padSize: Int32
+    var stride: Int32
+    var inputChannels: Int32
+    var inputHeight: Int32
+    var inputWidth: Int32
+    var outputHeight: Int32
+    var outputWidth: Int32
+}

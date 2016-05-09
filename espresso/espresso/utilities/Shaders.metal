@@ -67,13 +67,16 @@ struct MetalLrnParameter {
 };
 
 struct im2colGpuParameter {
-  int inputChannel;
-  int height;
-  int width;
+  int count;
+  int inputOffset;
   int kernelSize;
   int padSize;
   int stride;
-  int inputOffset;
+  int inputChannels;
+  int inputHeight;
+  int inputWidth;
+  int outputHeight;
+  int outputWidth;
 };
 
 /* Functions */
@@ -284,6 +287,41 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
 
 kernel void im2colGpu(const device float *input [[ buffer(0) ]],
                       device float *output [[ buffer(1) ]],
-                      const device im2colGpuParameter *im2colParam [[ buffer(2) ]]) {
+                      const device im2colGpuParameter* im2colParam [[ buffer(2) ]],
+                      uint id [[ thread_position_in_grid ]]) {
+  if (id >= (uint)im2colParam[0].count) {
+    return;
+  }
+  int inputChannels = im2colParam[0].inputChannels;
+  int inputHeight = im2colParam[0].inputHeight;
+  int inputWidth = im2colParam[0].inputWidth;
 
+  int kernelSize = im2colParam[0].kernelSize;
+  int padSize = im2colParam[0].padSize;
+  int stride = im2colParam[0].stride;
+  int inputOffset = im2colParam[0].inputOffset;
+
+  int outputHeight = im2colParam[0].outputHeight;
+  int outputWidth = im2colParam[0].outputWidth;
+
+  // not considering batch for now
+  int numELementsPerChan = outputHeight * outputWidth * kernelSize * kernelSize;
+  int curChan = id / numElementsPerChan;
+  int kernId = (id % numELementsPerChan) / (outputHeight * outputWidth);
+  int kernRow = kernId / kernelSize;
+  int kernCol = kernId % kernelSize;
+
+  int colLength = outputHeight * outputWidth;
+
+  int inputRowOff = ((id % numElementsPerChan) % colLength) / outputWidth;
+  int inputColOff = ((id % numELementsPerChan) % colLength) % outputWidth;
+
+  int inputRow = kernRow - padSize + inputRowOff * stride;
+  int inputCol = kernCol - padSize + inputColOff * stride;
+
+  if (inputRow >= 0 && inputRow < height && inputCol >= 0 && inputCol < width) {
+    output[id] = input[inputOffset + curChan * channelSize + inputRow * width + inputCol];
+  } else {
+    output[id] = 0;
+  }
 }
