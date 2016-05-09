@@ -63,6 +63,13 @@ struct MetalDropoutParameter {
 };
 
 struct MetalLrnParameter {
+  int count;
+  int localSize;
+  int bottomChannels;
+  int bottomHeight;
+  int bottomWidth;
+  float alpha;
+  float beta;
 
 };
 
@@ -296,6 +303,42 @@ kernel void softmaxForward(const device float *input [[ buffer(0) ]],
     output[fixedOffset + curChan * mapSizeToPerformOn + gridIndex] /= Z;
   }
 }
+
+kernel void lrnCrossForward(const device float *input [[ buffer(0) ]],
+                            device float *output [[ buffer(1) ]],
+                            const device MetalLrnParameter& lrnParam [[ buffer(2) ]],
+                            uint id [[ thread_position_in_grid ]]) {
+  if (id >= lrnParam.count) {
+    return;
+  }
+
+  int localSize = lrnParam.localSize;
+  int bottomChannels = lrnParam.bottomChannels;
+  int bottomHeight = lrnParam.bottomHeight;
+  int bottomWidth = lrnParam.bottomWidth;
+  float alpha = lrnParam.alpha;
+  float beta = lrnParam.beta;
+
+  int numElementsPerChan = bottomHeight * bottomWidth;
+  int numElementsPerBatch = numElementsPerChan * bottomChannels;
+  int curBatch = id / numElementsPerBatch;
+  int curChan = (id % numElementsPerBatch) / numElementsPerChan;
+  int curHeight = (id % numElementsPerChan) / bottomWidth;
+  int curWidth = (id % numElementsPerChan) % bottomWidth;
+
+  thread offset = curBatch * numElementsPerBatch;
+  thread float Z = 0;
+  for (maskIndex = 0; maskIndex < localSize; maskIndex++) {
+    int curMask = curChan - localSize / 2 + maskIndex;
+    if (curMask > 0 && curMask < bottomChannels) {
+      Z += input[offset + curMask * numElementsPerChan + curHeight * bottomWidth + curWidth];
+    }
+  }
+  output[id] = input[id] / (pow(1 + alpha/(localSize) * Z, beta));
+}
+
+
+kernel void lrnWithinForward();
 
 kernel void im2colGpu(const device float *input [[ buffer(0) ]],
                       device float *output [[ buffer(1) ]],
