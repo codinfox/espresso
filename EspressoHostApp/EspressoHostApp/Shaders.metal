@@ -63,7 +63,7 @@ struct MetalDropoutParameter {
 };
 
 struct MetalLrnParameter {
-  int count;
+  uint count;
   int localSize;
   int bottomChannels;
   int bottomHeight;
@@ -326,9 +326,9 @@ kernel void lrnCrossForward(const device float *input [[ buffer(0) ]],
   int curHeight = (id % numElementsPerChan) / bottomWidth;
   int curWidth = (id % numElementsPerChan) % bottomWidth;
 
-  thread offset = curBatch * numElementsPerBatch;
+  thread int offset = curBatch * numElementsPerBatch;
   thread float Z = 0;
-  for (maskIndex = 0; maskIndex < localSize; maskIndex++) {
+  for (int maskIndex = 0; maskIndex < localSize; maskIndex++) {
     int curMask = curChan - localSize / 2 + maskIndex;
     if (curMask > 0 && curMask < bottomChannels) {
       Z += input[offset + curMask * numElementsPerChan + curHeight * bottomWidth + curWidth];

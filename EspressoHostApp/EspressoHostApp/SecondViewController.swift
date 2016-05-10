@@ -119,6 +119,362 @@ class SecondViewController: UIViewController, UIImagePickerControllerDelegate, U
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     let engine: NetworkProperties.NetworkEngine = .GPU
+    //    network = Network(parameters: NetworkProperties(batchSize: 1, engine: engine))
+    //    network.add(ImageDataLayer(parameters: ImageDataParameters(
+    //      name: "data",
+    //      imgNames: Array<String>(count: 100, repeatedValue: ""),
+    //      dimensions: [1,3,227,227],
+    //      dependencies: [],
+    //      readImage: { _ in (self.readUIImageToTensor().storage, [0])}
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "conv1",
+    //      dependencies: ["data"],
+    //      numOutput: 96,
+    //      kernelSize: 7,
+    //      stride: 2
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "relu_conv1",
+    //      dependencies: ["conv1"]
+    //      )))
+    //    network.add(PoolingLayer(parameters: PoolingParameters(
+    //      name: "pool1",
+    //      dependencies: ["relu_conv1"],
+    //      kernelSize: 3,
+    //      stride: 2,
+    //      method: .MAX
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire2_squeeze1x1",
+    //      dependencies: ["pool1"],
+    //      numOutput: 16,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire2_relu_squeeze1x1",
+    //      dependencies: ["fire2_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire2_expand1x1",
+    //      dependencies: ["fire2_relu_squeeze1x1"],
+    //      numOutput: 64,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire2_relu_expand1x1",
+    //      dependencies: ["fire2_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire2_expand3x3",
+    //      dependencies: ["fire2_relu_squeeze1x1"],
+    //      numOutput: 64,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire2_relu_expand3x3",
+    //      dependencies: ["fire2_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire2_concat",
+    //      dependencies: ["fire2_relu_expand1x1", "fire2_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire3_squeeze1x1",
+    //      dependencies: ["fire2_concat"],
+    //      numOutput: 16,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire3_relu_squeeze1x1",
+    //      dependencies: ["fire3_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire3_expand1x1",
+    //      dependencies: ["fire3_relu_squeeze1x1"],
+    //      numOutput: 64,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire3_relu_expand1x1",
+    //      dependencies: ["fire3_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire3_expand3x3",
+    //      dependencies: ["fire3_relu_squeeze1x1"],
+    //      numOutput: 64,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire3_relu_expand3x3",
+    //      dependencies: ["fire3_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire3_concat",
+    //      dependencies: ["fire3_relu_expand1x1", "fire3_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire4_squeeze1x1",
+    //      dependencies: ["fire3_concat"],
+    //      numOutput: 32,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire4_relu_squeeze1x1",
+    //      dependencies: ["fire4_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire4_expand1x1",
+    //      dependencies: ["fire4_relu_squeeze1x1"],
+    //      numOutput: 128,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire4_relu_expand1x1",
+    //      dependencies: ["fire4_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire4_expand3x3",
+    //      dependencies: ["fire4_relu_squeeze1x1"],
+    //      numOutput: 128,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire4_relu_expand3x3",
+    //      dependencies: ["fire4_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire4_concat",
+    //      dependencies: ["fire4_relu_expand1x1", "fire4_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(PoolingLayer(parameters: PoolingParameters(
+    //      name: "pool4",
+    //      dependencies: ["fire4_concat"],
+    //      kernelSize: 3,
+    //      stride: 2,
+    //      method: .MAX
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire5_squeeze1x1",
+    //      dependencies: ["pool4"],
+    //      numOutput: 32,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire5_relu_squeeze1x1",
+    //      dependencies: ["fire5_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire5_expand1x1",
+    //      dependencies: ["fire5_relu_squeeze1x1"],
+    //      numOutput: 128,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire5_relu_expand1x1",
+    //      dependencies: ["fire5_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire5_expand3x3",
+    //      dependencies: ["fire5_relu_squeeze1x1"],
+    //      numOutput: 128,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire5_relu_expand3x3",
+    //      dependencies: ["fire5_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire5_concat",
+    //      dependencies: ["fire5_relu_expand1x1", "fire5_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire6_squeeze1x1",
+    //      dependencies: ["fire5_concat"],
+    //      numOutput: 48,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire6_relu_squeeze1x1",
+    //      dependencies: ["fire6_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire6_expand1x1",
+    //      dependencies: ["fire6_relu_squeeze1x1"],
+    //      numOutput: 192,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire6_relu_expand1x1",
+    //      dependencies: ["fire6_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire6_expand3x3",
+    //      dependencies: ["fire6_relu_squeeze1x1"],
+    //      numOutput: 192,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire6_relu_expand3x3",
+    //      dependencies: ["fire6_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire6_concat",
+    //      dependencies: ["fire6_relu_expand1x1", "fire6_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire7_squeeze1x1",
+    //      dependencies: ["fire6_concat"],
+    //      numOutput: 48,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire7_relu_squeeze1x1",
+    //      dependencies: ["fire7_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire7_expand1x1",
+    //      dependencies: ["fire7_relu_squeeze1x1"],
+    //      numOutput: 192,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire7_relu_expand1x1",
+    //      dependencies: ["fire7_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire7_expand3x3",
+    //      dependencies: ["fire7_relu_squeeze1x1"],
+    //      numOutput: 192,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire7_relu_expand3x3",
+    //      dependencies: ["fire7_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire7_concat",
+    //      dependencies: ["fire7_relu_expand1x1", "fire7_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire8_squeeze1x1",
+    //      dependencies: ["fire7_concat"],
+    //      numOutput: 64,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire8_relu_squeeze1x1",
+    //      dependencies: ["fire8_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire8_expand1x1",
+    //      dependencies: ["fire8_relu_squeeze1x1"],
+    //      numOutput: 256,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire8_relu_expand1x1",
+    //      dependencies: ["fire8_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire8_expand3x3",
+    //      dependencies: ["fire8_relu_squeeze1x1"],
+    //      numOutput: 256,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire8_relu_expand3x3",
+    //      dependencies: ["fire8_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire8_concat",
+    //      dependencies: ["fire8_relu_expand1x1", "fire8_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(PoolingLayer(parameters: PoolingParameters(
+    //      name: "pool8",
+    //      dependencies: ["fire8_concat"],
+    //      kernelSize: 3,
+    //      stride: 2,
+    //      method: .MAX
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire9_squeeze1x1",
+    //      dependencies: ["pool8"],
+    //      numOutput: 64,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire9_relu_squeeze1x1",
+    //      dependencies: ["fire9_squeeze1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire9_expand1x1",
+    //      dependencies: ["fire9_relu_squeeze1x1"],
+    //      numOutput: 256,
+    //      kernelSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire9_relu_expand1x1",
+    //      dependencies: ["fire9_expand1x1"]
+    //      )))
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "fire9_expand3x3",
+    //      dependencies: ["fire9_relu_squeeze1x1"],
+    //      numOutput: 256,
+    //      kernelSize: 3,
+    //      padSize: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "fire9_relu_expand3x3",
+    //      dependencies: ["fire9_expand3x3"]
+    //      )))
+    //    network.add(ConcatLayer(parameters: ConcatParameters(
+    //      name: "fire9_concat",
+    //      dependencies: ["fire9_relu_expand1x1", "fire9_relu_expand3x3"]
+    //      )))
+    //
+    //    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
+    //      name: "conv10",
+    //      dependencies: ["fire9_concat"],
+    //      numOutput: 1000,
+    //      kernelSize: 1,
+    //      stride: 1
+    //      )))
+    //    network.add(ReluLayer(parameters: ReLUParameters(
+    //      name: "relu_conv10",
+    //      dependencies: ["conv10"]
+    //      )))
+    //    network.add(PoolingLayer(parameters: PoolingParameters(
+    //      name: "pool10",
+    //      dependencies: ["relu_conv10"],
+    //      method: .AVG,
+    //      globalPooling: true
+    //      )))
+    //    network.add(SoftmaxLayer(parameters: SoftmaxParameters(
+    //      name: "prob",
+    //      dependencies: ["pool10"]
+    //      )))
+    //
+    //    let networkFile = NSBundle.mainBundle().pathForResource("squeezenet", ofType: "espressomodel")
+    //    network.importFromFile(networkFile!, engine: engine)
+
     network = Network(parameters: NetworkProperties(batchSize: 1, engine: engine))
     network.add(ImageDataLayer(parameters: ImageDataParameters(
       name: "data",
@@ -131,355 +487,142 @@ class SecondViewController: UIViewController, UIImagePickerControllerDelegate, U
       name: "conv1",
       dependencies: ["data"],
       numOutput: 96,
-      kernelSize: 7,
-      stride: 2
+      kernelSize: 11,
+      stride: 4
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
       name: "relu_conv1",
       dependencies: ["conv1"]
       )))
+
+    // LRN layer here
+    //    network.add(LRNLayer(parameters: LRNParameters(
+    //      name: "norm1",
+    //      dependencies: ["relu_conv1"])))
+
+    network.add(ReluLayer(parameters: ReLUParameters(
+      name: "norm1",
+      dependencies: ["relu_conv1"])))
+
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool1",
-      dependencies: ["relu_conv1"],
+      dependencies: ["norm1"],
       kernelSize: 3,
       stride: 2,
       method: .MAX
       )))
 
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire2_squeeze1x1",
+      name: "conv2",
       dependencies: ["pool1"],
-      numOutput: 16,
-      kernelSize: 1
+      numOutput: 256,
+      kernelSize: 5,
+      padSize: 2,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire2_relu_squeeze1x1",
-      dependencies: ["fire2_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire2_expand1x1",
-      dependencies: ["fire2_relu_squeeze1x1"],
-      numOutput: 64,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire2_relu_expand1x1",
-      dependencies: ["fire2_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire2_expand3x3",
-      dependencies: ["fire2_relu_squeeze1x1"],
-      numOutput: 64,
-      kernelSize: 3,
-      padSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire2_relu_expand3x3",
-      dependencies: ["fire2_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire2_concat",
-      dependencies: ["fire2_relu_expand1x1", "fire2_relu_expand3x3"]
+      name: "relu_conv2",
+      dependencies: ["conv2"]
       )))
 
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire3_squeeze1x1",
-      dependencies: ["fire2_concat"],
-      numOutput: 16,
-      kernelSize: 1
-      )))
+    // LRN layer here
+    //    network.add(LRNLayer(parameters: LRNParameters(
+    //      name: "norm2",
+    //      dependencies: ["relu_conv2"])))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire3_relu_squeeze1x1",
-      dependencies: ["fire3_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire3_expand1x1",
-      dependencies: ["fire3_relu_squeeze1x1"],
-      numOutput: 64,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire3_relu_expand1x1",
-      dependencies: ["fire3_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire3_expand3x3",
-      dependencies: ["fire3_relu_squeeze1x1"],
-      numOutput: 64,
-      kernelSize: 3,
-      padSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire3_relu_expand3x3",
-      dependencies: ["fire3_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire3_concat",
-      dependencies: ["fire3_relu_expand1x1", "fire3_relu_expand3x3"]
-      )))
-
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire4_squeeze1x1",
-      dependencies: ["fire3_concat"],
-      numOutput: 32,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire4_relu_squeeze1x1",
-      dependencies: ["fire4_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire4_expand1x1",
-      dependencies: ["fire4_relu_squeeze1x1"],
-      numOutput: 128,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire4_relu_expand1x1",
-      dependencies: ["fire4_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire4_expand3x3",
-      dependencies: ["fire4_relu_squeeze1x1"],
-      numOutput: 128,
-      kernelSize: 3,
-      padSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire4_relu_expand3x3",
-      dependencies: ["fire4_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire4_concat",
-      dependencies: ["fire4_relu_expand1x1", "fire4_relu_expand3x3"]
-      )))
+      name: "norm2",
+      dependencies: ["relu_conv2"])))
 
     network.add(PoolingLayer(parameters: PoolingParameters(
-      name: "pool4",
-      dependencies: ["fire4_concat"],
+      name: "pool2",
+      dependencies: ["norm2"],
       kernelSize: 3,
       stride: 2,
       method: .MAX
       )))
 
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire5_squeeze1x1",
-      dependencies: ["pool4"],
-      numOutput: 32,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire5_relu_squeeze1x1",
-      dependencies: ["fire5_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire5_expand1x1",
-      dependencies: ["fire5_relu_squeeze1x1"],
-      numOutput: 128,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire5_relu_expand1x1",
-      dependencies: ["fire5_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire5_expand3x3",
-      dependencies: ["fire5_relu_squeeze1x1"],
-      numOutput: 128,
+      name: "conv3",
+      dependencies: ["pool2"],
+      numOutput: 384,
       kernelSize: 3,
       padSize: 1
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire5_relu_expand3x3",
-      dependencies: ["fire5_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire5_concat",
-      dependencies: ["fire5_relu_expand1x1", "fire5_relu_expand3x3"]
+      name: "relu_conv3",
+      dependencies: ["conv3"]
       )))
 
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire6_squeeze1x1",
-      dependencies: ["fire5_concat"],
-      numOutput: 48,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire6_relu_squeeze1x1",
-      dependencies: ["fire6_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire6_expand1x1",
-      dependencies: ["fire6_relu_squeeze1x1"],
-      numOutput: 192,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire6_relu_expand1x1",
-      dependencies: ["fire6_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire6_expand3x3",
-      dependencies: ["fire6_relu_squeeze1x1"],
-      numOutput: 192,
+      name: "conv4",
+      dependencies: ["relu_conv3"],
+      numOutput: 384,
       kernelSize: 3,
-      padSize: 1
+      padSize: 1,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire6_relu_expand3x3",
-      dependencies: ["fire6_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire6_concat",
-      dependencies: ["fire6_relu_expand1x1", "fire6_relu_expand3x3"]
+      name: "relu_conv4",
+      dependencies: ["conv4"]
       )))
 
     network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire7_squeeze1x1",
-      dependencies: ["fire6_concat"],
-      numOutput: 48,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire7_relu_squeeze1x1",
-      dependencies: ["fire7_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire7_expand1x1",
-      dependencies: ["fire7_relu_squeeze1x1"],
-      numOutput: 192,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire7_relu_expand1x1",
-      dependencies: ["fire7_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire7_expand3x3",
-      dependencies: ["fire7_relu_squeeze1x1"],
-      numOutput: 192,
-      kernelSize: 3,
-      padSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire7_relu_expand3x3",
-      dependencies: ["fire7_expand3x3"]
-      )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire7_concat",
-      dependencies: ["fire7_relu_expand1x1", "fire7_relu_expand3x3"]
-      )))
-
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire8_squeeze1x1",
-      dependencies: ["fire7_concat"],
-      numOutput: 64,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire8_relu_squeeze1x1",
-      dependencies: ["fire8_squeeze1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire8_expand1x1",
-      dependencies: ["fire8_relu_squeeze1x1"],
-      numOutput: 256,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire8_relu_expand1x1",
-      dependencies: ["fire8_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire8_expand3x3",
-      dependencies: ["fire8_relu_squeeze1x1"],
+      name: "conv5",
+      dependencies: ["relu_conv4"],
       numOutput: 256,
       kernelSize: 3,
-      padSize: 1
+      padSize: 1,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire8_relu_expand3x3",
-      dependencies: ["fire8_expand3x3"]
+      name: "relu_conv5",
+      dependencies: ["conv5"]
       )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire8_concat",
-      dependencies: ["fire8_relu_expand1x1", "fire8_relu_expand3x3"]
-      )))
-
+    
     network.add(PoolingLayer(parameters: PoolingParameters(
-      name: "pool8",
-      dependencies: ["fire8_concat"],
+      name: "pool5",
+      dependencies: ["relu_conv5"],
       kernelSize: 3,
       stride: 2,
       method: .MAX
       )))
-
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire9_squeeze1x1",
-      dependencies: ["pool8"],
-      numOutput: 64,
-      kernelSize: 1
+    
+    network.add(FullyConnectedLayer(parameters: FullyConnectedParameters(
+      name: "fc6",
+      dependencies: ["pool5"],
+      numOutput: 4096
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire9_relu_squeeze1x1",
-      dependencies: ["fire9_squeeze1x1"]
+      name: "relu6",
+      dependencies: ["fc6"]
       )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire9_expand1x1",
-      dependencies: ["fire9_relu_squeeze1x1"],
-      numOutput: 256,
-      kernelSize: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire9_relu_expand1x1",
-      dependencies: ["fire9_expand1x1"]
-      )))
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "fire9_expand3x3",
-      dependencies: ["fire9_relu_squeeze1x1"],
-      numOutput: 256,
-      kernelSize: 3,
-      padSize: 1
+    network.add(FullyConnectedLayer(parameters: FullyConnectedParameters(
+      name: "fc7",
+      dependencies: ["relu6"],
+      numOutput: 4096
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
-      name: "fire9_relu_expand3x3",
-      dependencies: ["fire9_expand3x3"]
+      name: "relu7",
+      dependencies: ["fc7"]
       )))
-    network.add(ConcatLayer(parameters: ConcatParameters(
-      name: "fire9_concat",
-      dependencies: ["fire9_relu_expand1x1", "fire9_relu_expand3x3"]
-      )))
-
-    network.add(ConvolutionLayer(parameters: ConvolutionParameters(
-      name: "conv10",
-      dependencies: ["fire9_concat"],
-      numOutput: 1000,
-      kernelSize: 1,
-      stride: 1
-      )))
-    network.add(ReluLayer(parameters: ReLUParameters(
-      name: "relu_conv10",
-      dependencies: ["conv10"]
-      )))
-    network.add(PoolingLayer(parameters: PoolingParameters(
-      name: "pool10",
-      dependencies: ["relu_conv10"],
-      method: .AVG,
-      globalPooling: true
+    network.add(FullyConnectedLayer(parameters: FullyConnectedParameters(
+      name: "fc8",
+      dependencies: ["relu7"],
+      numOutput: 1000
       )))
     network.add(SoftmaxLayer(parameters: SoftmaxParameters(
       name: "prob",
-      dependencies: ["pool10"]
+      dependencies: ["fc8"]
       )))
-
-    let networkFile = NSBundle.mainBundle().pathForResource("squeezenet", ofType: "espressomodel")
-    network.importFromFile(networkFile!, engine: engine)
+    
+    let networkFile = NSBundle.mainBundle().pathForResource("AlexNet_compressed", ofType: "net")
+    network.importCompressedNetworkFromFile(networkFile!)
   }
-
-//  override func viewWillDisappear(animated: Bool) {
-//    network = nil
-//  }
-
+  
+  //  override func viewWillDisappear(animated: Bool) {
+  //    network = nil
+  //  }
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.

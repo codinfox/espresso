@@ -22,6 +22,8 @@ struct MetalConvolutionParameter {
   int outputChannel;
   int outputHeight;
   int outputWidth;
+  int groupNo;
+  int totalGroups;
 };
 
 struct MetalPoolingParameter {
@@ -326,19 +328,54 @@ kernel void lrnCrossForward(const device float *input [[ buffer(0) ]],
   int curHeight = (id % numElementsPerChan) / bottomWidth;
   int curWidth = (id % numElementsPerChan) % bottomWidth;
 
-  thread offset = curBatch * numElementsPerBatch;
+  thread int offset = curBatch * numElementsPerBatch;
   thread float Z = 0;
-  for (maskIndex = 0; maskIndex < localSize; maskIndex++) {
+  for (int maskIndex = 0; maskIndex < localSize; maskIndex++) {
     int curMask = curChan - localSize / 2 + maskIndex;
     if (curMask > 0 && curMask < bottomChannels) {
-      Z += input[offset + curMask * numElementsPerChan + curHeight * bottomWidth + curWidth];
+      float x = input[offset + curMask * numElementsPerChan + curHeight * bottomWidth + curWidth];
+      Z += x * x;
     }
   }
   output[id] = input[id] / (pow(1 + alpha/(localSize) * Z, beta));
 }
 
 
-kernel void lrnWithinForward();
+kernel void lrnWithinForward(const device float *input [[ buffer(0) ]],
+                             device float *output [[ buffer(1) ]],
+                             const device MetalLrnParameter& lrnParam [[ buffer(2) ]],
+                             uint id [[ thread_position_in_grid ]]) {
+  if (id >= lrnParam.count) {
+    return;
+  }
+  int localSize = lrnParam.localSize;
+  int bottomChannels = lrnParam.bottomChannels;
+  int bottomHeight = lrnParam.bottomHeight;
+  int bottomWidth = lrnParam.bottomWidth;
+  float alpha = lrnParam.alpha;
+  float beta = lrnParam.beta;
+
+  int numElementsPerChan = bottomHeight * bottomWidth;
+  int numElementsPerBatch = numElementsPerChan * bottomChannels;
+  int curBatch = id / numElementsPerBatch;
+  int curChan = (id % numElementsPerBatch) / numElementsPerChan;
+  int curHeight = (id % numElementsPerChan) / bottomWidth;
+  int curWidth = (id % numElementsPerChan) % bottomWidth;
+
+  int maskY = curHeight - localSize / 2;
+  int maskX = curWidth - localSize / 2;
+  thread int offset = curBatch * numElementsPerBatch + curChan * numElementsPerChan;
+  thread float Z = 0;
+  for (int kernY = 0; kernY < localSize; kernY++) {
+    for (int kernX = 0; kernX < localSize; kernX++) {
+      if ((maskY + kernY) >= 0 && (maskY + kernY) < bottomHeight && (maskX + kernX) >= 0 && (maskX + kernX) < bottomWidth) {
+        float x = input[offset + (maskY + kernY) * bottomWidth + (maskX + kernX)];
+        Z += x * x;
+      }
+    }
+  }
+  output[id] = input[id] / (pow(1 + alpha/(localSize * localSize) * Z, beta));
+}
 
 kernel void im2colGpu(const device float *input [[ buffer(0) ]],
                       device float *output [[ buffer(1) ]],

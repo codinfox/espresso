@@ -12,10 +12,13 @@ import XCTest
 class SqueezeNetTests: XCTestCase {
 
   var network : Network!
-  let filename = "/Users/Ben/Projects/espresso/models/squeezenet.espressomodel"
+//  let modelFile = "/Users/Ben/Projects/espresso/models/squeezenet.espressomodel"
+//  let imgFile = "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg"
+  let modelFile = "/Users/jerry/Projects/15-618/espresso/models/SqueezeNet_compressed.net"
+  let imgFile = "/Users/jerry/Projects/15-618/espresso/EspressoHostApp/example.jpg"
 
   func readUIImageToTensor() -> Tensor {
-    let inputCGImage = UIImage(contentsOfFile: "/Users/Ben/Downloads/ING-bell-pepper_sql.jpg")!.CGImage
+    let inputCGImage = UIImage(contentsOfFile: imgFile)!.CGImage
     let width = 227 // CGImageGetWidth(inputCGImage)
     let height = 227 // CGImageGetHeight(inputCGImage)
 
@@ -413,7 +416,7 @@ class SqueezeNetTests: XCTestCase {
 
   func testPerformanceExample() {
     // This is an example of a performance test case.
-    self.network.importFromFile(filename)
+    self.network.importFromFile(modelFile)
     self.measureBlock {
       self.network.forward()
     }

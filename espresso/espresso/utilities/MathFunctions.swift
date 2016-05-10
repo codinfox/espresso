@@ -21,17 +21,18 @@ var onceToken : dispatch_once_t = 0
  Dense: P * N
  Output: M * N
  */
-public func sparseDenseMatrixMultiplication(sparse: CompressedInfo, dense: [Float32], M: Int, N: Int, P: Int) -> [Float32] {
+public func sparseDenseMatrixMultiplication(sparse: CompressedInfo, dense: [Float32], M: Int, N: Int, P: Int, groupOffset: Int = 0, totalGroups: Int = 1) -> [Float32] {
   dispatch_once(&onceToken) { 
     concurrentQueue = dispatch_queue_create("edu.cmu.espresso.blasqueue", DISPATCH_QUEUE_CONCURRENT)
   }
 
+  let denseOffset = groupOffset * N * P / totalGroups;
   var group = dispatch_group_create()
   var outputs : [[Float32]] = [[],[]]
   for i in 0 ..< 2 {
     dispatch_group_enter(group)
     dispatch_group_async(group, concurrentQueue, { 
-      outputs[i] = sparseDenseMatrixMultiplicationHelper(sparse, dense: dense, M: M, N: N, P: P, startIndex: i)
+      outputs[i] = sparseDenseMatrixMultiplicationHelper(sparse, dense: dense, M: M, N: N, P: P/totalGroups, startIndex: i, denseOffset: denseOffset, totalGroups: totalGroups)
       dispatch_group_leave(group)
     })
   }
@@ -40,7 +41,7 @@ public func sparseDenseMatrixMultiplication(sparse: CompressedInfo, dense: [Floa
   return outputs[0]
 }
 
-func sparseDenseMatrixMultiplicationHelper(sparse: CompressedInfo, dense: [Float32], M: Int, N: Int, P: Int, startIndex: Int) -> [Float32] {
+func sparseDenseMatrixMultiplicationHelper(sparse: CompressedInfo, dense: [Float32], M: Int, N: Int, P: Int, startIndex: Int, denseOffset: Int = 0, totalGroups: Int = 1) -> [Float32] {
   let ind = sparse.ind
   let spm = sparse.spm
   let codebook = sparse.codebook
@@ -74,7 +75,7 @@ func sparseDenseMatrixMultiplicationHelper(sparse: CompressedInfo, dense: [Float
 
     let denseStart = col * N
 
-    vDSP_vsma((&dense + denseStart), 1, &val, &rowResult, 1, &rowResult, 1, vDSP_Length(N))
+    vDSP_vsma((&dense + denseStart + denseOffset), 1, &val, &rowResult, 1, &rowResult, 1, vDSP_Length(N))
   }
   vDSP_vadd(&rowResult, 1, (&output + outputPointer), 1, (&output + outputPointer), 1, vDSP_Length(N))
   return output

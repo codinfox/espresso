@@ -106,9 +106,18 @@ public class ConvolutionLayer: ForwardLayerProtocol, BackwardLayerProtocol, Trai
 
       if self.memoryLimitedMode {
         // if memory limited
-        mulRes = sparseDenseMatrixMultiplication(self.compressedInfo, dense: bottomCol, M: (numOutput), N: (outputHeight * outputWidth), P: (bottomChannels * kernelSize * kernelSize))
+        for i in 0..<parameters.group {
+          // ith group
+          let tmpMulRes = sparseDenseMatrixMultiplication(self.compressedInfo, dense: bottomCol, M: (numOutput), N: (outputHeight * outputWidth), P: (bottomChannels * kernelSize * kernelSize), groupOffset: i, totalGroups: parameters.group)
+          if (i == 0) {
+            mulRes = tmpMulRes
+          } else {
+            vDSP_vadd(mulRes, 1, tmpMulRes, 1, &mulRes, 1, vDSP_Length(mulRes.count))
+          }
+        }
       } else {
         // if memory is not an issue
+        // TODO groups
 
         let weightCol = self.weights.storage
 
@@ -207,6 +216,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
   public let kernelSize : Int
   public let stride : Int
   public let padSize : Int
+  public let group: Int
   public let isBiasTerm : Bool
   public let biasLRMultiplier : Tensor.DataType // learning rate multiplier
   public let weightLRMultiplier : Tensor.DataType // learning rate multiplier
@@ -218,6 +228,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
               kernelSize: Int,
               stride: Int = 1,
               padSize: Int = 0,
+              group: Int = 1,
               isBiasTerm: Bool = true,
               biasLRMultiplier : Tensor.DataType = 1,
               weightLRMultiplier : Tensor.DataType = 1,
@@ -229,6 +240,7 @@ public struct ConvolutionParameters: LayerParameterProtocol {
     self.kernelSize = kernelSize
     self.stride = stride
     self.padSize = padSize
+    self.group = group
     self.isBiasTerm = isBiasTerm
     self.weightFiller = weightFiller
     self.biasFiller = biasFiller

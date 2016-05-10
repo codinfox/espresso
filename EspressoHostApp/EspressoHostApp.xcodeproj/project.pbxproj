@@ -15,6 +15,7 @@
 		B51B30DE1CDC309800B73AAB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B51B30DD1CDC309800B73AAB /* Assets.xcassets */; };
 		B51B30E11CDC309800B73AAB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B51B30DF1CDC309800B73AAB /* LaunchScreen.storyboard */; };
 		B51B30E91CDC31BB00B73AAB /* squeezenet.espressomodel in Resources */ = {isa = PBXBuildFile; fileRef = B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */; };
+		C42966951CE0C45E00E6FF4B /* AlexNet_compressed.net in Resources */ = {isa = PBXBuildFile; fileRef = C42966941CE0C45A00E6FF4B /* AlexNet_compressed.net */; };
 		C4466C611CDFE53F0027AB9C /* espresso.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4466C601CDFE53F0027AB9C /* espresso.framework */; };
 		C4466C621CDFE53F0027AB9C /* espresso.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4466C601CDFE53F0027AB9C /* espresso.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C4A578111CDDBB8F0084B1E9 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C4A578101CDDBB8F0084B1E9 /* Shaders.metal */; };
@@ -45,6 +46,7 @@
 		B51B30E01CDC309800B73AAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B51B30E21CDC309800B73AAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = squeezenet.espressomodel; sourceTree = "<group>"; };
+		C42966941CE0C45A00E6FF4B /* AlexNet_compressed.net */ = {isa = PBXFileReference; lastKnownFileType = file; path = AlexNet_compressed.net; sourceTree = "<group>"; };
 		C4466C601CDFE53F0027AB9C /* espresso.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = espresso.framework; path = "/Users/jerry/Library/Developer/Xcode/DerivedData/espresso-csoodbyvxoatyffodqbunhwdfsst/Build/Products/Debug-iphoneos/espresso.framework"; sourceTree = "<absolute>"; };
 		C4A578101CDDBB8F0084B1E9 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -64,6 +66,7 @@
 		B51B30C81CDC309800B73AAB = {
 			isa = PBXGroup;
 			children = (
+				C42966941CE0C45A00E6FF4B /* AlexNet_compressed.net */,
 				C4466C601CDFE53F0027AB9C /* espresso.framework */,
 				B51B30E81CDC31BB00B73AAB /* squeezenet.espressomodel */,
 				B501DD101CDC448D002675F0 /* example.jpg */,
@@ -159,6 +162,7 @@
 				B51B30E11CDC309800B73AAB /* LaunchScreen.storyboard in Resources */,
 				B51B30DE1CDC309800B73AAB /* Assets.xcassets in Resources */,
 				B51B30DC1CDC309800B73AAB /* Main.storyboard in Resources */,
+				C42966951CE0C45E00E6FF4B /* AlexNet_compressed.net in Resources */,
 				B501DD111CDC448D002675F0 /* example.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

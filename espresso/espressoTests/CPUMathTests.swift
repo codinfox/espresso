@@ -23,7 +23,7 @@ class CPUMathTests: XCTestCase {
     func testExample() {
       let sparse = CompressedInfo(codebook: [1,2,3,4,6], spm: [UInt8(0), UInt8(1), UInt8(2), UInt8(1), UInt8(3), UInt8(4), UInt8(0), UInt8(1), UInt8(2)], ind: [0,1,2,3,4,5,6,7,8])
       let dense = [Float32](count: 9, repeatedValue: 1)
-      let result = sparseDenseMatrixMultiplication(sparse, dense: dense, M: 3, N: 3, P: 3)
+      let result = sparseDenseMatrixMultiplication(sparse, dense: dense, M: 3, N: 3, P: 3, groupOffset: 0)
       let expected : [Float32] = [6,6,6,12,12,12,6,6,6]
       XCTAssertEqual(result, expected)
     }

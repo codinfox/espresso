@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Accelerate
 import Metal
 
 /** @brief LRN layer.
@@ -36,7 +37,7 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   public init(parameters: LRNParameters) {
     self.parameters = parameters
   }
-  
+
   public func layerSetUp(engine engine: NetworkProperties.NetworkEngine,
                                 bottomDimensions: [[Int]],
                                 metalDevice: MTLDevice! = nil,
@@ -65,30 +66,41 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
   func forwardCPU(bottom: [Tensor]) {
     if (bottom.count > 0) {
       let bottom = bottom[0]
-      let batchSize = bottom.dimensions[0]
 
+      let bottomBatches = bottom.dimensions[0]
       let bottomChannels = bottom.dimensions[1]
       let bottomHeight = bottom.dimensions[2]
       let bottomWidth = bottom.dimensions[3]
 
-      for currentBatch in 0..<batchSize {
-        switch parameters.region {
-        case .ACROSS_CHANNELS:
-          for y in 0 ..< bottomHeight {
-            for x in 0 ..< bottomWidth {
-              for currentChannel in 0 ..< bottomChannels {
-                var Z : Tensor.DataType = 0
-                for maskIndex in 0 ..< parameters.localSize {
-                  let currentMask = currentChannel - parameters.localSize / 2 + maskIndex
-                  if currentMask > 0 && currentMask < bottomChannels {
-                    Z += bottom[currentBatch, currentMask, y, x] * bottom[currentBatch, currentMask, y, x]
-                  }
-                }
-                output[currentBatch, currentChannel, y, x] = bottom[currentBatch, currentChannel, y, x] / (pow(1 + parameters.alpha / Tensor.DataType(parameters.localSize) * Z, parameters.beta))
-              }
-            }
+      let numELementsPerBatch = bottomChannels * bottomHeight * bottomWidth
+      let numElementsPerChan = bottomHeight * bottomWidth
+      switch parameters.region {
+      case .ACROSS_CHANNELS:
+        // reusing paddedSquare in all batches
+        var paddedSquare = Tensor(dimensions: [1, bottomChannels + parameters.localSize - 1, bottomHeight, bottomWidth])
+        var scale = Tensor(dimensions: [bottomBatches, bottomChannels, bottomHeight, bottomWidth])
+        let leftPadding = (parameters.localSize - 1) / 2 // local size is an odd number
+        for currentBatch in 0..<bottomBatches {
+          let batchOffset = currentBatch * numELementsPerBatch
+          vDSP_vsq(&bottom.storage + batchOffset, 1, &paddedSquare.storage + (leftPadding * numElementsPerChan), 1, vDSP_Length(numELementsPerBatch))
+          for local in 0..<parameters.localSize {
+            cblas_saxpy(Int32(numElementsPerChan), parameters.alpha / Float(parameters.localSize), &paddedSquare.storage + (local * numElementsPerChan), 1, &scale.storage + currentBatch * numELementsPerBatch, 1)
           }
-        case .WITHIN_CHANNEL:
+          for curChan in 1..<bottomChannels {
+            // copy previous scale
+            scale.storage.replaceRange((batchOffset + curChan * numElementsPerChan)..<(batchOffset + (curChan + 1) * numElementsPerChan), with: scale.storage[(batchOffset + (curChan-1) * numElementsPerChan)..<(batchOffset + curChan * numElementsPerChan)])
+            // add head
+            cblas_saxpy(Int32(numElementsPerChan), parameters.alpha / Float(parameters.localSize), &paddedSquare.storage + (curChan + parameters.localSize - 1) * numElementsPerChan, 1, &scale.storage + (currentBatch * numELementsPerBatch + curChan * numElementsPerChan), 1)
+            // subtract tail
+            cblas_saxpy(Int32(numElementsPerChan), -parameters.alpha / Float(parameters.localSize), &paddedSquare.storage + (curChan - 1) * numElementsPerChan, 1, &scale.storage + (currentBatch * numELementsPerBatch + curChan * numElementsPerChan), 1)
+          }
+          var minus_beta : Float = -parameters.beta
+          var n = Int32(self.output.count())
+          vvpowf(&self.output.storage, &minus_beta, &scale.storage, &n)
+          vDSP_vmul(&bottom.storage, 1, &self.output.storage, 1, &self.output.storage, 1, vDSP_Length(self.output.count()))
+        }
+      case .WITHIN_CHANNEL:
+        for currentBatch in 0..<bottomBatches {
           for currentChannel in 0 ..< bottomChannels {
             for y in 0 ..< bottomHeight {
               for x in 0 ..< bottomWidth {
@@ -114,7 +126,6 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       }
     }
   }
-
   public func forwardGPU(bottom: [Tensor]) {
     if bottom.count > 0 {
       let bottom = bottom[0]
@@ -138,7 +149,6 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
       submitCommonComputeJob(funcName, paramBuffer: paramBuffer, metalDefaultLibrary: self.metalDefaultLibrary, metalDevice: self.metalDevice, inputData: bottom, outputData: self.output, commandBuffer: commandBuffer, threadCount: self.output.count())
     }
   }
-
 }
 
 public struct LRNParameters : LayerParameterProtocol {

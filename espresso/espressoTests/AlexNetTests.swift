@@ -84,6 +84,10 @@ class AlexNetTests: XCTestCase {
       name: "norm1",
       dependencies: ["relu_conv1"])))
 
+//    network.add(ReluLayer(parameters: ReLUParameters(
+//      name: "norm1",
+//      dependencies: ["relu_conv1"])))
+
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool1",
       dependencies: ["norm1"],
@@ -97,7 +101,8 @@ class AlexNetTests: XCTestCase {
       dependencies: ["pool1"],
       numOutput: 256,
       kernelSize: 5,
-      padSize: 2
+      padSize: 2,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
       name: "relu_conv2",
@@ -108,6 +113,10 @@ class AlexNetTests: XCTestCase {
     network.add(LRNLayer(parameters: LRNParameters(
       name: "norm2",
       dependencies: ["relu_conv2"])))
+
+//    network.add(ReluLayer(parameters: ReLUParameters(
+//      name: "norm2",
+//      dependencies: ["relu_conv2"])))
 
     network.add(PoolingLayer(parameters: PoolingParameters(
       name: "pool2",
@@ -134,7 +143,8 @@ class AlexNetTests: XCTestCase {
       dependencies: ["relu_conv3"],
       numOutput: 384,
       kernelSize: 3,
-      padSize: 1
+      padSize: 1,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
       name: "relu_conv4",
@@ -146,7 +156,8 @@ class AlexNetTests: XCTestCase {
       dependencies: ["relu_conv4"],
       numOutput: 256,
       kernelSize: 3,
-      padSize: 1
+      padSize: 1,
+      group: 2
       )))
     network.add(ReluLayer(parameters: ReLUParameters(
       name: "relu_conv5",
