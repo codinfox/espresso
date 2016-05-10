@@ -81,19 +81,19 @@ Neural networks are inherently parallelizable within layer, as there is little d
 ##### The problem of efficiently evaluating neural networks
 In a typical neural network, the most expensive layers are Convolution layer and Fully Connected Layer. 
 Convolutions layer is compute bound, and a naive implementation requires 7 for loops. Data parallelism is commonly applied in convolution layer, that is, we distribute the input data of convolution layer in different machines, using parallelism to speedup the computation, while replicate the model(weights) in different machines.
-Fully connected layers has far more weights than other layers, so model parallelism is adopted in this case. The model are splitted in different machines while the input data are kept the same.
-However, we don't have the luxury of parallelising over multiple machines, multiple GPUs or even multiple CPUs(The most recent iPhone model has 2 CPU cores). In such a constrined environment, what we can use as a building block is the SIMD operations in CPU, accessed through the highly optimized Accelerate Framework, and the quad-core GPU, available to use throught the Metal APIs.
+Fully connected layers has far more weights than other layers, so model parallelism is adopted in this case. The model are split in different machines while the input data are kept the same.
+However, we don't have the luxury of parallelising over multiple machines, multiple GPUs or even multiple CPUs(The most recent iPhone model has 2 CPU cores). In such a constrained environment, what we can use as a building block is the SIMD operations in CPU, accessed through the highly optimized Accelerate Framework, and the quad-core GPU, available to use through the Metal APIs.
 Also, in such a limited time, we want to choose which layers to optimize very carefully. Based on usage patterns and the impact on performance, we decided to make the most effort in optimizing Convolution layer since it's computationally expensive and most commonly used.
 
 ##### Image to Column(`im2col`) in Convolution Layer
 
 ![Image to Column from 15-418/618 course website](images/im2col.png "Image to Column from 15-418/618 course website")
 
-In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. Also there is no parallelism at all in the naive implementation since it is doesn't use the SIMD features of CPU or the GPU parallelism. It turns out that the performance suffers a lot without `im2col` and parallelsim. The original implementation takes about 1800 seconds to evaluate a `SqueezeNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yielding a ~250x speedup. 
+In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. Also there is no parallelism at all in the naive implementation since it is doesn't use the SIMD features of CPU or the GPU parallelism. It turns out that the performance suffers a lot without `im2col` and parallelism. The original implementation takes about 1800 seconds to evaluate a `SqueezeNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yielding a ~250x speedup. 
 
 The speedup can be attributed to both our efficient implementation of `im2col` function, which restructures the computation as matrix multiplication and the highly optimized matrix operations in Accelerate framework.
 
-Our implementation of `im2col` fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small (3 is a common choice). However, if we look at the column of the result matrix, the ajacent pixels in result matrix are the pixels with the same index in the kernel window for ajacent convolution operations, which are almost consequtive in the original image matrix, or ajacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
+Our implementation of `im2col` fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small (3 is a common choice). However, if we look at the column of the result matrix, the adjacent pixels in result matrix are the pixels with the same index in the kernel window for adjacent convolution operations, which are almost consecutive in the original image matrix, or adjacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
 
 ##### Multi-stage Image to Column
 
@@ -103,7 +103,7 @@ Our implementation of `im2col` fully utilized the spacial locality in the operat
 
 We reimplemented all the layers on Apple GPU with Metal API. Metal is an API similar to OpenCL than can be used to exploit the parallelism over the GPU cores on iOS devices. Our straightforward implementation achieved a better performance than the optimized CPU version, which we believe, is a result of the increased parallelism in multiple GPU threads(warps). Also, in our GPU implementation, we distribute the work 
 
-Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation. Because of the time limit, we didn't further explore in this direction, we leave the further optimization of GPU version as a possible future improvment.
+Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation. Because of the time limit, we didn't further explore in this direction, we leave the further optimization of GPU version as a possible future improvement.
  
 ##### Other optimizations using Accelerate Framework
 
@@ -113,7 +113,7 @@ The accelerate framework is our interface to access the SIMD feature provided in
 
 #### Network Architectures
 
-We performed analysis on three differnet architectures:
+We performed analysis on three different architectures:
 
 | Name | Dataset | #parameters | #layers | #conv/fc layers | Original Runtime Memory |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -139,7 +139,7 @@ The difference between OFD+OO+Sparse Matrix and OFD+OO+MIC is the performance im
 
 As expected, the performance degrade slightly. It takes 1 more second to finish one forward pass in the SqueezeNet with OFD+OO+Sparse Matrix. This degrade in performance is acceptable.
 
-We observe that OFD+OO+MIC, although achieved almost equally low peak memory  usuage, OFD+OO+Sparse Matrix is better performance-wise. This is because by using sparse matrix representation and operations, we can reduce the number of operations performed by the algorithm.
+We observe that OFD+OO+MIC, although achieved almost equally low peak memory  usage, OFD+OO+Sparse Matrix is better performance-wise. This is because by using sparse matrix representation and operations, we can reduce the number of operations performed by the algorithm.
 
 We also did a run time memory recording on the AlexNet.
 
@@ -151,11 +151,13 @@ With OFD+OO+MIC, the memory usage bumps a lot. The peaks are when the network ru
 ![Runtime memory analysis on AlexNet](images/alex_mem.png "Runtime memory analysis on AlexNet")
 <small>Runtime memory analysis on AlexNet with OFD+OO+Sparse Matrix</small>
 
-We see when sparse matrix is applied, the peak memory usage is reduced to 101M, which is 3x less than OFD+OO+MIC version. This is mainly due to the sparse representation of weights of fully connected layers. Because weights of fully connected layers are aggresively compressed by deep compression algorithm, by not converting the sparse form to dense form, we save a lot of memory and operations.
+We see when sparse matrix is applied, the peak memory usage is reduced to 101M, which is 3x less than OFD+OO+MIC version. This is mainly due to the sparse representation of weights of fully connected layers. Because weights of fully connected layers are aggressively compressed by deep compression algorithm, by not converting the sparse form to dense form, we save a lot of memory and operations.
 
 #### Performance
 
-The following table is the running time of evaluting 3 networks in our framework.
+The following table is the running time of evaluating 3 networks in our framework.
+
+Test device: iPad 3 (CPU: Dual-core A6X 1.4GHz, GPU: Quad-core PowerVB SGX554MP4, 1GB RAM)
 
 |   Network   | Naive | Optimized | GPU Version |
 |:---------:|:-------------------:|:-----:|:-------:|
