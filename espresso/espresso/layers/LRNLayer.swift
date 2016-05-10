@@ -94,9 +94,9 @@ public class LRNLayer: ForwardLayerProtocol, BackwardLayerProtocol {
             // subtract tail
             cblas_saxpy(Int32(numElementsPerChan), -parameters.alpha / Float(parameters.localSize), &paddedSquare.storage + (curChan - 1) * numElementsPerChan, 1, &scale.storage + (currentBatch * numELementsPerBatch + curChan * numElementsPerChan), 1)
           }
-          var minus_beta : Float = -parameters.beta
+          let minus_beta : [Float] = [-parameters.beta]
           var n = Int32(self.output.count())
-          vvpowf(&self.output.storage, &minus_beta, &scale.storage, &n)
+          vvpowf(&self.output.storage, minus_beta, scale.storage, &n)
           vDSP_vmul(&bottom.storage, 1, &self.output.storage, 1, &self.output.storage, 1, vDSP_Length(self.output.count()))
         }
       case .WITHIN_CHANNEL:
