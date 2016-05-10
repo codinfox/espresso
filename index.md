@@ -125,7 +125,7 @@ In all experiments, we use batch size of 1.
 
 #### Memory Usage
 
-Memory usage experiments are done on CPU version only. Many of these memory optimizations are currently not ported to GPU version, and we don't currently know how to measure GPU performances on iOS devices.
+Memory usage experiments are done on CPU version only. Many of these memory optimizations are currently not ported to GPU version, and we don't currently know how to measure GPU performances on iOS devices. All the measurements in this section are done with iPhone 6 using Xcode debugging tools.
 
 ![Memory usage with different techniques](images/mem_use.png "Memory usage with different techniques")
 <small>Memory usage with different techniques. The experiment is done with SqueezeNet [^8]. The band shows the maximum and minimum memory usage and the solid line shows the average memory usage. The runtime memory usage of original network is 172M, while after applying all the techniques, we manage to shrink it to 66M</small>
@@ -157,17 +157,32 @@ We see when sparse matrix is applied, the peak memory usage is reduced to 101M, 
 
 The following table is the running time of evaluating 3 networks in our framework.
 
-Test device: iPad 3 (CPU: Dual-core A6X 1.4GHz, GPU: Quad-core PowerVB SGX554MP4, 1GB RAM)
+-------------
+
+Test device: iPad Air (CPU: Dual-core A7 1.4GHz, GPU: Quad-core PowerVR G6430, 1GB RAM)
 
 |   Network   | Naive | Optimized | GPU Version |
 |:---------:|:-------------------:|:-----:|:-------:|
-| `SqueezeNet`(31M) |~1800s| 7.8s (230x) | ~5s (360x) |
-| `AlexNet` (233M) | / |  6.9s | / |
+| `SqueezeNet`(31M) | / | 13.21s | 6.03s (2.19x) |
+| `AlexNet` (233M) | / |  25.14s | 17.40s (1.44x) |
+
+-------------
+
+Test device: Simulated iPhone 6 (CPU: Dual-core A8 1.4GHz, GPU: Quad-core PowerVR G6450, 1GB RAM)
+
+|   Network   | Naive | Optimized | GPU Version |
+|:---------:|:-------------------:|:-----:|:-------:|
+| `SqueezeNet`(31M) | 1787.2s | 7.8s (230x) | 4.81s (371x) |
+| `AlexNet` (233M) | / |  7.3s | / |
 |`MNIST`(11M)| / |0.024s | / |
 
 Although `AlexNet` has much more parameters (240M model file) than `SqueezeNet`(30M model file), the evaluation time is still less than `SqueezeNet`, one difference between the two network is that `SqueezeNet` has a lot more layers than `AlexNet`, which means the inherent sequential part of the computation is potentially larger since our implementation enforces strict dependencies between layers(The layers are topologically sorted according to dependency in construction time). The same argument applies for the running time of `MNIST` since it has far shallower networks.
 
 Another reason that `AlexNet` is faster is that the sparse matrix multiplication. In `SqueezeNet`, the weights are very dense, so there is little benefit in applying the sparse matrix multiplication. While in `AlexNet`, the weights are much larger and more sparse, and the benefit of sparse matrix multiplication is taking effect.
+
+The reason why on iPad AlexNet seems slower is current unclear. But we suspect it to be due to the more limited SIMD support.
+
+All the measurements below are done on simulated iPhone 6 using Xcode debugging tools.
 
 ![Runtime CPU Usage analysis on SqueezeNet](images/squeeze_time.png "Runtime CPU Usage analysis on SqueezeNet")
 <small>Runtime CPU Usage analysis on SqueezeNet on iPhone 6 (2 cores)</small>
