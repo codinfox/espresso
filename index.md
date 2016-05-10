@@ -103,7 +103,7 @@ Our implementation of `im2col` fully utilized the spacial locality in the operat
 
 We reimplemented all the layers on Apple GPU with Metal API. Metal is an API similar to OpenCL than can be used to exploit the parallelism over the GPU cores on iOS devices. Our straightforward implementation achieved a better performance than the optimized CPU version, which we believe, is a result of the increased parallelism in multiple GPU threads(warps). Also, in our GPU implementation, we distribute the work 
 
-Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation. Because of the time limit, we didn't further explore in this direction, we leave the further optimization of GPU version as a place for future improvment.
+Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation. Because of the time limit, we didn't further explore in this direction, we leave the further optimization of GPU version as a possible future improvment.
  
 ##### Other optimizations using Accelerate Framework
 
@@ -251,6 +251,7 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
     /* The index of the label with largest probability */
     let index = out.indexOf(prob!)
 ```
+
 ### Acknowledgement
 
 We would like to thank Prof. Kayvon for providing iOS developer certificate.
