@@ -89,9 +89,9 @@ Also, in such a limited time, we want to choose which layers to optimize very ca
 
 ![Image to Column from 15-418/618 course website](images/im2col.png "Image to Column from 15-418/618 course website")
 
-In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. However, it turns out that the performance suffers a lot without `im2col`. The original implementation takes about 1800 seconds to evaluate a `SqueezeNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yielding a ~250x speedup. 
+In our naive implementation, we used the common 7 for loops to implement convolution layer to keep the memory usage low. Also there is no parallelism at all in the naive implementation since it is doesn't use the SIMD features of CPU or the GPU parallelism. It turns out that the performance suffers a lot without `im2col` and parallelsim. The original implementation takes about 1800 seconds to evaluate a `SqueezeNet`, while the version using `im2col` and Accelerate framework for matrix multiplication takes only 7 seconds, yielding a ~250x speedup. 
 
-The speedup can be attributed to both our efficient implementation of `im2col` function, which restructures the computation as matrix multiplication and the highly optimized Accelerate framework.
+The speedup can be attributed to both our efficient implementation of `im2col` function, which restructures the computation as matrix multiplication and the highly optimized matrix operations in Accelerate framework.
 
 Our implementation of `im2col` fully utilized the spacial locality in the operation. The `im2col` operation expands the image to multiple small vectors, each vector corresponds to the values of the image pixels when the convolution is performed. The above figure is a slide from 15-418/618 course website. There is not much spacial locality to exploit in each row, since the kernelSize is typically small (3 is a common choice). However, if we look at the column of the result matrix, the ajacent pixels in result matrix are the pixels with the same index in the kernel window for ajacent convolution operations, which are almost consequtive in the original image matrix, or ajacent if the stride is 1. Therefore, if we fill the matrix column by column, we'll have great spacial locality in reading the original matrix. To further improve the locality of the output matrix, we will produce a matrix that is a transpose of the matrix shown in the slide instead. This way, we can have the best spatial locality both in input matrix and in output matrix.
 
@@ -101,9 +101,9 @@ Our implementation of `im2col` fully utilized the spacial locality in the operat
  
 ##### GPU Parallel Implementation of Layers
 
-We reimplemented all the layers on Apple GPU with Metal API. Metal is an API similar to OpenCL than can be used to exploit the parallelism over the GPU cores on iOS devices. Our straightforward implementation achieved a better performance than the optimized CPU version, which we believe, is a result of the increased parallelism in multiple GPU threads(warps).
+We reimplemented all the layers on Apple GPU with Metal API. Metal is an API similar to OpenCL than can be used to exploit the parallelism over the GPU cores on iOS devices. Our straightforward implementation achieved a better performance than the optimized CPU version, which we believe, is a result of the increased parallelism in multiple GPU threads(warps). Also, in our GPU implementation, we distribute the work 
 
-Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation.
+Inspired by the speedup of `im2col` in the CPU version, we also implemented the GPU version of `im2col` and a naive matrix multiplication implementation. The performance is similar to the most straightforward GPU implementation. One reason could be that the naive matrix multiplication doesn't make up for the extra overhead of doing `im2col`. And the utilization of parallelism is already sufficient in the original implementation. Because of the time limit, we didn't further explore in this direction, we leave the further optimization of GPU version as a place for future improvment.
  
 ##### Other optimizations using Accelerate Framework
 
@@ -251,16 +251,12 @@ An example of using our framework to define, import and evaluate the `SqueezeNet
     /* The index of the label with largest probability */
     let index = out.indexOf(prob!)
 ```
-
-#### Demo
-Shown in the **Overview** section.
-
-#### Work division
-Equal work was performed by both project members.
-
 ### Acknowledgement
 
 We would like to thank Prof. Kayvon for providing iOS developer certificate.
+
+### Work division
+Equal work was performed by both project members.
 
 ##### References:
 
