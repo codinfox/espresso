@@ -155,7 +155,7 @@ We see when sparse matrix is applied, the peak memory usage is reduced to 101M, 
 
 #### Performance
 
-The following table is the running time of evaluating 3 networks in our framework.
+The following table is the running time of evaluating 3 networks in our framework. All the measurements are done at the startup of the application.
 
 -------------
 
